@@ -1,0 +1,37 @@
+<?php
+//var_dump($this->data);
+?>
+<!--<form class="width98">
+    <a id="contracts-ppin" class="contracts-button" name="contracts-ppin"
+        href="/pcfa/publishpin" >
+        Publish prior information notice
+    </a><br />
+    <a id="contracts-pcn" class="contracts-button" name="contracts-pcn"
+        href="/pcfa/publishcn" >
+        Publish contract notice
+    </a><br />
+    <a id="contracts-ct" class="contracts-button" name="contracts-ct"
+        href="/pcfa/createtender" >
+        Create tender
+    </a><br />
+    <a id="contracts-cc" class="contracts-button" name="contracts-cc"
+        href="/pcfa/cancelcontract" >
+        Cancel contract
+    </a>
+</form>-->
+<div id="contracts-content" class="width99">
+<?php
+
+echo $this->data["content"];
+
+/*$cl = new ReflectionClass(get_class($data["content"]));
+$m = $cl->getMethods();
+var_dump($m);*/
+//if (isset($this->data["ow"]->selectedResource))
+//    echo "true"; else echo "false";
+
+if( isset($this->stateView) ){
+    echo $this->stateView;
+} 
+?>    
+</div>
