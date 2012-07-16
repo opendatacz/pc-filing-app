@@ -1,6 +1,6 @@
 <?php
 
-class ContractsModule extends OntoWiki_Module
+class ContractstoolboxModule extends OntoWiki_Module
 {
     protected $session = null;
 
@@ -44,11 +44,15 @@ class ContractsModule extends OntoWiki_Module
      * Returns the content
      */
     public function getContents() {
+        //register controller
+        $url = new OntoWiki_Url(array('controller' => 'contracts', 'action' => 'publishbusiness'), array());
+        $this->view->actionUrl = (string)$url;
+    
         // scripts and css only if module is visible
-        $this->view->headScript()->appendFile($this->view->moduleUrl . 'pcfacontracts.js');
-        $this->view->headLink()->appendStylesheet($this->view->moduleUrl . 'pcfacontracts.css');
+        $this->view->headScript()->appendFile($this->view->moduleUrl . 'contracts.js');
+        $this->view->headLink()->appendStylesheet($this->view->moduleUrl . 'contracts.css');
         
-        $sessionKey = 'PcfaContractsModule' . (isset($config->session->identifier) ? $config->session->identifier : '');        
+        $sessionKey = 'PcfaContracts' . (isset($config->session->identifier) ? $config->session->identifier : '');        
         $stateSession = new Zend_Session_Namespace($sessionKey);
 
         $data = array();

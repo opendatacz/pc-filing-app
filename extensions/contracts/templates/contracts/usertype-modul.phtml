@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * OntoWiki contracts user type module template
+ */
+$odd = true;
+?>
+
+<ol class="bullets-none separated">
+    <li>
+        <small>
+        Member of groups:
+        <ul>
+        <?php
+            if ($this->data["contractor"]) echo "<li>Contractors</li>";
+            if ($this->data["supplier"]) echo "<li>Suppliers</li>";
+        ?>
+        </ul>
+        <br />
+        </small>
+    </li>
+    <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
+        <a id="pcfa-usercontractor" class="navigation navList" name="pcfa-usercontractor"
+            href="<?php echo $this->data["url"],"/",($this->data["contractor"]?"?contractor=no":"?contractor=yes"); ?>" >
+            <?php echo ($this->data["contractor"]?"I am not contractor":"I am contractor"); ?>
+        </a>
+    </li>
+    <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
+        <a id="pcfa-usersupplier" class="navigation navList" name="pcfa-usersupplier"
+            href="<?php echo $this->data["url"],"/",($this->data["supplier"]?"?supplier=no":"?supplier=yes"); ?>" >
+            <?php echo ($this->data["supplier"]?"I am not supplier":"I am supplier"); ?>
+        </a>
+    </li>
+</ol>

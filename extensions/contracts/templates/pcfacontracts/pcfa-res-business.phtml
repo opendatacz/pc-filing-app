@@ -3,15 +3,15 @@
 $odd = true;
 
 ?>
-<h2 class="curResourceName">Business entity:
+<p class="curResourceName">Business entity:
     <a href="<?php echo $this->data["ow"]->getUrlBase(),"resource/properties/?r=",urlencode($this->data["res"]->__toString()); ?>">
         <?php echo (string)$this->data["res"]; ?>
     </a>
-</h2>
+</p>
 <ol class="bullets-none separated">
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="contracts-ppin" class="navigation navList contracts-button" name="contracts-ppin"
-            href="/pcfa/publishbusiness" >
+            href="<?php echo $this->data["ow"]->getUrlBase(),"contracts/publishbusiness/?r=",urlencode($this->data["res"]->__toString()); ?>" >
             Publish business entity
         </a>
     </li>

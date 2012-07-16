@@ -3,33 +3,33 @@
 $odd = true;
 
 ?>
-<h2 class="curResourceName">Public contract:
+<p class="curResourceName">Public contract:
     <a href="<?php echo $this->data["ow"]->getUrlBase(),"resource/properties/?r=",urlencode($this->data["res"]->__toString()); ?>">
         <?php echo $this->data["res"]->__toString(); ?>
     </a>
-</h2>
+</p>
 <ol class="bullets-none separated">
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="contracts-ppin" class="navigation navList contracts-button" name="contracts-ppin"
-            href="/pcfa/publishpin" >
+            href="/contracts/publishpriornotice" >
             Publish prior information notice
         </a>
     </li>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="contracts-pcn" class="navigation navList contracts-button" name="contracts-pcn"
-            href="/pcfa/publishcn" >
+            href="/contracts/publishnotice" >
             Publish contract notice
         </a>
     </li>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="contracts-ct" class="navigation navList contracts-button" name="contracts-ct"
-            href="/pcfa/createtender" >
+            href="/contracts/createtender" >
             Create tender
         </a>
     </li>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="contracts-cc" class="navigation navListcontracts-button" name="contracts-cc"
-            href="/pcfa/cancelcontract" >
+            href="/contracts/cancelcontract" >
             Cancel contract
         </a>
     </li>
