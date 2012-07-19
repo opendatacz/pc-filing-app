@@ -1,0 +1,98 @@
+<?php
+$odd = false;
+$store = OntoWiki::getInstance()->erfurt->getStore();//$this->placeholder('erfurt_store')->getValue();
+$model = OntoWiki::getInstance()->selectedModel;
+
+?>
+
+<h2>New business entity</h2>
+<h3>in model <em><?php echo (string)$model; ?></em></h3>
+<?php if (!$model->isEditable()) { ?>
+<p class="messagebox warning">This model is not editable, please select your personal data space.</p>
+<?php } ?>
+
+<?php if (!isset($_POST["gr_legal_name"])) { ?>
+<form id="newbusiness" name="newbusiness" method="post" action="">
+<table class="separated-vertical">
+<tbody>
+    <tr>
+        <td width="120">
+            <a class="hasMenu" href="/view/r/gr%3AlegalName">gr:legalName</a>
+        </td>
+        <td>
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <input id="gr_legal_name" name="gr_legal_name" class="text" type="text" value="" />
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td width="120">
+            <a class="hasMenu" href="/view/r/vcard%3Aadr">vcard:adr</a>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td width="140">
+            &nbsp;&nbsp;&nbsp;<a class="hasMenu" href="/view/r/vcard%3Acountry-name">vcard:country-name</a>
+        </td>
+        <td>
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <input id="vcard_country_name" name="vcard_country_name" class="text" type="text" value="" />
+                two-letter code according to <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank">ISO 3166-1 alpha-2</a>; e.g. CZ or GB
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            &nbsp;&nbsp;&nbsp;<a class="hasMenu" href="/view/r/vcard%3Alocality">vcard:locality</a>
+        </td>
+        <td>
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <input id="vcard_locality" name="vcard_locality" class="text" type="text" value="" />
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            &nbsp;&nbsp;&nbsp;<a class="hasMenu" href="/view/r/vcard%3Apostal-code">vcard:postal-code</a>
+        </td>
+        <td>
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <input id="vcard_postal_code" name="vcard_postal_code" class="text" type="text" value="" />
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            &nbsp;&nbsp;&nbsp;<a class="hasMenu" href="/view/r/vcard%3Astreet">vcard:street</a>
+        </td>
+        <td>
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <input id="vcard_street" name="vcard_street" class="text" type="text" value="" />
+            </div>
+        </td>
+    </tr>
+</tbody>
+</table>
+<a class="button init-resource" href="javascript:document.newbusiness.submit();" >
+<img src="/extensions/themes/silverblue/images/icon-editadd.png" /> <?php /* //TODO theme */ ?>
+<span>Create business entity</span>
+</a>
+</form>
+<?php } else {
+//$resource = OntoWiki::getInstance()->selectedResource;
+//$rurl = urlencode((string)$resource->getUri());
+$resname = $this->placeholder('added_resource')->getValue();
+$rurl = urlencode($resname);
+?>
+
+<p class="messagebox success">Business entity successfully created.</p>
+
+<p>You can see it <a href="/resource/properties/?r=<?php echo $rurl; ?>">here</a>.</p>
+
+<?php } 

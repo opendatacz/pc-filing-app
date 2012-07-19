@@ -51,8 +51,15 @@ class ContractsController extends OntoWiki_Controller_Component
         }
     }
     
+    /*
+     * Sets or unsets user from contractors and suppliers group
+     */         
     public function setusertypeAction()
     {
+        $translate = $this->_owApp->translate;
+        $windowTitle = $translate->_('Usergroup change');
+        $this->view->placeholder('main.window.title')->set($windowTitle);
+        
         $configModel = $this->store->getModel('http://localhost/OntoWiki/Config/',false);
         $user = $this->_owApp->getUser();
         $options['use_ac'] = false;
@@ -87,6 +94,104 @@ class ContractsController extends OntoWiki_Controller_Component
             }
         }
     }
+    
+    public function newbusinessentityAction()
+    {
+        $model = $this->_owApp->selectedModel;
+        $translate = $this->_owApp->translate;
+        $store = $this->_owApp->erfurt->getStore();
+        
+        $windowTitle = $translate->_('Create business entity');
+        $this->view->placeholder('main.window.title')->set($windowTitle);
+        
+        if (isset($_POST["gr_legal_name"]))
+        {
+            $name = $_POST["gr_legal_name"];
+            $countryname = $_POST["vcard_country_name"];
+            $locality = $_POST["vcard_locality"];
+            $postalcode = $_POST["vcard_postal_code"];
+            $street = $_POST["vcard_street"];
+            $reshexcode = dechex(rand(1,16777215));
+            $reshexcodelong = (string)$reshexcode;
+            while (strlen($reshexcodelong) < 6)
+                $reshexcodelong = "0".$reshexcodelong;
+            $resname = $model->getModelIri()."be_".$reshexcodelong;
+            
+            $bnodePrefix = '_:'.$reshexcodelong;
+            $vcard = $bnodePrefix . '_vcard';
+            $vcard_adr = $bnodePrefix . '_vcard_adr';
+            $vcard_org = $bnodePrefix . '_vcard_org';
+            $stmtArray = array(
+                $resname => array(
+                    EF_RDF_TYPE => array(array(
+                        'type'  => 'uri',
+                        'value' => 'http://purl.org/goodrelations/v1#BusinessEntity' 
+                    )),
+                    'http://purl.org/goodrelations/v1#legalName' => array(array(
+                        'type'  => 'literal',
+                        'value' => $name
+                    )),
+                    'http://purl.org/business-register#contact' => array(array(
+                        'type'  => 'bnode',
+                        'value' => $vcard
+                    ))
+                ),
+                $vcard => array(
+                    EF_RDF_TYPE => array(array(
+                        'type'  => 'uri',
+                        'value' => 'http://www.w3.org/2006/vcard/ns#VCard' 
+                    )),
+                    'http://www.w3.org/2006/vcard/ns#adr' => array(array(
+                        'type'  => 'bnode',
+                        'value' => $vcard_adr
+                    )),
+                    'http://www.w3.org/2006/vcard/ns#org' => array(array(
+                        'type'  => 'bnode',
+                        'value' => $vcard_org
+                    ))
+                ),
+                $vcard_org => array(
+                    EF_RDF_TYPE => array(array(
+                        'type'  => 'uri',
+                        'value' => 'http://www.w3.org/2006/vcard/ns#Organization' 
+                    )),
+                    'http://www.w3.org/2006/vcard/ns#organization-name' => array(array(
+                        'type'  => 'bnode',
+                        'value' => $name
+                    ))
+                ),
+                $vcard_adr => array(
+                    'http://www.w3.org/2006/vcard/ns#country-name' => array(array(
+                        'type'  => 'literal',
+                        'value' => $countryname
+                    )),
+                    'http://www.w3.org/2006/vcard/ns#locality' => array(array(
+                        'type'  => 'literal',
+                        'value' => $locality
+                    )),
+                    'http://www.w3.org/2006/vcard/ns#postal-code' => array(array(
+                        'type'  => 'literal',
+                        'value' => $postalcode
+                    )),
+                    'http://www.w3.org/2006/vcard/ns#street' => array(array(
+                        'type'  => 'literal',
+                        'value' => $street
+                    ))
+                )
+            );
+            
+            $store->addMultipleStatements($model->getModelIri(), $stmtArray, true);
+            
+            $this->view->placeholder('added_resource')->set($resname);
+            //$resource = $model->getResource($resname);
+            //$this->_owApp->selectedResource = $resource;
+
+        }
+    }
+    
+    public function newcontractAction()
+    {
+    }
 
     public function publishbusinessAction()
     {
@@ -99,6 +204,8 @@ class ContractsController extends OntoWiki_Controller_Component
         
         $windowTitle = sprintf($translate->_('Publish business entity %1$s'), $title);
         $this->view->placeholder('main.window.title')->set($windowTitle);
+        
+        //TODO
     }
     
     public function publishpriornoticeAction()
@@ -111,16 +218,14 @@ class ContractsController extends OntoWiki_Controller_Component
         echo "<p>resolves</p>";
     }
 
+
     /*
      * The main action which is retrieved via ajax
      */
     public function exploreAction()
     {
-
-
         // save state to session
         $this->savestateServer($this->view, $this->setup);
-
         return;
     }
 

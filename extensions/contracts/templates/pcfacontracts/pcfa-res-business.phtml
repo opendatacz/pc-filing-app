@@ -3,7 +3,7 @@
 $odd = true;
 
 ?>
-<p class="curResourceName">Business entity:
+<p class="curResourceName" style="overflow:hidden;">Business entity:
     <a href="<?php echo $this->data["ow"]->getUrlBase(),"resource/properties/?r=",urlencode($this->data["res"]->__toString()); ?>">
         <?php echo (string)$this->data["res"]; ?>
     </a>

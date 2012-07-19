@@ -8,13 +8,13 @@ $odd = true;
 <ol class="bullets-none separated">
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="pcfa-createcontract" class="navigation navList contracts-button" name="pcfa-createcontract"
-            href="javascript:createInstanceFromClassURI('http://purl.org/procurement/public-contracts#Contract')" >
+            href="/contracts/newcontract/" >
             New public contract
         </a>
     </li>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="pcfa-createbusiness" class="navigation navList contracts-button" name="pcfa-createbusiness"
-            href="javascript:createInstanceFromClassURI('http://purl.org/goodrelations/v1#BusinessEntity')" >
+            href="/contracts/newbusinessentity/" >
             New business entity
         </a>
     </li>
