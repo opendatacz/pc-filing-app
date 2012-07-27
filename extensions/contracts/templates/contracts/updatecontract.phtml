@@ -1,0 +1,138 @@
+<?php
+$odd = false;
+$store = OntoWiki::getInstance()->erfurt->getStore();//$this->placeholder('erfurt_store')->getValue();
+$model = OntoWiki::getInstance()->selectedModel;
+$resource = OntoWiki::getInstance()->selectedResource;
+?>
+
+<?php if (isset($this->prePropertiesContent)): ?>
+    <div><?php echo $this->prePropertiesContent; ?></div>    
+<?php endif; ?>
+<?php $flag = false; ?>
+<h2>Update contract</h2>
+<h3><em><?php echo (string)$resource; ?></em></h3>
+<span about="<?php echo $this->resourceUri ?>" style="display:none" class="about_span"></span>
+<?php if (!$model->isEditable()) { /* OntoWiki::getInstance()->erfurt->getAc()->isModelAllowed('edit',$model->getUri()) */ ?>
+<p class="messagebox warning">This model is not editable, please select resource in your personal data space.</p>
+<?php } ?>
+<table class="separated-vertical rdfa" about="<?php echo $this->resourceUri ?>"
+    <?php foreach ($this->namespaces as $namespace => $prefix): ?>
+        <?php echo ' xmlns:' . $prefix . '="' . $namespace . '"' ?>
+    <?php endforeach; ?>>
+
+
+
+<!--<div class="innercontent">
+<form id="newcontract" name="newcontract" method="post" action="">-->
+<!--<table class="separated-vertical">
+<tbody>
+<table class="separated-vertical rdfa" about="http://ld.opendata.cz/resource/isvzus.cz/public-contract/100085"
+             xmlns:br="http://purl.org/business-register#"             xmlns:dcterms="http://purl.org/dc/terms/"             xmlns:gr="http://purl.org/goodrelations/v1#"             xmlns:owl="http://www.w3.org/2002/07/owl#"             xmlns:pc="http://purl.org/procurement/public-contracts#"             xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"             xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"             xmlns:schema="http://schema.org/"             xmlns:sioc="http://rdfs.org/sioc/ns#"             xmlns:sioct="http://rdfs.org/sioc/types#"             xmlns:sysconf="http://localhost/OntoWiki/Config/"             xmlns:vcard="http://www.w3.org/2006/vcard/ns#"             xmlns:xsd="http://www.w3.org/2001/XMLSchema#"             xmlns:__default="http://ld.opendata.cz/resource/"    >
+-->
+<tbody update:from="http://ld.opendata.cz/resource/" id="table-group-1">
+    <tr>
+        <td width="120">
+            <a class="hasMenu" href="/view/r/dcterms%3Atitle">dcterms:title</a>
+        </td>
+        <td style="width: 25em;">
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <input id="prop_dcterms_title" name="prop_dcterms_title" class="text" type="text" value="" style="width: 50%;" />
+            </div>
+        </td>
+        <td>A name given to the resource.</td>
+    </tr>
+    <tr>
+        <td width="120">
+            <a class="hasMenu" href="/view/r/dcterms%3Adescription">dcterms:description</a>
+        </td>
+        <td>
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <textarea id="prop_dcterms_description" name="prop_dcterms_description" style="width: 100%; min-width: 25em; min-height: 8em;"></textarea>
+            </div>
+        </td>
+        <td>An account of the resource. (Description may include but is not limited to: an abstract, a table of contents, a graphical representation, or a free-text account of the resource.)</td>
+    </tr>
+    <tr>
+        <td width="120">
+            <a class="hasMenu" href="/view/r/pc%3AawardDate">pc:awardDate</a>
+        </td>
+        <td>
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <input id="prop_pc_awardDate" name="prop_pc_awardDate" class="text hasDatepicker" type="text" value="" style="width: 50%;" datatype="xsd:date" />
+            </div>
+        </td>
+        <td>Date of contract award</td>
+    </tr>
+    <tr>
+        <td width="120">
+            <a class="hasMenu" href="/view/r/pc%3AstartDate">pc:startDate</a>
+        </td>
+        <td>
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <input id="prop_pc_startDate" name="prop_pc_startDate" class="text" type="text" value="" style="width: 100%;" />
+            </div>
+        </td>
+        <td>Start date of contract</td>
+    </tr>
+    <tr>
+        <td width="120">
+            <a class="hasMenu" href="/view/r/pc%3AestimatedEndDate">pc:estimatedEndDate</a>
+        </td>
+        <td>
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <input id="prop_pc_estimatedEndDate" name="prop_pc_estimatedEndDate" class="text" type="text" value="" style="width: 100%;" />
+            </div>
+        </td>
+        <td>Estimated end date of contract</td>
+    </tr>
+    <tr>
+        <td width="120">
+            <a class="hasMenu" href="/view/r/pc%3AactualEndDate">pc:actualEndDate</a>
+        </td>
+        <td>
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <input id="prop_pc_actualEndDate" name="prop_pc_actualEndDate" class="text" type="text" value="" style="width: 100%;" />
+            </div>
+        </td>
+        <td>Actual end date of contract</td>
+    </tr>
+    
+    
+    <tr>
+                <td width="120">
+                    <a class="hasMenu" 
+                       about="http://purl.org/procurement/public-contracts#startDate" 
+                       href="http://ontowiki2.ranec.net/view/r/pc%3AstartDate">pc:startDate</a>
+                </td>
+                <td>
+                                        <div class="has-contextmenu-area">
+                        <div class="contextmenu">
+                                                                                                                    <a class="item rdfauthor-edit-property"
+                                   onclick="editProperty(event)">
+                                    <span class="icon icon-edit" title="Edit Values">
+                                        <span>Show as List</span>
+                                    </span>
+                                </a>
+                                                    </div>
+                        <ul class="bullets-none">
+                                                                                                <li property="pc:startDate" 
+                                        data-object-hash="dac071b3482ac1eeb93399594db550e6"
+                                        content="2010-01-12"
+                                                                                    datatype="xsd:date"
+                                                                                >&nbsp;</li>
+                                                                                                                </ul>
+                    </div>
+                </td>
+            </tr>
+
+
+</tbody>
+</table>
+<!--</form>
+</div>-->

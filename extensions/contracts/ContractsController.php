@@ -106,16 +106,24 @@ class ContractsController extends OntoWiki_Controller_Component
         
         if (isset($_POST["gr_legal_name"]))
         {
-            $name = $_POST["gr_legal_name"];
-            $countryname = $_POST["vcard_country_name"];
-            $locality = $_POST["vcard_locality"];
-            $postalcode = $_POST["vcard_postal_code"];
-            $street = $_POST["vcard_street"];
-            $reshexcode = dechex(rand(1,16777215));
-            $reshexcodelong = (string)$reshexcode;
-            while (strlen($reshexcodelong) < 6)
-                $reshexcodelong = "0".$reshexcodelong;
-            $resname = $model->getModelIri()."be_".$reshexcodelong;
+            $name = $_POST["prop_gr_legalName"];
+            $tid = $_POST["prop_gr_taxID"];
+            $countryname = $_POST["prop_vcard_country-name"];
+            $locality = $_POST["prop_vcard_locality"];
+            $postalcode = $_POST["prop_vcard_postal-code"];
+            $street = $_POST["prop_vcard_street"];
+            if (strlen(trim($tid)) > 4) { //TODO: jake univerzalni pravidlo pro platny kod?
+                $tid = trim($tid);
+                $tid = strtolower($tid);
+                str_replace(' ','-',$tid); //TODO: bezpecnejsi prevod na URL slug
+                $reshexcode = $reshexcodelong = $reshexcodelong = $tid;
+            } else {
+                $reshexcode = dechex(rand(1,16777215)); //TODO: kontrola ze neexistuje
+                $reshexcodelong = (string)$reshexcode;
+                while (strlen($reshexcodelong) < 6)
+                    $reshexcodelong = "0".$reshexcodelong;
+            }
+            $resname = $model->getModelIri()."business-entity/".$reshexcodelong;
             
             $bnodePrefix = '_:'.$reshexcodelong;
             $vcard = $bnodePrefix . '_vcard';
@@ -130,6 +138,10 @@ class ContractsController extends OntoWiki_Controller_Component
                     'http://purl.org/goodrelations/v1#legalName' => array(array(
                         'type'  => 'literal',
                         'value' => $name
+                    )),
+                    'http://purl.org/goodrelations/v1#taxID' => array(array(
+                        'type'  => 'literal',
+                        'value' => $tid
                     )),
                     'http://purl.org/business-register#contact' => array(array(
                         'type'  => 'bnode',
@@ -191,6 +203,67 @@ class ContractsController extends OntoWiki_Controller_Component
     
     public function newcontractAction()
     {
+        $model = $this->_owApp->selectedModel;
+        $translate = $this->_owApp->translate;
+        $store = $this->_owApp->erfurt->getStore();
+        
+        $windowTitle = $translate->_('Create contract');
+        $this->view->placeholder('main.window.title')->set($windowTitle);
+        
+        $nid = dechex(rand(16777216,268435455)); //tj mezi 0x1000000 a 0xFFFFFFF
+        $resname = $model->getModelIri().'public-contract/'.$nid;
+        
+        try {
+            $this->store->addStatement($model->getModelIri(),
+                $resname,
+                EF_RDF_TYPE,
+                array('value' => 'http://purl.org/procurement/public-contracts#Contract', 'type'  => 'uri'),
+                true);
+            $this->store->addStatement($model->getModelIri(),
+                $resname,
+                'http://purl.org/dc/terms/title',
+                array('value' => 'new public contract', 'type'  => 'literal', 'datatype' => 'xsd:string'),
+                true);
+            $this->view->placeholder('added_resource')->set($resname);
+        } catch (Exception $e) {
+            //no ACL to edit
+        }
+    }
+    
+    public function updatecontractAction()
+    {
+        return; //deprecated???
+        
+        $translate  = $this->_owApp->translate;
+        $store      = $this->_owApp->erfurt->getStore();
+        $model      = $this->_owApp->selectedModel;
+        $graph      = $this->_owApp->selectedModel;
+        $resource   = $this->_owApp->selectedResource;
+        //$navigation = $this->_owApp->navigation;
+        //$resourceMenu = OntoWiki_Menu_Registry::getInstance()->getMenu('contracts');
+        
+        $title = $resource->getTitle($this->_config->languages->locale) 
+               ? $resource->getTitle($this->_config->languages->locale) 
+               : OntoWiki_Utils::contractNamespace((string)$resource);
+        
+        $windowTitle = $translate->_(sprintf('Update contract %1$s',$title));
+        $this->view->placeholder('main.window.title')->set($windowTitle);
+        
+        if (!empty($resource)) {
+            $event = new Erfurt_Event('onPrePropertiesContentAction');
+            $event->uri = (string)$resource;
+            $result = $event->trigger();
+
+            if ($result) {
+                $this->view->prePropertiesContent = $result;
+            }
+
+            $model = new OntoWiki_Model_Resource($store, $graph, (string)$resource);
+            $values = $model->getValues();
+            $predicates = $model->getPredicates();
+        
+            
+        }
     }
 
     public function publishbusinessAction()

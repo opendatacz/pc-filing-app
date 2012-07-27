@@ -1,3 +1,19 @@
-<?php $odd = false; ?>
+<?php
+$odd = false;
+$store = OntoWiki::getInstance()->erfurt->getStore();//$this->placeholder('erfurt_store')->getValue();
+$model = OntoWiki::getInstance()->selectedModel;
 
-<p>New contract.</p>
+?>
+
+
+<h2>New contract</h2>
+<h3>in model <em><?php echo (string)$model; ?></em></h3>
+<?php if (!$model->isEditable()) { /* OntoWiki::getInstance()->erfurt->getAc()->isModelAllowed('edit',$model->getUri()) */ ?>
+<p class="messagebox error">This model is not editable, please select your personal data space.</p>
+<?php } else { 
+$resname = $this->placeholder('added_resource')->getValue();
+$rurl = urlencode($resname);
+?>
+<p class="messagebox success">New contract created.</p>
+<p>To edit its properties continue <a href="/resource/properties/?r=<?php echo $rurl; ?>">here</a>.</p>
+<?php } ?>

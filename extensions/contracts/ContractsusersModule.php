@@ -48,10 +48,14 @@ class ContractsusersModule extends OntoWiki_Module
         
         $configModel = $data["store"]->getModel('http://localhost/OntoWiki/Config/',false);
         
+        $cache = $this->_owApp->erfurt->getQueryCache(); //$cache = Erfurt_App::getInstance()->getQueryCache();
+        $cache->invalidateWithModelIri($configModel->getModelIri());
+        
         $resContractors = $configModel->getResource('http://localhost/OntoWiki/Config/Contractors');
         require_once 'Erfurt/Syntax/RdfSerializer.php';
         $serializer = Erfurt_Syntax_RdfSerializer::rdfSerializerWithFormat('rdfxml');
         $serialized = $serializer->serializeResourceToString($resContractors->getIri(), $configModel->getModelIri(), false, false);
+        
         $domdoc = new DOMDocument();
         @$domdoc->LoadXml($serialized);
         $xpath = new DOMXPath($domdoc);
@@ -59,7 +63,7 @@ class ContractsusersModule extends OntoWiki_Module
         for ($i=0;$i<$members->length;$i++)
             if ($members->item($i)->nodeValue == $data["username"])
                 $data["contractor"] = true;
-        
+                
         $resSuppliers = $configModel->getResource('http://localhost/OntoWiki/Config/Suppliers');
         $serializer = Erfurt_Syntax_RdfSerializer::rdfSerializerWithFormat('rdfxml');
         $serialized = $serializer->serializeResourceToString($resSuppliers->getIri(), $configModel->getModelIri(), false, false);

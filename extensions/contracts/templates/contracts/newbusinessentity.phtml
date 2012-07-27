@@ -7,11 +7,11 @@ $model = OntoWiki::getInstance()->selectedModel;
 
 <h2>New business entity</h2>
 <h3>in model <em><?php echo (string)$model; ?></em></h3>
-<?php if (!$model->isEditable()) { ?>
+<?php if (!$model->isEditable()) { /* OntoWiki::getInstance()->erfurt->getAc()->isModelAllowed('edit',$model->getUri()) */ ?>
 <p class="messagebox warning">This model is not editable, please select your personal data space.</p>
 <?php } ?>
 
-<?php if (!isset($_POST["gr_legal_name"])) { ?>
+<?php if (!isset($_POST["prop_gr_legalName"])) { ?>
 <form id="newbusiness" name="newbusiness" method="post" action="">
 <table class="separated-vertical">
 <tbody>
@@ -22,15 +22,29 @@ $model = OntoWiki::getInstance()->selectedModel;
         <td>
             <div class="has-contextmenu-area">
                 <div class="contextmenu"> </div>
-                <input id="gr_legal_name" name="gr_legal_name" class="text" type="text" value="" />
+                <input id="prop_gr_legalName" name="prop_gr_legalName" class="text" type="text" value="" style="width: 100%;" />
             </div>
         </td>
+        <td>The legal name of the business entity.</td>
+    </tr>
+    <tr>
+        <td width="120">
+            <a class="hasMenu" href="/view/r/gr%3AtaxID">gr:taxID</a>
+        </td>
+        <td>
+            <div class="has-contextmenu-area">
+                <div class="contextmenu"> </div>
+                <input id="prop_gr_taxID" name="prop_gr_taxID" class="text" type="text" value="" style="width: 100%;" />
+            </div>
+        </td>
+        <td>The Tax / Fiscal ID of the business entity, e.g. the TIN in the US or the CIF/NIF in Spain. It is usually assigned by the country of residence.</td>
     </tr>
     <tr>
         <td width="120">
             <a class="hasMenu" href="/view/r/vcard%3Aadr">vcard:adr</a>
         </td>
         <td></td>
+        <td>A postal or street address of a person.</td>
     </tr>
     <tr>
         <td width="140">
@@ -39,10 +53,10 @@ $model = OntoWiki::getInstance()->selectedModel;
         <td>
             <div class="has-contextmenu-area">
                 <div class="contextmenu"> </div>
-                <input id="vcard_country_name" name="vcard_country_name" class="text" type="text" value="" />
-                two-letter code according to <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank">ISO 3166-1 alpha-2</a>; e.g. CZ or GB
-            </div>
+                <input id="prop_vcard_country-name" name="prop_vcard_country-name" class="text" type="text" value="" style="width: 100%;" />
+                            </div>
         </td>
+        <td>The country of a postal address. Use two-letter code according to <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" target="_blank">ISO 3166-1 alpha-2</a>; e.g. CZ or GB</td>
     </tr>
     <tr>
         <td width="140">
@@ -51,9 +65,10 @@ $model = OntoWiki::getInstance()->selectedModel;
         <td>
             <div class="has-contextmenu-area">
                 <div class="contextmenu"> </div>
-                <input id="vcard_locality" name="vcard_locality" class="text" type="text" value="" />
+                <input id="prop_vcard_locality" name="prop_vcard_locality" class="text" type="text" value="" style="width: 100%;" />
             </div>
         </td>
+        <td>The locality (e.g., city) of a postal address.</td>
     </tr>
     <tr>
         <td width="140">
@@ -62,9 +77,10 @@ $model = OntoWiki::getInstance()->selectedModel;
         <td>
             <div class="has-contextmenu-area">
                 <div class="contextmenu"> </div>
-                <input id="vcard_postal_code" name="vcard_postal_code" class="text" type="text" value="" />
+                <input id="prop_vcard_postal-code" name="prop_vcard_postal-code" class="text" type="text" value="" style="width: 100%;" />
             </div>
         </td>
+        <td>The postal code (e.g., U.S. ZIP code) of a postal address.</td>
     </tr>
     <tr>
         <td width="140">
@@ -73,9 +89,10 @@ $model = OntoWiki::getInstance()->selectedModel;
         <td>
             <div class="has-contextmenu-area">
                 <div class="contextmenu"> </div>
-                <input id="vcard_street" name="vcard_street" class="text" type="text" value="" />
+                <input id="prop_vcard_street" name="prop_vcard_street" class="text" type="text" value="" style="width: 100%;" />
             </div>
         </td>
+        <td> </td>
     </tr>
 </tbody>
 </table>

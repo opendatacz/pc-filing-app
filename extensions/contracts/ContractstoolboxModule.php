@@ -98,7 +98,7 @@ class ContractstoolboxModule extends OntoWiki_Module
     }
 	
     public function shouldShow(){
-        if (isset($this->_owApp->selectedModel)) {
+        if (isset($this->_owApp->selectedModel) && (!($this->_owApp->getUser()->isAnonymousUser()))) {
             return true;
         } else {
             return false;
