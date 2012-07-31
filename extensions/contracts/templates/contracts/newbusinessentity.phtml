@@ -7,12 +7,18 @@ $model = OntoWiki::getInstance()->selectedModel;
 
 <h2>New business entity</h2>
 <h3>in model <em><?php echo (string)$model; ?></em></h3>
-<?php if (!$model->isEditable()) { /* OntoWiki::getInstance()->erfurt->getAc()->isModelAllowed('edit',$model->getUri()) */ ?>
-<p class="messagebox warning">This model is not editable, please select your personal data space.</p>
-<?php } ?>
-
-<?php if (!isset($_POST["prop_gr_legalName"])) { ?>
-<form id="newbusiness" name="newbusiness" method="post" action="">
+<?php
+if (!$model->isEditable()) { /* OntoWiki::getInstance()->erfurt->getAc()->isModelAllowed('edit',$model->getUri()) */ 
+    echo '<p class="messagebox warning">This model is not editable, please select your personal data space.</p>';
+}
+$usergroups = ContractsHelper::getContractUseroups();
+if (!$usergroups["any"]) {
+    echo '<p class="messagebox error">You must be contractor or supplier to be able to create business entities.</p>';
+    echo '<p class="messagebox info">You can visit <a href="/application/preferences">preferences</a> to change your user type.</p>';
+}
+else if (!isset($_POST["prop_gr_legalName"])) {
+?>
+<form id="newbusiness" name="newbusiness" method="post" action="<?php if (isset($_GET["self"])) echo "?self=",$_GET["self"]; ?>">
 <table class="separated-vertical">
 <tbody>
     <tr>
@@ -29,15 +35,15 @@ $model = OntoWiki::getInstance()->selectedModel;
     </tr>
     <tr>
         <td width="120">
-            <a class="hasMenu" href="/view/r/gr%3AtaxID">gr:taxID</a>
+            <a class="hasMenu" href="/view/r/br%3AofficialNumber">br:officialNumber</a>
         </td>
         <td>
             <div class="has-contextmenu-area">
                 <div class="contextmenu"> </div>
-                <input id="prop_gr_taxID" name="prop_gr_taxID" class="text" type="text" value="" style="width: 100%;" />
+                <input id="prop_br_officialNumber" name="prop_br_officialNumber" class="text" type="text" value="" style="width: 100%;" />
             </div>
         </td>
-        <td>The Tax / Fiscal ID of the business entity, e.g. the TIN in the US or the CIF/NIF in Spain. It is usually assigned by the country of residence.</td>
+        <td>Official identification number.</td>
     </tr>
     <tr>
         <td width="120">
@@ -92,7 +98,7 @@ $model = OntoWiki::getInstance()->selectedModel;
                 <input id="prop_vcard_street" name="prop_vcard_street" class="text" type="text" value="" style="width: 100%;" />
             </div>
         </td>
-        <td> </td>
+        <td>The street address of a postal address.</td>
     </tr>
 </tbody>
 </table>
@@ -105,11 +111,20 @@ $model = OntoWiki::getInstance()->selectedModel;
 //$resource = OntoWiki::getInstance()->selectedResource;
 //$rurl = urlencode((string)$resource->getUri());
 $resname = $this->placeholder('added_resource')->getValue();
-$rurl = urlencode($resname);
+print_r($resname);
+$isself = $this->placeholder('is_own_business')->getValue();
+if ($resname !== false) {
+    $rurl = urlencode($resname);
+    echo '<p class="messagebox success">Business entity successfully created.</p>';
+    echo '<p>You can see it <a href="/resource/properties/?r=',$rurl,'">here</a>.</p>';
+    if ($isself)
+        echo '<p class="messagebox info">This business entity is linked tou your account describing your company.</p>';
+}
+else
+    echo '<p class="messagebox error">Business entity was not created. Possible permision problem.</p>';
 ?>
 
-<p class="messagebox success">Business entity successfully created.</p>
+<?php }
 
-<p>You can see it <a href="/resource/properties/?r=<?php echo $rurl; ?>">here</a>.</p>
-
-<?php } 
+/*$usergroups = ContractsHelper::getContractUseroups();
+print_r($usergroups);*/

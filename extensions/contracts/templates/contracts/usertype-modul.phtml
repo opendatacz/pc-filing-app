@@ -4,6 +4,27 @@
  * OntoWiki contracts user type module template
  */
 $odd = true;
+//set private data space as active model
+$privatedataspace = ContractsHelper::getUserDataSpace();
+$privatedataspace = $privatedataspace[0];
+$store = OntoWiki::getInstance()->erfurt->getStore();
+$model = $store->getModel($privatedataspace);
+OntoWiki::getInstance()->selectedModel = $model;
+
+//$groups = ContractsHelper::getContractUseroups();
+$contractor = $this->data["contractor"]; //$groups["contractor"];
+$supplier = $this->data["supplier"]; //$groups["supplier"];
+$ownbusiness = ContractsHelper::getUserBusiness();
+
+
+//$privatedataspace = ContractsHelper::getUserDataSpace();
+//$ownbusiness = ContractsHelper::getUserBusiness();
+
+//$ud = ContractsHelper::getUserDataSpace();
+//print_r($ud);
+//$ub = ContractsHelper::getUsergetUserBusiness();
+//print_r($ub);
+
 ?>
 
 <ol class="bullets-none separated">
@@ -12,11 +33,12 @@ $odd = true;
         Member of groups:
         <ul>
         <?php
-            if ($this->data["contractor"]) echo "<li>Contractors</li>";
-            if ($this->data["supplier"]) echo "<li>Suppliers</li>";
+            if ($contractor) echo "<li>Contractors</li>";
+            if ($supplier) echo "<li>Suppliers</li>";
+            if (!$contractor && !$supplier) echo "<li>none</li>";
         ?>
         </ul>
-        <br />
+        <!-- <br /> -->
         </small>
     </li>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
@@ -31,4 +53,31 @@ $odd = true;
             <?php echo ($this->data["supplier"]?"I am not supplier":"I am supplier"); ?>
         </a>
     </li>
+<?php
+if ($contractor || $supplier) {
+    if ($ownbusiness === false) {
+?>
+    <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
+        <a id="pcfa-businessself" class="navigation navList" name="pcfa-businessself"
+            href="/contracts/newbusinessentity/?self=true" >
+            Create own business entity
+        </a>
+    </li>
+<?php } else { ?>
+    <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
+        <a id="pcfa-businessself" class="navigation navList" name="pcfa-businessself"
+            href="/resource/properties/?r=<?php echo urlencode($ownbusiness[0]); ?>" >
+            Edit own business entity details
+        </a>
+    </li>
+<?php
+    }
+} else {
+?>
+    <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
+        <small>You must be either contractor or supplier to edit your business entity.</small>
+    </li>
+<?php } ?>
 </ol>
+
+<?php

@@ -100,14 +100,21 @@ class ContractsController extends OntoWiki_Controller_Component
         $model = $this->_owApp->selectedModel;
         $translate = $this->_owApp->translate;
         $store = $this->_owApp->erfurt->getStore();
+        $newentityprefix = $this->_privateConfig->resource->prefix;
         
         $windowTitle = $translate->_('Create business entity');
         $this->view->placeholder('main.window.title')->set($windowTitle);
         
-        if (isset($_POST["gr_legal_name"]))
+        $usergroups = ContractsHelper::getContractUseroups();
+                
+        if (isset($_POST["prop_gr_legalName"]) && $usergroups["any"]) //TODO: kontrola vsech atributu??
         {
+            if (!$model->isEditable()) {
+                $this->view->placeholder('added_resource')->set(false);
+                return false;
+            }
             $name = $_POST["prop_gr_legalName"];
-            $tid = $_POST["prop_gr_taxID"];
+            $tid = $_POST["prop_br_officialNumber"];
             $countryname = $_POST["prop_vcard_country-name"];
             $locality = $_POST["prop_vcard_locality"];
             $postalcode = $_POST["prop_vcard_postal-code"];
@@ -123,7 +130,8 @@ class ContractsController extends OntoWiki_Controller_Component
                 while (strlen($reshexcodelong) < 6)
                     $reshexcodelong = "0".$reshexcodelong;
             }
-            $resname = $model->getModelIri()."business-entity/".$reshexcodelong;
+            $resname = $newentityprefix."business-entity/".$reshexcodelong;
+            //echo "--$resname--";
             
             $bnodePrefix = '_:'.$reshexcodelong;
             $vcard = $bnodePrefix . '_vcard';
@@ -139,7 +147,7 @@ class ContractsController extends OntoWiki_Controller_Component
                         'type'  => 'literal',
                         'value' => $name
                     )),
-                    'http://purl.org/goodrelations/v1#taxID' => array(array(
+                    'http://purl.org/business-register#officialNumber' => array(array(
                         'type'  => 'literal',
                         'value' => $tid
                     )),
@@ -194,10 +202,30 @@ class ContractsController extends OntoWiki_Controller_Component
             
             $store->addMultipleStatements($model->getModelIri(), $stmtArray, true);
             
+            //when creating business entity describing himself
+            if (isset($_GET["self"]) && ($_GET["self"] == "true") && (ContractsHelper::getUserBusiness() === false)) {
+                $configModel = $store->getModel('http://localhost/OntoWiki/Config/',false);
+                $user = $this->_owApp->getUser();
+                $username = $user->getUsername();
+                $useruri = 'http://localhost/OntoWiki/Config/'.$username; //je spolehlive? TODO: najit lepsi zpusob zjisteni uri uzivatele
+                //add information about business entity to user profile
+                $predicate = $this->_privateConfig->contracts->configns.$this->_privateConfig->ownbusiness->predicate;
+                $store->addStatement($configModel->getModelIri(),
+                    $useruri,
+                    $predicate,
+                    array('value' => $resname, 'type'  => 'uri'),
+                    false);
+                $this->view->placeholder('is_own_business')->set(true);
+                echo "iri:",$configModel->getModelIri()," sub:",$useruri," pre:",$predicate," obj:",$resname;
+            } else
+                $this->view->placeholder('is_own_business')->set(false);
+            
             $this->view->placeholder('added_resource')->set($resname);
+
             //$resource = $model->getResource($resname);
             //$this->_owApp->selectedResource = $resource;
-
+        } else {
+            $this->view->placeholder('added_resource')->set(false);
         }
     }
     
@@ -210,24 +238,29 @@ class ContractsController extends OntoWiki_Controller_Component
         $windowTitle = $translate->_('Create contract');
         $this->view->placeholder('main.window.title')->set($windowTitle);
         
-        $nid = dechex(rand(16777216,268435455)); //tj mezi 0x1000000 a 0xFFFFFFF
-        $resname = $model->getModelIri().'public-contract/'.$nid;
-        
-        try {
-            $this->store->addStatement($model->getModelIri(),
-                $resname,
-                EF_RDF_TYPE,
-                array('value' => 'http://purl.org/procurement/public-contracts#Contract', 'type'  => 'uri'),
-                true);
-            $this->store->addStatement($model->getModelIri(),
-                $resname,
-                'http://purl.org/dc/terms/title',
-                array('value' => 'new public contract', 'type'  => 'literal', 'datatype' => 'xsd:string'),
-                true);
-            $this->view->placeholder('added_resource')->set($resname);
-        } catch (Exception $e) {
-            //no ACL to edit
-        }
+        $usergroups = ContractsHelper::getContractUseroups();
+        if ($usergroups["contractor"]) {
+            $nid = dechex(rand(16777216,268435455)); //tj mezi 0x1000000 a 0xFFFFFFF
+            $resname = $model->getModelIri().'public-contract/'.$nid;
+            
+            try {
+                $this->store->addStatement($model->getModelIri(),
+                    $resname,
+                    EF_RDF_TYPE,
+                    array('value' => 'http://purl.org/procurement/public-contracts#Contract', 'type'  => 'uri'),
+                    true);
+                $this->store->addStatement($model->getModelIri(),
+                    $resname,
+                    'http://purl.org/dc/terms/title',
+                    array('value' => 'new public contract', 'type'  => 'literal', 'datatype' => 'xsd:string'),
+                    true);
+                $this->view->placeholder('added_resource')->set($resname);
+            } catch (Exception $e) {
+                $this->view->placeholder('added_resource')->set(false);
+                //no ACL to edit
+            }
+        } else
+            $this->view->placeholder('added_resource')->set(false);
     }
     
     public function updatecontractAction()

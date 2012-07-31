@@ -9,7 +9,7 @@ class ContractsusersModule extends OntoWiki_Module
     }
 
     public function getTitle() {
-        return "Public Contract User Type";
+        return "Public Contract User";
     }
 
     /**
@@ -43,10 +43,14 @@ class ContractsusersModule extends OntoWiki_Module
         $data["username"] = $data["user"]->getUsername();
         $data["useruri"] = $data["user"]->getUri();//$this->_erfurt->getAuth()->getIdentity()->getUri();
         $data["ac"] = $this->_erfurt->getAc();
-        $data["contractor"] = false;
-        $data["supplier"] = false;
+        //$data["contractor"] = false;
+        //$data["supplier"] = false;
         
-        $configModel = $data["store"]->getModel('http://localhost/OntoWiki/Config/',false);
+        $res = ContractsHelper::getContractUseroups();
+        $data["contractor"] = $res["contractor"];
+        $data["supplier"] = $res["supplier"];
+        
+        /*$configModel = $data["store"]->getModel('http://localhost/OntoWiki/Config/',false);
         
         $cache = $this->_owApp->erfurt->getQueryCache(); //$cache = Erfurt_App::getInstance()->getQueryCache();
         $cache->invalidateWithModelIri($configModel->getModelIri());
@@ -55,7 +59,6 @@ class ContractsusersModule extends OntoWiki_Module
         require_once 'Erfurt/Syntax/RdfSerializer.php';
         $serializer = Erfurt_Syntax_RdfSerializer::rdfSerializerWithFormat('rdfxml');
         $serialized = $serializer->serializeResourceToString($resContractors->getIri(), $configModel->getModelIri(), false, false);
-        
         $domdoc = new DOMDocument();
         @$domdoc->LoadXml($serialized);
         $xpath = new DOMXPath($domdoc);
@@ -74,6 +77,7 @@ class ContractsusersModule extends OntoWiki_Module
         for ($i=0;$i<$members->length;$i++)
             if ($members->item($i)->nodeValue == $data["username"])
                 $data["supplier"] = true;
+        */
         
         //if ($data["supplier"]) echo "sup";
         //if ($data["contractor"]) echo "con";

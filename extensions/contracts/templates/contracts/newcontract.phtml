@@ -12,8 +12,14 @@ $model = OntoWiki::getInstance()->selectedModel;
 <p class="messagebox error">This model is not editable, please select your personal data space.</p>
 <?php } else { 
 $resname = $this->placeholder('added_resource')->getValue();
-$rurl = urlencode($resname);
-?>
-<p class="messagebox success">New contract created.</p>
-<p>To edit its properties continue <a href="/resource/properties/?r=<?php echo $rurl; ?>">here</a>.</p>
-<?php } ?>
+if ($resname === false) {
+    echo '<p class="messagebox error">New contract was not created.</p>';
+    $usergroups = ContractsHelper::getContractUseroups();
+    if (!$usergroups["contractor"])
+        echo '<p class="messagebox info">You must be contractor to be able to create new contracts. Check your <a href="/application/preferences">preferences</a>.</p>';
+} else {
+    $rurl = urlencode($resname);
+    echo '<p class="messagebox success">New contract created.</p>';
+    echo '<p>To edit its properties continue <a href="/resource/properties/?r=',$rurl,'">here</a>.</p>';
+}
+}
