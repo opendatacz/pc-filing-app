@@ -1,0 +1,24 @@
+<?php
+$odd = true;
+?>
+<div id="contracts-businesstoolbox-content" class="width99">
+<p class="curResourceName" style="overflow:hidden;">Business entity:
+    <a href="<?php echo $this->data["ow"]->getUrlBase(),"resource/properties/?r=",urlencode((string)$this->data["res"]); ?>">
+        <?php echo (string)$this->data["res"]; ?>
+    </a>
+</p>
+<ol class="bullets-none separated">
+    <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
+        <a id="contracts-ppin" class="navigation navList contracts-button" name="contracts-ppin"
+            href="<?php echo $this->data["ow"]->getUrlBase(),"contracts/publishbusiness/?r=",urlencode((string)$this->data["res"]); ?>" >
+            Publish business entity
+        </a>
+    </li>
+</ol>
+<?php
+if( isset($this->stateView) ){
+    echo $this->stateView;
+} 
+?>    
+</div>
+<?php 

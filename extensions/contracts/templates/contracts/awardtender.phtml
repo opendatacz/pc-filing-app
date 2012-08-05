@@ -1,0 +1,30 @@
+<?php
+$odd = false;
+$resource = OntoWiki::getInstance()->selectedResource;
+$resource_uri = (string)$resource;
+$not_linked = $this->placeholder('tender_not_linked')->getValue();
+?>
+<h2>Award tender</h2>
+<h3>Tender <em><?php echo $resource_uri; ?></em></h3>
+<?php
+if ($not_linked) { ?>
+<p class="messagebox warning">This tender is not assigned to any contract.</p>
+<?php } else {
+    $resource_contract_uri = $this->placeholder('tender_contract')->getValue();
+    $contract_already_awarded = $this->placeholder('contract_already_awarded')->getValue();
+    $tender_awarded = $this->placeholder('tender_awarded')->getValue();
+?>
+<h3>for contract <em><?php echo $resource_contract_uri; ?></em></h3>
+
+<?php if ($contract_already_awarded !== false) { ?>
+<p class="messagebox warning">Tender <em><?php echo $contract_already_awarded; ?></em> was already awarded for this contract.</p>
+<?php } ?>
+
+<?php if ($tender_awarded) { ?>
+<p class="messagebox success">Tender was successfully awarded.</p>
+<?php } else { ?>
+<p class="messagebox error">Tender was not awarded.</p>
+<?php } ?>
+
+<?php
+}

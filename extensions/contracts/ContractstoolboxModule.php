@@ -45,9 +45,8 @@ class ContractstoolboxModule extends OntoWiki_Module
      */
     public function getContents() {
         //register controller
-        $url = new OntoWiki_Url(array('controller' => 'contracts', 'action' => 'publishbusiness'), array());
-        $this->view->actionUrl = (string)$url;
-    
+        /*$url = new OntoWiki_Url(array('controller' => 'contracts', 'action' => 'publishbusiness'), array());
+        $this->view->actionUrl = (string)$url;*/
         // scripts and css only if module is visible
         $this->view->headScript()->appendFile($this->view->moduleUrl . 'contracts.js');
         $this->view->headLink()->appendStylesheet($this->view->moduleUrl . 'contracts.css');
@@ -56,53 +55,20 @@ class ContractstoolboxModule extends OntoWiki_Module
         $stateSession = new Zend_Session_Namespace($sessionKey);
 
         $data = array();
-        $subdata = array();
-        $subdata["ow"] = $this->_owApp;
-        $subdata["mod"] = $this->_owApp->selectedModel;
-        $subdata["store"] = $this->_owApp->erfurt->getStore();
-        if (isset($this->_owApp->selectedResource) && $this->_owApp->selectedResource->__toString() !== $this->_owApp->selectedModel->__toString()) {
-            $subdata["res"] = $this->_owApp->selectedResource;
-            $model = new OntoWiki_Model_Resource($subdata["store"], $subdata["mod"], (string)$subdata["res"]);
-            $values = $model->getValues();
-            $isType = false;
-            if (isset($values[(string)$subdata["mod"]]["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]))
-                $types = $values[(string)$subdata["mod"]]["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"];
-            else
-                $types = array();
-            foreach ($types as $type) {
-                if ($type["uri"] === "http://purl.org/procurement/public-contracts#Contract") {
-                    $isType = "contract";
-                    break;
-                }
-            }
-            if ($isType === false) {
-                foreach ($types as $type) {
-                    if ($type["uri"] === "http://purl.org/goodrelations/v1#BusinessEntity") {
-                        $isType = "business";
-                        break;
-                    }
-                }
-            }
-            if ($isType === "contract")
-                $data["content"] = $this->render("pcfacontracts/pcfa-res-contract", $subdata, 'data');
-            else if ($isType === "business")
-                $data["content"] = $this->render("pcfacontracts/pcfa-res-business", $subdata, 'data');
-            else
-                $data["content"] = $this->render("pcfacontracts/pcfa-model", $subdata, 'data');
-        } else {
-            $data["content"] = $this->render("pcfacontracts/pcfa-model", $subdata, 'data');
-        }
-        $data["ow"] = $this->_owApp;
-        $content = $this->render('pcfacontracts_content', $data, 'data'); // 
+        if (isset($this->_owApp->selectedModel))
+            $data["onmodel"] = true;
+        else
+            $data["onmodel"] = false;
+        
+        $content = $this->render('contracts/module-main', $data, 'data'); // 
         return $content;
     }
 	
     public function shouldShow(){
-        if (isset($this->_owApp->selectedModel) && (!($this->_owApp->getUser()->isAnonymousUser()))) {
+        if (!($this->_owApp->getUser()->isAnonymousUser())) //&& isset($this->_owApp->selectedModel)
             return true;
-        } else {
+        else
             return false;
-        }
     }
 
 }

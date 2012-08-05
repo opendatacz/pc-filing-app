@@ -1,10 +1,9 @@
 <?php
-
 $odd = true;
-
 ?>
+<div id="contracts-contracttoolbox-content" class="width99">
 <p class="curResourceName" style="overflow:hidden;">Public contract:
-    <a href="<?php echo $this->data["ow"]->getUrlBase(),"resource/properties/?r=",urlencode($this->data["res"]->__toString()); ?>">
+    <a href="<?php echo $this->data["ow"]->getUrlBase(),"resource/properties/?r=",urlencode((string)$this->data["res"]); ?>">
         <?php echo $this->data["res"]->__toString(); ?>
     </a>
 </p>
@@ -22,8 +21,8 @@ $odd = true;
         </a>
     </li>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
-        <a id="contracts-ct" class="navigation navList contracts-button" name="contracts-ct"
-            href="/contracts/createtender" >
+        <a id="contracts-ct" class="navigation navList contracts-button" name="contracts-nt"
+            href="/contracts/newtender" >
             Create tender
         </a>
     </li>
@@ -33,10 +32,11 @@ $odd = true;
             Cancel contract
         </a>
     </li>
-    <!--<li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
-        <a id="contracts-uc" class="navigation navListcontracts-button" name="contracts-uc"
-            href="/contracts/updatecontract" >
-            Update contract
-        </a>
-    </li>-->
 </ol>
+<?php
+if( isset($this->stateView) ){
+    echo $this->stateView;
+} 
+?>    
+</div>
+<?php 

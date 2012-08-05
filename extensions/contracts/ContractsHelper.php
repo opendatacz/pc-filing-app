@@ -24,7 +24,62 @@ class ContractsHelper extends OntoWiki_Component_Helper
         'vcard' => 'http://www.w3.org/2006/vcard/ns#'
     );
     
-    public static function getPropertiesFromForm($addNs = array())
+    public static function generateGuid()
+    {
+        if (function_exists('com_create_guid') === true)
+        {
+            return trim(com_create_guid(), '{}');
+        }
+        return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+    }
+    
+    /**
+     * param $model Erfurt_Rdf_Model to be queried
+     * param $query array of SPARQL queries returning ?s ?p ?o columns
+     *         
+     * @return array statment array usable by Erfurt_Rdf_Model->addMultipleStatements()
+     */         
+    public static function constuctStmtArray($model, $query, $options)
+    {
+        $stmtArray = array();
+        $defaultsubject = $options["default_subject"];
+        $bnodePredicates = array();
+        if (isset($options["bnode"]))
+            $bnodePredicates = $options["bnode"];
+        $constructOnly = array();
+        if (isset($options["construct_only"]))
+            $constructOnly = $options["construct_only"];
+        //loop for subjects
+        for ($i=0;$i<count($query);$i++) {
+            $res = $model->sparqlQuery($query[$i]);
+            //if (count($res) == 0) break;
+            if (count($res) == 0) continue;
+            if (!empty($res[0]["s"]))
+                $subject = $res[0]["s"];
+            else
+                $subject = $defaultsubject;
+            $stmtArray[$subject] = array();
+            //loop for predicates
+            for ($j=0;$j<count($res);$j++) {
+                $predicate = $res[$j]["p"];
+                //not allowed predicate for this subject
+                if (isset($constructOnly[$subject]) && !in_array($predicate,$constructOnly[$subject]))
+                    continue;
+                //is defines as bnode
+                if (in_array($predicate,$bnodePredicates))
+                    $type = "bnode";
+                else if (substr($res[$j]["o"],0,7)=="http://") //TODO: is this heuristic enough?
+                    $type = "uri";
+                else
+                    $type = "literal";
+                $stmtArray[$subject][$predicate][] = array( "type" => $type,
+                    "value" => $res[$j]["o"]);
+            }
+        }
+        return $stmtArray;
+    }
+    
+    /*public static function getPropertiesFromForm($addNs = array())
     {
         $results = array();
         $ns = array_merge($this->ns,$addNs);
@@ -38,7 +93,7 @@ class ContractsHelper extends OntoWiki_Component_Helper
                 'value' => $value);
         }
         return $results;
-    }
+    }*/
     
     /**
      * return array with keys "contractor" and "supplier" containing true/false
@@ -151,6 +206,22 @@ class ContractsHelper extends OntoWiki_Component_Helper
         if ($res === array())
             return false;
         return $res;
+    }
+    
+    public static function checkRequiredProperties($object,$required)
+    {
+        $app = OntoWiki::getInstance();
+        $store = $app->erfurt->getStore();
+        $graph = $app->selectedModel;
+        $model = new OntoWiki_Model_Resource($store, $graph, (string)$object);
+        $ojectpredicates = $model->getPredicates();
+        $predicates = array_keys($ojectpredicates[(string)$graph]);
+        $missing = array();
+        foreach ($required as $onereq) {
+            if (!in_array($onereq,$predicates))
+                $missing[] = $onereq;
+        }
+        return $missing;
     }
 }
 

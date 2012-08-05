@@ -91,6 +91,15 @@ class DataSpacePlugin extends OntoWiki_Plugin
     }
     
     //TODO: move to different plugin
+    /**
+     * Event called when user is editing resource properties.
+     * Adds recommended properties to editation. Renames properties label.     
+     *     
+     * $event->values contains the property values.
+     * $event->predicates contains the property predicates
+     *
+     * @param Erfurt_Event $event The event containing values and predicates. (can be set)
+     */
     public function onPropertiesActionData($event)
     {
         $modelobj = OntoWiki::getInstance()->selectedModel;
@@ -102,7 +111,7 @@ class DataSpacePlugin extends OntoWiki_Plugin
             //$modelobj->addNamespacePrefix("dcterms","http://purl.org/dc/terms/");
         } catch (Exception $e) { }*/
         
-        $isContract = false; $isBusiness = false;
+        $isContract = false; $isBusiness = false; $isPrice = false;
         if (!isset($event->values[$model]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']))
             return false; //no rdf:type
         foreach($event->values[$model]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'] as $value) {
@@ -110,6 +119,8 @@ class DataSpacePlugin extends OntoWiki_Plugin
                 $isContract = true;
             if ($value['uri'] === 'http://purl.org/goodrelations/v1#BusinessEntity')
                 $isBusiness = true;
+            if ($value['uri'] === 'http://purl.org/goodrelations/v1#PriceSpecification')
+                $isPrice = true;
         }
         $ep = $event->predicates;
         //print_r($ep);
@@ -120,16 +131,62 @@ class DataSpacePlugin extends OntoWiki_Plugin
         //unset type (no need to change type)
          //unset($ep[$model]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']);
          //unset($ev[$model]['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']);
+ 
+        //::: PRICE SPECIFICATION ::::::::::::::::::::::::::::::::::::::::::::::
+        if ($isPrice) {
+            $grp = $modelobj->getNamespacePrefix("http://purl.org/goodrelations/v1#");
+            $xsdp = $modelobj->getNamespacePrefix("http://www.w3.org/2001/XMLSchema#");
+            //hasCurrency
+            $uri = 'http://purl.org/goodrelations/v1#hasCurrency';
+            if (!in_array($uri,$predicates)) {
+                $short = $grp.':hasCurrency';
+                $content = "no currency";
+                $datatype = "$xsdp:string";
+                $ep[$model][$uri] = array( 'uri' => $uri , 'curi' => $short ,
+                    'url' => 'http://ontowiki2.ranec.net/view/r/'.urlencode($short) ,
+                    'title' => $short , 'has_more' => '');
+                $ev[$model][$uri][] = array( 'content' => $content , 'object' => 'not set' ,
+                    'object_hash' => md5(Erfurt_Utils::buildLiteralString($content,$datatype)) ,
+                    'datatype' => $datatype ,
+                    'lang' => '' , 'url' => '' , 'uri' => '' , 'curi' => '' );
+            }
+            //hasCurrencyValue
+            $uri = 'http://purl.org/goodrelations/v1#hasCurrencyValue';
+            if (!in_array($uri,$predicates)) {
+                $short = $grp.':hasCurrencyValue';
+                $content = "0";
+                $datatype = "$xsdp:float";
+                $ep[$model][$uri] = array( 'uri' => $uri , 'curi' => $short ,
+                    'url' => 'http://ontowiki2.ranec.net/view/r/'.urlencode($short) ,
+                    'title' => $short , 'has_more' => '');
+                $ev[$model][$uri][] = array( 'content' => $content , 'object' => 'not set' ,
+                    'object_hash' => md5(Erfurt_Utils::buildLiteralString($content,$datatype)) ,
+                    'datatype' => $datatype ,
+                    'lang' => '' , 'url' => '' , 'uri' => '' , 'curi' => '' );
+            }
+            //rename properties
+            $uri = 'http://purl.org/goodrelations/v1#hasCurrency';
+            if (isset($ep[$model][$uri]))
+                $ep[$model][$uri]['title'] = 'currency';
+            $uri = 'http://purl.org/goodrelations/v1#hasCurrencyValue';
+            if (isset($ep[$model][$uri]))
+                $ep[$model][$uri]['title'] = 'value';
+            //results
+            $event->predicates = $ep;
+            $event->values = $ev;
+            return true;
+        }
         //::: BUSINESS ENTITY ::::::::::::::::::::::::::::::::::::::::::::::::::
         if ($isBusiness) {
             $grp = $modelobj->getNamespacePrefix("http://purl.org/goodrelations/v1#");
             $brp = $modelobj->getNamespacePrefix("http://purl.org/business-register#");
+            $xsdp = $modelobj->getNamespacePrefix("http://www.w3.org/2001/XMLSchema#");
             //legalName 
             $uri = 'http://purl.org/goodrelations/v1#legalName';
             if (!in_array($uri,$predicates)) {
                 $short = $grp.':legalName';
                 $content = "Default name";
-                $datatype = 'xsd:string';
+                $datatype = "$xsdp:string";
                 $ep[$model][$uri] = array( 'uri' => $uri , 'curi' => $short ,
                     'url' => 'http://ontowiki2.ranec.net/view/r/'.urlencode($short) ,
                     'title' => $short , 'has_more' => '');
@@ -143,7 +200,7 @@ class DataSpacePlugin extends OntoWiki_Plugin
             if (!in_array($uri,$predicates)) {
                 $short = $brp.':legalName';
                 $content = "Not set";
-                $datatype = 'xsd:string';
+                $datatype = "$xsdp:string";
                 $ep[$model][$uri] = array( 'uri' => $uri , 'curi' => $short ,
                     'url' => 'http://ontowiki2.ranec.net/view/r/'.urlencode($short) ,
                     'title' => $short , 'has_more' => '');
@@ -168,12 +225,13 @@ class DataSpacePlugin extends OntoWiki_Plugin
         if ($isContract) {
             $pcp = $modelobj->getNamespacePrefix("http://purl.org/procurement/public-contracts#");
             $dctp = $modelobj->getNamespacePrefix("http://purl.org/dc/terms/");
+            $xsdp = $modelobj->getNamespacePrefix("http://www.w3.org/2001/XMLSchema#");
             //title
             $uri = 'http://purl.org/dc/terms/title';
             if (!in_array($uri,$predicates)) {
                 $short = $dctp.':title';
                 $content = "Default title";
-                $datatype = 'xsd:string';
+                $datatype = "$xsdp:string";
                 $ep[$model][$uri] = array( 'uri' => $uri , 'curi' => $short ,
                     'url' => 'http://ontowiki2.ranec.net/view/r/'.urlencode($short) ,
                     'title' => $short , 'has_more' => '');
@@ -187,7 +245,7 @@ class DataSpacePlugin extends OntoWiki_Plugin
             if (!in_array($uri,$predicates)) {
                 $short = $dctp.':description';
                 $content = "Default description";
-                $datatype = 'xsd:string';
+                $datatype = "$xsdp:string";
                 $ep[$model][$uri] = array( 'uri' => $uri , 'curi' => $short ,
                     'url' => 'http://ontowiki2.ranec.net/view/r/'.urlencode($short) ,
                     'title' => $short , 'has_more' => '');
@@ -201,7 +259,7 @@ class DataSpacePlugin extends OntoWiki_Plugin
             if (!in_array($uri,$predicates)) {
                 $short = $pcp.':startDate';
                 $content = Date("Y-m-d");
-                $datatype = 'xsd:date';
+                $datatype = "$xsdp:date";
                 $ep[$model][$uri] = array( 'uri' => $uri , 'curi' => $short ,
                     'url' => 'http://ontowiki2.ranec.net/view/r/'.urlencode($short) ,
                     'title' => $short , 'has_more' => '');
@@ -215,7 +273,7 @@ class DataSpacePlugin extends OntoWiki_Plugin
             if (!in_array($uri,$predicates)) {
                 $short = $pcp.':endDate';
                 $content = Date("Y-m-d");
-                $datatype = 'xsd:date';
+                $datatype = "$xsdp:date";
                 $ep[$model][$uri] = array( 'uri' => $uri , 'curi' => $short ,
                     'url' => 'http://ontowiki2.ranec.net/view/r/'.urlencode($short) ,
                     'title' => $short , 'has_more' => '');
@@ -229,7 +287,7 @@ class DataSpacePlugin extends OntoWiki_Plugin
             if (!in_array($uri,$predicates)) {
                 $short = $pcp.':awardDate';
                 $content = Date("Y-m-d");
-                $datatype = 'xsd:date';
+                $datatype = "$xsdp:date";
                 $ep[$model][$uri] = array( 'uri' => $uri , 'curi' => $short ,
                     'url' => 'http://ontowiki2.ranec.net/view/r/'.urlencode($short) ,
                     'title' => $short , 'has_more' => '');
@@ -243,7 +301,7 @@ class DataSpacePlugin extends OntoWiki_Plugin
             if (!in_array($uri,$predicates)) {
                 $short = $pcp.':tenderDeadline';
                 $content = Date("Y-m-d");
-                $datatype = 'xsd:date';
+                $datatype = "$xsdp:date";
                 $ep[$model][$uri] = array( 'uri' => $uri , 'curi' => $short ,
                     'url' => 'http://ontowiki2.ranec.net/view/r/'.urlencode($short) ,
                     'title' => $short , 'has_more' => '');
@@ -252,6 +310,23 @@ class DataSpacePlugin extends OntoWiki_Plugin
                     'datatype' => $datatype ,
                     'lang' => '' , 'url' => '' , 'uri' => '' , 'curi' => '' );
             }
+            //referenceNumber
+            $uri = 'http://purl.org/procurement/public-contracts#referenceNumber';
+            if (!in_array($uri,$predicates)) {
+                $short = $pcp.':referenceNumber';
+                $content = "Empty";
+                $datatype = "$xsdp:string";
+                $ep[$model][$uri] = array( 'uri' => $uri , 'curi' => $short ,
+                    'url' => 'http://ontowiki2.ranec.net/view/r/'.urlencode($short) ,
+                    'title' => $short , 'has_more' => '');
+                $ev[$model][$uri][] = array( 'content' => $content , 'object' => 'not set' ,
+                    'object_hash' => md5(Erfurt_Utils::buildLiteralString($content,$datatype)) ,
+                    'datatype' => $datatype ,
+                    'lang' => '' , 'url' => '' , 'uri' => '' , 'curi' => '' );
+            }
+            //mainObject
+            //location
+            
             //rename properties
             $uri = 'http://purl.org/dc/terms/title';
             if (isset($ep[$model][$uri]))
@@ -280,11 +355,16 @@ class DataSpacePlugin extends OntoWiki_Plugin
             $uri = 'http://purl.org/procurement/public-contracts#mainObject';
             if (isset($ep[$model][$uri]))
                 $ep[$model][$uri]['title'] = 'main object of contract'; 
+            $uri = 'http://purl.org/procurement/public-contracts#referenceNumber';
+            if (isset($ep[$model][$uri]))
+                $ep[$model][$uri]['title'] = 'file reference number'; 
             //results
             //print_r($ep);
             $event->predicates = $ep;
             $event->values = $ev;
             return true;
         }
+        //TODO: all rename properties pull from ontology graph
+        //onotology graph would have to contain at least rdf,pc,dct,gr,br ontology
     }
 }

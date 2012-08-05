@@ -9,7 +9,7 @@ class ContractsusersModule extends OntoWiki_Module
     }
 
     public function getTitle() {
-        return "Public Contract User";
+        return "Public Contract App: User Management";
     }
 
     /**
@@ -82,7 +82,7 @@ class ContractsusersModule extends OntoWiki_Module
         //if ($data["supplier"]) echo "sup";
         //if ($data["contractor"]) echo "con";
         
-        $content = $this->render('contracts/usertype-modul', $data, 'data');
+        $content = $this->render('contracts/module-user', $data, 'data');
         return $content;
     }
 	
