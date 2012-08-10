@@ -1,9 +1,27 @@
 <?php
 $odd = false;
-//$already_published = $this->placeholder('already_published')->getValue();
-$resource_uri = (string)OntoWiki::getInstance()->selectedResource;
+$ow = OntoWiki::getInstance();
+$published_priornotice = $this->placeholder('published_priornotice')->getValue();
+$already_published = $this->placeholder('already_published')->getValue();
+$published_cancellationnotice = $this->placeholder('published_cancellationnotice')->getValue();
+$resource = (string)OntoWiki::getInstance()->selectedResource;
 ?>
 
 <h2>Cancel contract</h2>
-<h3>Contract <em><?php echo $resource_uri; ?></h3>
-<p>TODO: what to do?</p>
+<h3>Contract <em><?php echo $$resource; ?></h3>
+
+<?php if (!$published_priornotice) { ?>
+<p class="messagebox error">Contract was not published. You can delete it. No need to publish cancelation notice.</p>
+<?php } ?>
+
+<?php if ($already_published) { ?>
+<p class="messagebox error">Cancellation notice was already published to public data space. The contract is already canceled.</p>
+<?php } ?>
+
+<?php if ($published_cancellationnotice) { ?>
+<p class="messagebox success">Cancellation notice was successfully published to public data space. The contract is now canceled.</p>
+<?php } else { ?>
+<p class="messagebox error">Cancellation notice could <strong>not</strong> be published to public data space.</p>
+<?php } ?>
+
+<p class="messagebox"><a href="<?php echo $ow->getUrlBase(),"resource/properties/?r=",urlencode($resource); ?>">Back to contract</a></p>

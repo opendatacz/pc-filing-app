@@ -153,14 +153,16 @@ class ContractsHelper extends OntoWiki_Component_Helper
         $username = $user->getUsername();
         $useruri = 'http://localhost/OntoWiki/Config/'.$username; //TODO: check je to skutecne vzdy pravda?
         $configModel = $store->getModel('http://localhost/OntoWiki/Config/',false);
-        $config2ns = "http://localhost/OntoWiki/Config2/";
-        $pspredicate = "PrivateStore";
+        $config2ns = "http://localhost/OntoWiki/Config2/"; //TODO: get from ini file
+        $pspredicate = "PrivateStore"; //TODO: get from ini file
         //$predicate = $this2->_privateConfig->ownbusiness->predicate;
         //clear cache
         $cache = $app->erfurt->getQueryCache(); //$cache = Erfurt_App::getInstance()->getQueryCache();
         $cache->invalidateWithModelIri($configModel->getModelIri());
         //add ns
-        $config2prefix = $configModel->getNamespacePrefix($config2ns);
+        //$config2prefix = $configModel->getNamespacePrefix($config2ns);
+        $prefixes = $configModel->getNamespacePrefixes();
+        $config2prefixes = array_keys($prefixes,$config2ns);
         //load contractor
         $resUser = $configModel->getResource($useruri);
         require_once 'Erfurt/Syntax/RdfSerializer.php';
@@ -169,10 +171,15 @@ class ContractsHelper extends OntoWiki_Component_Helper
         $domdoc = new DOMDocument();
         @$domdoc->LoadXml($serialized);
         $xpath = new DOMXPath($domdoc);
-        $members = $xpath->query("//$config2prefix:$pspredicate/@rdf:resource"); //TODO: parametry
         $res = array();
-        for ($i=0;$i<$members->length;$i++)
-            $res[] = $members->item($i)->nodeValue;
+        foreach ($config2prefixes as $c2p) {
+            @$members = $xpath->query("//$c2p:$pspredicate/@rdf:resource"); //TODO: parametry
+            if (is_object($members))
+                for ($i=0;$i<$members->length;$i++)
+                    $res[] = $members->item($i)->nodeValue;
+        }
+        if ($res === array())
+            return false;
         return $res;
     }
     
@@ -190,19 +197,25 @@ class ContractsHelper extends OntoWiki_Component_Helper
         $cache = $app->erfurt->getQueryCache(); //$cache = Erfurt_App::getInstance()->getQueryCache();
         $cache->invalidateWithModelIri($configModel->getModelIri());
         //add ns
-        $config2prefix = $configModel->getNamespacePrefix($config2ns);
+        //$config2prefix = $configModel->getNamespacePrefix($config2ns);
+        $prefixes = $configModel->getNamespacePrefixes();
+        $config2prefixes = array_keys($prefixes,$config2ns);
         //load contractor
         $resUser = $configModel->getResource($useruri);
         require_once 'Erfurt/Syntax/RdfSerializer.php';
         $serializer = Erfurt_Syntax_RdfSerializer::rdfSerializerWithFormat('rdfxml');
         $serialized = $serializer->serializeResourceToString($resUser->getIri(), $configModel->getModelIri(), false, false);
+        //echo "SERIALIZED: ",$serialized;
         $domdoc = new DOMDocument();
         @$domdoc->LoadXml($serialized);
         $xpath = new DOMXPath($domdoc);
-        $members = $xpath->query("//$config2prefix:$bspredicate/@rdf:resource"); //TODO: parametry
         $res = array();
-        for ($i=0;$i<$members->length;$i++)
-            $res[] = $members->item($i)->nodeValue;
+        foreach ($config2prefixes as $c2p) {
+            @$members = $xpath->query("//$c2p:$bspredicate/@rdf:resource"); //TODO: parametry
+            if (is_object($members))
+                for ($i=0;$i<$members->length;$i++)
+                    $res[] = $members->item($i)->nodeValue;
+        }
         if ($res === array())
             return false;
         return $res;

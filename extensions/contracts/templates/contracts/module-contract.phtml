@@ -1,34 +1,35 @@
 <?php
 $odd = true;
+$ow = OntoWiki::getInstance(); //$this->data["ow"]
 ?>
 <div id="contracts-contracttoolbox-content" class="width99">
 <p class="curResourceName" style="overflow:hidden;">Public contract:
-    <a href="<?php echo $this->data["ow"]->getUrlBase(),"resource/properties/?r=",urlencode((string)$this->data["res"]); ?>">
+    <a href="<?php echo $ow->getUrlBase(),"resource/properties/?r=",urlencode((string)$this->data["res"]); ?>">
         <?php echo $this->data["res"]->__toString(); ?>
     </a>
 </p>
 <ol class="bullets-none separated">
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="contracts-ppin" class="navigation navList contracts-button" name="contracts-ppin"
-            href="/contracts/publishpriornotice" >
+            href="<?php echo $ow->getUrlBase(); ?>contracts/publishpriornotice" >
             Publish prior information notice
         </a>
     </li>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="contracts-pcn" class="navigation navList contracts-button" name="contracts-pcn"
-            href="/contracts/publishnotice" >
+            href="<?php echo $ow->getUrlBase(); ?>contracts/publishnotice" >
             Publish contract notice
         </a>
     </li>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
-        <a id="contracts-ct" class="navigation navList contracts-button" name="contracts-nt"
-            href="/contracts/newtender" >
+        <a id="contracts-ct" class="navigation navList contracts-button" name="contracts-ct"
+            href="<?php echo $ow->getUrlBase(); ?>contracts/newtender" >
             Create tender
         </a>
     </li>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="contracts-cc" class="navigation navListcontracts-button" name="contracts-cc"
-            href="/contracts/cancelcontract" >
+            href="<?php echo $ow->getUrlBase(); ?>contracts/cancelcontract" >
             Cancel contract
         </a>
     </li>

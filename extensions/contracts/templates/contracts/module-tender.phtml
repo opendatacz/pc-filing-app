@@ -1,25 +1,26 @@
 <?php
 $odd = true;
+$ow = OntoWiki::getInstance(); //$this->data["ow"]
 ?>
 <div id="contracts-tendertoolbox-content" class="width99">
 <p class="curResourceName" style="overflow:hidden;">Tender:
-    <a href="<?php echo $this->data["ow"]->getUrlBase(),"resource/properties/?r=",urlencode((string)$this->data["res"]); ?>">
+    <a href="<?php echo $ow->getUrlBase(),"resource/properties/?r=",urlencode((string)$this->data["res"]); ?>">
         <?php echo (string)$this->data["res"]; ?>
     </a>
 </p>
 <ol class="bullets-none separated">
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="contracts-ppin" class="navigation navList contracts-button" name="contracts-ppin"
-            href="<?php echo $this->data["ow"]->getUrlBase(),"contracts/awardtender/?r=",urlencode((string)$this->data["res"]); ?>" >
+            href="<?php echo $ow->getUrlBase(),"contracts/awardtender/?r=",urlencode((string)$this->data["res"]); ?>" >
             Award tender
         </a>
     </li>
-    <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
+    <!--<li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="contracts-ppin" class="navigation navList contracts-button" name="contracts-ppin"
-            href="<?php echo $this->data["ow"]->getUrlBase(),"contracts/rejecttender/?r=",urlencode((string)$this->data["res"]); ?>" >
+            href="<?php echo $ow->getUrlBase(),"contracts/rejecttender/?r=",urlencode((string)$this->data["res"]); ?>" >
             Reject tender
         </a>
-    </li>
+    </li>-->
 </ol>
 <?php
 if( isset($this->stateView) ){

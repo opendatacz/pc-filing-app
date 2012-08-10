@@ -1,30 +1,39 @@
 <?php
 $odd = false;
+$ow = OntoWiki::getInstance();
 $store = OntoWiki::getInstance()->erfurt->getStore();//$this->placeholder('erfurt_store')->getValue();
 $model = OntoWiki::getInstance()->selectedModel;
 $resource = OntoWiki::getInstance()->selectedResource;
-
 ?>
-
 
 <h2>New tender</h2>
 <h3>in model <em><?php echo (string)$model; ?></em></h3>
 <h3>for contract <em><?php echo (string)$resource; ?></em></h3>
+
 <?php if (!$model->isEditable()) { /* OntoWiki::getInstance()->erfurt->getAc()->isModelAllowed('edit',$model->getUri()) */ ?>
 <p class="messagebox error">This model is not editable, please select your personal data space.</p>
+
 <?php } else { 
 $resname = $this->placeholder('added_resource')->getValue();
+$contract_notice_already_published = $this->placeholder('contract_notice_already_published')->getValue();
+?>
+
+<?php if ($contract_notice_already_published) { ?>
+<p class="messagebox warning">Contract notice was already published.</p>
+<?php } ?>
+
+<?php
 if ($resname === false) {
     echo '<p class="messagebox error">New tender was not created.</p>';
     $usergroups = ContractsHelper::getContractUseroups();
     if (!$usergroups["contractor"])
-        echo '<p class="messagebox info">You must be contractor to be able to create new tenders. Check your <a href="/application/preferences">preferences</a>.</p>';
+        echo '<p class="messagebox info">You must be contractor to be able to create new tenders. Check your <a href="',$ow->getUrlBase(),'application/preferences">preferences</a>.</p>';
     $businesses = ContractsHelper::getUserBusiness();
     if ($businesses === false)
-        echo '<p class="messagebox info">You must create your business entity from your <a href="/application/preferences">preferences</a>.</p>';
+        echo '<p class="messagebox info">You must create your business entity from your <a href="',$ow->getUrlBase(),'application/preferences">preferences</a>.</p>';
 } else {
     $rurl = urlencode($resname);
     echo '<p class="messagebox success">New tender created.</p>';
-    echo '<p>To edit its properties continue <a href="/resource/properties/?r=',$rurl,'">here</a>.</p>';
+    echo '<p>To edit its properties continue <a href="',$ow->getUrlBase(),'resource/properties/?r=',$rurl,'">here</a>.</p>';
 }
 }

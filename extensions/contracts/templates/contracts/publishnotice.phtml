@@ -1,3 +1,43 @@
-<?php $odd = false; ?>
+<?php
+$odd = false;
+$ow = OntoWiki::getInstance();
+$published_priornotice = $this->placeholder('published_priornotice')->getValue();
+$already_published = $this->placeholder('already_published')->getValue();
+$missing = $this->placeholder('missing')->getValue();
+$price_problem = $this->placeholder('price_problem')->getValue();
+$published_contractnotice = $this->placeholder('published_contractnotice')->getValue();
+$resource = (string)OntoWiki::getInstance()->selectedResource;
 
-<p>hello publish notice</p>
+?>
+<h2>Publish contract notice</h2>
+<h3><em><?php echo $resource; ?></em></h3>
+
+<?php if (!$published_priornotice) { ?>
+<p class="messagebox error">Prior information notice was not published.</p>
+<?php } ?>
+
+<?php if ($already_published) { ?>
+<p class="messagebox error">Contract notice was already published to public data space.</p>
+<?php } ?>
+
+<?php if ($missing != array()) { ?>
+<p class="messagebox error">Missing required properties:</p>
+<ul>
+    <?php
+    foreach ($missing as $prop)
+        echo "<li>",$prop,"</li>";
+    ?>
+</ul><br />
+<?php } ?>
+
+<?php if ($price_problem) { ?>
+<p class="messagebox error">Problem with price properties. Either <em>pc:estimatedPrice</em> or both <em>pc:estimatedPricelower</em> and <em>pc:estimatedPriceUpper</em> must be set.</p>
+<?php } ?>
+
+<?php if ($published_contractnotice) { ?>
+<p class="messagebox success">Contract notice was successfully published to public data space.</p>
+<?php } else { ?>
+<p class="messagebox error">Contract notice could <strong>not</strong> be published to public data space.</p>
+<?php } ?>
+
+<p class="messagebox"><a href="<?php echo $ow->getUrlBase(),"resource/properties/?r=",urlencode($resource); ?>">Back to contract</a></p>

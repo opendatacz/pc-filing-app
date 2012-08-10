@@ -23,7 +23,7 @@ class ContractstoolboxModule extends OntoWiki_Module
         // build main menu (out of sub menus below)
         $mainMenu = new OntoWiki_Menu();
         
-        $pcMenu = new OntoWiki_Menu();
+        /*$pcMenu = new OntoWiki_Menu();
         $pcMenu->setEntry('Publish prior information notice', "javascript:publishPriorInformationNotice()");
         $pcMenu->setEntry('Publish contract notice', "javascript:publishContractNotice()");
         $pcMenu->setEntry('Create tender', "javascript:createTender()");
@@ -35,7 +35,7 @@ class ContractstoolboxModule extends OntoWiki_Module
         $tMenu = new OntoWiki_Menu();
         $tMenu->setEntry('Award tender', "javascript:awardTender()");
         $tMenu->setEntry('Reject tender', "javascript:rejectTender()");
-        $mainMenu->setEntry('Tender', $tMenu);
+        $mainMenu->setEntry('Tender', $tMenu);*/
 
         return $mainMenu;
     }
@@ -44,6 +44,11 @@ class ContractstoolboxModule extends OntoWiki_Module
      * Returns the content
      */
     public function getContents() {
+        /*$app = OntoWiki::getInstance();
+        //clear cache*/
+        //$cache->invalidateWithModelIri($configModel->getModelIri());
+        
+    
         //register controller
         /*$url = new OntoWiki_Url(array('controller' => 'contracts', 'action' => 'publishbusiness'), array());
         $this->view->actionUrl = (string)$url;*/

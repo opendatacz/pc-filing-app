@@ -26,7 +26,7 @@ class ContractsusersModule extends OntoWiki_Module
     public function getContents() {
         //register controller
         $url = new OntoWiki_Url(array('controller' => 'contracts', 'action' => 'setusertype'), array());
-        $this->view->actionUrl = (string)$url;
+        //$this->view->actionUrl = (string)$url;
     
         // scripts and css only if module is visible
         //$this->view->headScript()->appendFile($this->view->moduleUrl . 'contracts.js');

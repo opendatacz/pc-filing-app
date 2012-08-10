@@ -4,26 +4,21 @@
  * OntoWiki contracts user type module template
  */
 $odd = true;
+$ow = OntoWiki::getInstance();
 //set private data space as active model
 $privatedataspace = ContractsHelper::getUserDataSpace();
-$privatedataspace = $privatedataspace[0];
-$store = OntoWiki::getInstance()->erfurt->getStore();
-$model = $store->getModel($privatedataspace);
-OntoWiki::getInstance()->selectedModel = $model;
-
+if ($privatedataspace !== false) {
+    $privatedataspace = $privatedataspace[0];
+    $store = OntoWiki::getInstance()->erfurt->getStore();
+    $model = $store->getModel($privatedataspace);
+    OntoWiki::getInstance()->selectedModel = $model;
+}
 //$groups = ContractsHelper::getContractUseroups();
+
+$suurl = $this->data["url"]; //$ow->getUrlBase()."contracts/setusertype";
 $contractor = $this->data["contractor"]; //$groups["contractor"];
 $supplier = $this->data["supplier"]; //$groups["supplier"];
 $ownbusiness = ContractsHelper::getUserBusiness();
-
-
-//$privatedataspace = ContractsHelper::getUserDataSpace();
-//$ownbusiness = ContractsHelper::getUserBusiness();
-
-//$ud = ContractsHelper::getUserDataSpace();
-//print_r($ud);
-//$ub = ContractsHelper::getUsergetUserBusiness();
-//print_r($ub);
 
 ?>
 
@@ -43,13 +38,13 @@ $ownbusiness = ContractsHelper::getUserBusiness();
     </li>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="pcfa-usercontractor" class="navigation navList" name="pcfa-usercontractor"
-            href="<?php echo $this->data["url"],"/",($this->data["contractor"]?"?contractor=no":"?contractor=yes"); ?>" >
+            href="<?php echo $suurl,"/",($this->data["contractor"]?"?contractor=no":"?contractor=yes"); ?>" >
             <?php echo ($this->data["contractor"]?"I am not contractor":"I am contractor"); ?>
         </a>
     </li>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="pcfa-usersupplier" class="navigation navList" name="pcfa-usersupplier"
-            href="<?php echo $this->data["url"],"/",($this->data["supplier"]?"?supplier=no":"?supplier=yes"); ?>" >
+            href="<?php echo $suurl,"/",($this->data["supplier"]?"?supplier=no":"?supplier=yes"); ?>" >
             <?php echo ($this->data["supplier"]?"I am not supplier":"I am supplier"); ?>
         </a>
     </li>
@@ -59,14 +54,14 @@ if ($contractor || $supplier) {
 ?>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="pcfa-businessself" class="navigation navList" name="pcfa-businessself"
-            href="/contracts/newbusinessentity/?self=true" >
+            href="<?php echo $ow->getUrlBase(); ?>contracts/newbusinessentity/?self=true" >
             Create own business entity
         </a>
     </li>
 <?php } else { ?>
     <li class="<?php echo $odd ? 'odd' : 'even'; $odd = !$odd; ?>">
         <a id="pcfa-businessself" class="navigation navList" name="pcfa-businessself"
-            href="/resource/properties/?r=<?php echo urlencode($ownbusiness[0]); ?>" >
+            href="<?php echo $ow->getUrlBase(); ?>resource/properties/?r=<?php echo urlencode($ownbusiness[0]); ?>" >
             Edit own business entity details
         </a>
     </li>

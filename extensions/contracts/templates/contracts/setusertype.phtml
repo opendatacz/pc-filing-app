@@ -1,5 +1,8 @@
-<?php $odd = false; ?>
+<?php
+$odd = false;
+$ow = OntoWiki::getInstance();
+?>
 
 <h2>Usergroup changed</h2>
 
-<p class="messagebox success">User group was changed, visit <a href="/application/preferences">preferences</a> for details.</p>
+<p class="messagebox success">User group was changed, visit <a href="<?php echo $ow->getUrlBase(); ?>application/preferences">preferences</a> for details.</p>

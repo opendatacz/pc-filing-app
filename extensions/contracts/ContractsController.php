@@ -22,6 +22,8 @@ class ContractsController extends OntoWiki_Controller_Component
         "pc" => "http://purl.org/procurement/public-contracts#",
         "br" => "http://purl.org/business-register#",
         "gr" => "http://purl.org/goodrelations/v1#",
+        "vcard" => "http://www.w3.org/2006/vcard/ns#",
+        "xsd" => "http://www.w3.org/2001/XMLSchema#",
         "rdf" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         "rdfs" => "http://www.w3.org/2000/01/rdf-schema#");
 
@@ -121,6 +123,9 @@ class ContractsController extends OntoWiki_Controller_Component
         $windowTitle = $translate->_('Create business entity');
         $this->view->placeholder('main.window.title')->set($windowTitle);
         
+        $dctp = $model->getNamespacePrefix('http://purl.org/dc/terms/');
+        $xsdp = $model->getNamespacePrefix('http://www.w3.org/2001/XMLSchema#');
+        
         $usergroups = ContractsHelper::getContractUseroups();
                 
         if (isset($_POST["prop_gr_legalName"]) && $usergroups["any"]) //TODO: kontrola vsech atributu??
@@ -129,17 +134,16 @@ class ContractsController extends OntoWiki_Controller_Component
                 $this->view->placeholder('added_resource')->set(false);
                 return false;
             }
-            $name = $_POST["prop_gr_legalName"];
-            $tid = $_POST["prop_br_officialNumber"];
-            $countryname = $_POST["prop_vcard_country-name"];
-            $locality = $_POST["prop_vcard_locality"];
-            $postalcode = $_POST["prop_vcard_postal-code"];
-            $street = $_POST["prop_vcard_street"];
-            if (strlen(trim($tid)) > 4) { //TODO: jake univerzalni pravidlo pro platny kod?
-                $tid = trim($tid);
-                $tid = strtolower($tid);
-                str_replace(' ','-',$tid); //TODO: bezpecnejsi prevod na URL slug
-                $resuriend = $countryname.$tid;
+            $name = trim($_POST["prop_gr_legalName"]);
+            $tid = trim($_POST["prop_br_officialNumber"]);
+            $countryname = trim($_POST["prop_vcard_country-name"]);
+            $locality = trim($_POST["prop_vcard_locality"]);
+            $postalcode = trim($_POST["prop_vcard_postal-code"]);
+            $street = trim($_POST["prop_vcard_street"]);
+            
+            if (strlen($tid) > 4) { //TODO: jake univerzalni pravidlo pro platny kod?
+                $resuriend = strtoupper($countryname).strtolower($tid);
+                $resuriend = str_replace(' ','-',$resuriend); //TODO: bezpecnejsi prevod na URL slug
             } else
                 $resuriend = ContractsHelper::generateGuid();
             $resname = $newentityprefix."business-entity/".$resuriend;
@@ -164,13 +168,17 @@ class ContractsController extends OntoWiki_Controller_Component
                         'type'  => 'literal',
                         'value' => $tid
                     )),
-                    'http://purl.org/dc/terms/creator' => array(array( //id toho kdo vytvoril kontrakt
-                        'type'  => 'uri',
-                        'value' => $usruri
-                    )),
                     'http://purl.org/business-register#contact' => array(array(
                         'type'  => 'uri', //bnode
                         'value' => $vcard
+                    )),
+                    $dctp.':creator' => array(array( //id toho kdo vytvoril BE
+                        'type'  => 'uri',
+                        'value' => $usruri
+                    )),
+                    $dctp.':created' => array(array( //datum vytvoreni BE
+                        'type'  => 'literal', 'datatype' => $xsdp.':date',
+                        'value' => Date("Y-m-d")
                     ))
                 ),
                 $vcard => array(
@@ -198,6 +206,10 @@ class ContractsController extends OntoWiki_Controller_Component
                     ))
                 ),
                 $vcard_adr => array(
+                    EF_RDF_TYPE => array(array(
+                        'type'  => 'uri',
+                        'value' => 'http://www.w3.org/2006/vcard/ns#Address' 
+                    )),
                     'http://www.w3.org/2006/vcard/ns#country-name' => array(array(
                         'type'  => 'literal',
                         'value' => $countryname
@@ -233,7 +245,7 @@ class ContractsController extends OntoWiki_Controller_Component
                     array('value' => $resname, 'type'  => 'uri'),
                     false);
                 $this->view->placeholder('is_own_business')->set(true);
-                echo "iri:",$configModel->getModelIri()," sub:",$useruri," pre:",$predicate," obj:",$resname;
+                //echo "iri:",$configModel->getModelIri()," sub:",$useruri," pre:",$predicate," obj:",$resname;
             } else
                 $this->view->placeholder('is_own_business')->set(false);
             
@@ -272,6 +284,9 @@ class ContractsController extends OntoWiki_Controller_Component
             $priceflaturi = $resname."/price-specification/1";
             $priceminuri  = $resname."/price-specification/2";
             $pricemaxuri  = $resname."/price-specification/3";
+            $contacturi  = $resname."/vcard-class/1";
+            $adruri  = $contacturi."/vcard-address-class/1";
+            $orguri  = $contacturi."/vcard-organization-class/1";
             $business = $businesses[0];
             try {
                 $this->store->addStatement($model->getModelIri(),
@@ -279,11 +294,11 @@ class ContractsController extends OntoWiki_Controller_Component
                     EF_RDF_TYPE,
                     array('value' => 'http://purl.org/procurement/public-contracts#Contract', 'type'  => 'uri'),
                     true);
-                $this->store->addStatement($model->getModelIri(),
+                /*$this->store->addStatement($model->getModelIri(),
                     $resname,
                     'http://purl.org/dc/terms/title',
                     array('value' => 'new public contract', 'type'  => 'literal', 'datatype' => 'xsd:string'),
-                    true);
+                    true);*/
                 $this->store->addStatement($model->getModelIri(),
                     $resname,
                     'http://purl.org/procurement/public-contracts#contractingAuthority',
@@ -315,8 +330,39 @@ class ContractsController extends OntoWiki_Controller_Component
                 $this->store->addStatement($model->getModelIri(),
                     $resname,'http://purl.org/procurement/public-contracts#estimatedPriceUpper',
                     array('value' => $pricemaxuri, 'type'  => 'uri'), true);
+                //Address & Organization -> get from business
+                $options = array();
+                $query2[0] = 'SELECT ?s ?p ?o WHERE {
+                    <'.$business.'> <http://purl.org/business-register#contact> ?y .
+                    ?y <http://www.w3.org/2006/vcard/ns#adr> ?x .
+                    ?x ?p ?o. }';
+                $options["default_subject"] = $adruri;
+                $stmtArray2 = ContractsHelper::constuctStmtArray($model,$query2,$options);
+                $query3[0] = 'SELECT ?s ?p ?o WHERE {
+                    <'.$business.'> <http://purl.org/business-register#contact> ?y .
+                    ?y <http://www.w3.org/2006/vcard/ns#org> ?x .
+                    ?x ?p ?o. }';
+                $options["default_subject"] = $orguri;
+                $stmtArray3 = ContractsHelper::constuctStmtArray($model,$query3,$options);
+                $stmtArray = array_merge($stmtArray2,$stmtArray3);
+                $store->addMultipleStatements($model->getModelIri(), $stmtArray, true);
+                //VCard contact
+                $this->store->addStatement($model->getModelIri(),
+                    $contacturi, EF_RDF_TYPE,
+                    array('value' => $this->pref["vcard"].'VCard', 'type'  => 'uri'), true);
+                $this->store->addStatement($model->getModelIri(),
+                    $contacturi, $this->pref["vcard"].'adr',
+                    array('value' => $adruri, 'type'  => 'uri'), true);
+                $this->store->addStatement($model->getModelIri(),
+                    $contacturi, $this->pref["vcard"].'org',
+                    array('value' => $orguri, 'type'  => 'uri'), true);
+                $this->store->addStatement($model->getModelIri(),
+                    $resname,'http://purl.org/procurement/public-contracts#contact',
+                    array('value' => $contacturi, 'type'  => 'uri'), true);
+                
                 $this->view->placeholder('added_resource')->set($resname);
             } catch (Exception $e) {
+                //echo $e->getMessage();
                 $this->view->placeholder('added_resource')->set(false);
                 //no ACL to edit
             }
@@ -330,7 +376,7 @@ class ContractsController extends OntoWiki_Controller_Component
     public function updatecontractAction()
     {
         return; //deprecated???
-        
+        /*
         $translate  = $this->_owApp->translate;
         $store      = $this->_owApp->erfurt->getStore();
         //$model      = $this->_owApp->selectedModel;
@@ -358,9 +404,7 @@ class ContractsController extends OntoWiki_Controller_Component
             $model = new OntoWiki_Model_Resource($store, $graph, (string)$resource);
             $values = $model->getValues();
             $predicates = $model->getPredicates();
-        
-            
-        }
+        }*/
     }
 
     /***************************************************************************
@@ -376,11 +420,17 @@ class ContractsController extends OntoWiki_Controller_Component
         $resourceuri = (string)$resource;
         $title = $resource->getTitle();
         $translate   = $this->_owApp->translate;
+        $user = $this->_owApp->getUser();
+        $username = $user->getUsername();
+        $userprefix = $this->_privateConfig->user->prefix;
+        $usruri = $userprefix.$username;
         //$rUriEncoded = urlencode((string)$resource);
         //$mUriEncoded = urlencode((string)$model);
         
         $windowTitle = sprintf($translate->_('Publish business entity %1$s'), $title);
         $this->view->placeholder('main.window.title')->set($windowTitle);
+        
+        $xsdp = $model->getNamespacePrefix('http://www.w3.org/2001/XMLSchema#');
         
         //check if it doesnt exist
         $res = $publicmodel->sparqlQuery('SELECT ?x WHERE {<'.$resourceuri.'> ?z ?x}');
@@ -415,7 +465,14 @@ class ContractsController extends OntoWiki_Controller_Component
         //$options["bnode"][] = "http://www.w3.org/2006/vcard/ns#org";
         $stmtArray = ContractsHelper::constuctStmtArray($model,$query,$options);
         //print_r($stmtArray);
-        
+        $stmtArray[$resourceuri]["http://purl.org/dc/terms/publisher"] = array(array(
+            'type'  => 'uri',
+            'value' => $usruri
+        ));
+        $stmtArray[$resourceuri]["http://purl.org/procurement/public-contracts#publicationDate"] = array(array(
+            'type'  => 'literal', 'datatype' => $xsdp.'date',
+            'value' => Date("Y-m-d") 
+        ));
         $store->addMultipleStatements($publicmodel->getModelIri(), $stmtArray, false);
         $this->view->placeholder('published_business')->set(true);
     }
@@ -439,22 +496,24 @@ class ContractsController extends OntoWiki_Controller_Component
         $username = $user->getUsername();
         $title = $resource->getTitle();
         $translate   = $this->_owApp->translate;
+        $xsdp = $model->getNamespacePrefix($this->pref["xsd"]);
         //window title
         $windowTitle = sprintf($translate->_('Publish prior information notice for contract %1$s'), $title);
         $this->view->placeholder('main.window.title')->set($windowTitle);
         //CHECK EXISTENCE IN PUBLIC STORE
         //try {
-        $res = $publicmodel->sparqlQuery('SELECT ?x
+        $res_inpublic = $publicmodel->sparqlQuery('SELECT ?x
             WHERE {
                 <'.$resourceuri.'> <'.$this->pref["pc"].'notice> ?x .
                 ?x a <'.$this->pref["pc"].'PriorInformationNotice> .
                 }');
         //} catch (Exception $e) { echo $e->getMessage(); }
-        if ($res !== array()) {
+        if ($res_inpublic !== array()) {
             //resource already exists
             $this->view->placeholder('already_published')->set(true);
             return; //can not republish
         }
+        $this->view->placeholder('already_published')->set(false);
         //CHECK REQUIRED PROPERTIES
         $required = array();
         $required[] = EF_RDF_TYPE;
@@ -462,12 +521,13 @@ class ContractsController extends OntoWiki_Controller_Component
         $required[] = $this->pref["dcterms"]."description";
         $required[] = $this->pref["pc"]."contact";
         $required[] = $this->pref["pc"]."contractingAuthority";
-        //$required[] = $this->pref["pc"]."estimatedPrice"; //checked further on
-        //$required[] = $this->pref["pc"]."estimatedPriceLower";
-        //$required[] = $this->pref["pc"]."estimatedPriceUpper";
-        $required[] = $this->pref["pc"]."kind"; //???
-        $required[] = $this->pref["pc"]."mainObject"; //???
-        //$required[] = $this->pref["pc"]."notice";
+        /*$required[] = $this->pref["pc"]."estimatedPrice"; //checked further on
+        $required[] = $this->pref["pc"]."estimatedPriceLower";
+        $required[] = $this->pref["pc"]."estimatedPriceUpper";*/
+        /*$required[] = $this->pref["pc"]."notice";*/ //added further on, o check required
+        //TODO: add support for kind + mainObject
+        //$required[] = $this->pref["pc"]."kind";
+        //$required[] = $this->pref["pc"]."mainObject";
         $required[] = $this->pref["pc"]."referenceNumber";
         $missing = ContractsHelper::checkRequiredProperties($resourceuri,$required);
         $this->view->placeholder('missing')->set($missing);
@@ -480,9 +540,9 @@ class ContractsController extends OntoWiki_Controller_Component
                   <'.$this->pref["gr"].'hasCurrencyValue> ?ov ;
                   <'.$this->pref["gr"].'hasCurrency> ?oc .
             }';
-        $res = $model->sparqlQuery($query_prices);
+        $res_prices = $model->sparqlQuery($query_prices);
         $ep = $epl = $epu = $price_problem = false;
-        foreach ($res as $r) {
+        foreach ($res_prices as $r) {
             if ($r["p"] == $this->pref["pc"].'estimatedPrice') $ep = true;
             if ($r["p"] == $this->pref["pc"].'estimatedPriceLower') $epl = true;
             if ($r["p"] == $this->pref["pc"].'estimatedPriceUpper') $epu = true;
@@ -491,8 +551,13 @@ class ContractsController extends OntoWiki_Controller_Component
             $price_problem = true;
         $this->view->placeholder('price_problem')->set($price_problem);
         //CAN NOT PUBLISH (ERRORS)
-        if (!(($missing == array()) && ($ep xor ($epl && $epu))))
+        if (!(($missing == array()) && ($ep xor ($epl && $epu)))) {
+            /* //invalidate cache //TODO: invalidate only executed queries (not whole model)
+            $cache = $this->_owApp->erfurt->getQueryCache();
+            $cache->invalidateWithModelIri($model->getModelIri());*/
+            $this->view->placeholder('published_priornotice')->set(false);
             return;
+        }
         //LOAD CONTRACT DETAILS
         //stmt array sparql queries
         $query[0] = 'SELECT ?s ?p ?o WHERE {
@@ -513,8 +578,23 @@ class ContractsController extends OntoWiki_Controller_Component
             <'.$resourceuri.'> <'.$this->pref["pc"].'location> ?s.
             ?s ?p ?o. }';
         $query[] = 'SELECT ?s ?p ?o WHERE {
-            <'.$resourceuri.'> <'.$this->pref["pc"].'mainObject> ?s.
+            <'.$resourceuri.'> <'.$this->pref["pc"].'contact> ?s.
             ?s ?p ?o. }';
+        $query[] = 'SELECT ?s ?p ?o WHERE {
+            <'.$resourceuri.'> <'.$this->pref["pc"].'contact> ?x.
+            ?x <'.$this->pref["vcard"].'adr> ?s.
+            ?s ?p ?o. }';
+        $query[] = 'SELECT ?s ?p ?o WHERE {
+            <'.$resourceuri.'> <'.$this->pref["pc"].'contact> ?x.
+            ?x <'.$this->pref["vcard"].'org> ?s.
+            ?s ?p ?o. }';
+        /*$query[] = 'SELECT ?s ?p ?o WHERE {
+            <'.$resourceuri.'> <'.$this->pref["pc"].'mainObject> ?s.
+            ?s ?p ?o. }';*/
+        //invalidate cache //TODO: invalidate only executed queries (not whole model)
+        $cache = $this->_owApp->erfurt->getQueryCache();
+        $cache->invalidateWithModelIri($model->getModelIri());
+        
         $options = array();
         $options["default_subject"] = $resourceuri;
         $options["construct_only"][$resourceuri][] = EF_RDF_TYPE;
@@ -528,16 +608,16 @@ class ContractsController extends OntoWiki_Controller_Component
             $options["construct_only"][$resourceuri][] = $this->pref["pc"]."estimatedPriceLower";
             $options["construct_only"][$resourceuri][] = $this->pref["pc"]."estimatedPriceUpper";
         }
-        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."kind";
         $options["construct_only"][$resourceuri][] = $this->pref["pc"]."location";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."kind";
         $options["construct_only"][$resourceuri][] = $this->pref["pc"]."mainObject";
-        //$options["construct_only"][$resourceuri][] = $this->pref["pc"]."notice";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."notice";
         $options["construct_only"][$resourceuri][] = $this->pref["pc"]."referenceNumber";
         $stmtArray1 = ContractsHelper::constuctStmtArray($model,$query,$options);        
         //CREATION OF PRIOR INFORMATION NOTICE
         $pinuri = $resourceuri."/prior-information-notice/1";
         $publisheruri = $userprefix.$username;
-        //creator
+        //select creator
         $query_creator = 'SELECT ?creator WHERE {
             <'.$resourceuri.'> <'.$this->pref["dcterms"].'creator> ?creator. }';
         $res = $model->sparqlQuery($query_creator);
@@ -546,11 +626,20 @@ class ContractsController extends OntoWiki_Controller_Component
         else
             $creatoruri = $res[0]["creator"];
         $publicationdate = Date("Y-m-d");
+        $fillingAppUri = $this->_privateConfig->fillingapp->uri;
         $stmtArray2 = array(
             $pinuri => array(
                 EF_RDF_TYPE => array(array(
                     'type'  => 'uri',
                     'value' => 'http://purl.org/procurement/public-contracts#PriorInformationNotice' 
+                ),
+                array(
+                    'type'  => 'uri',
+                    'value' => 'http://www.w3.org/ns/prov#Entity' 
+                )),
+                'http://www.w3.org/ns/prov#wasAttributedTo' => array(array(
+                    'type'  => 'uri',
+                    'value' => $fillingAppUri
                 )),
                 'http://purl.org/dc/terms/creator' => array(array( //id toho kdo vytvoril kontrakt
                     'type'  => 'uri',
@@ -561,15 +650,20 @@ class ContractsController extends OntoWiki_Controller_Component
                     'value' => $publisheruri
                 )),
                 'http://purl.org/procurement/public-contracts#publicationDate' => array(array(
-                    'type'  => 'literal', //bnode
+                    'type'  => 'literal', 'datatype' => $xsdp.':date',
                     'value' => $publicationdate
                 ))
         ));
+        //add notice link
+        $stmtArray1[$resourceuri][$this->pref["pc"]."notice"][] = array(
+            'type'  => 'uri',
+            'value' => $pinuri
+        );
         $stmtArray = array_merge($stmtArray1,$stmtArray2);
-        print_r($stmtArray);
+        //print_r($stmtArray);
         //PUBLISH
-        //$store->addMultipleStatements($publicmodel->getModelIri(), $stmtArray, false);
-        //$this->view->placeholder('published_priornotice')->set(true);
+        $store->addMultipleStatements($publicmodel->getModelIri(), $stmtArray, false);
+        $this->view->placeholder('published_priornotice')->set(true);
     }
     
     /***************************************************************************
@@ -577,8 +671,200 @@ class ContractsController extends OntoWiki_Controller_Component
      */
     public function publishnoticeAction()
     {
-        //echo "<p>TODO</p>";
-        //TODO
+        $store = $this->_owApp->erfurt->getStore();
+        $model = $this->_owApp->selectedModel;
+        $modeluri = (string)$model;
+        $publicmodeluri = $this->_privateConfig->publicstore;
+        $publicmodel = new Erfurt_Rdf_Model($publicmodeluri);
+        $ontomodeluri = "http://purl.org/procurement/public-contracts#";
+        $ontomodel = new Erfurt_Rdf_Model($ontomodeluri);
+        $resource = $this->_owApp->selectedResource;
+        $resourceuri = (string)$resource;
+        $userprefix = $this->_privateConfig->user->prefix;
+        $user = $this->_owApp->getUser();
+        $username = $user->getUsername();
+        $title = $resource->getTitle();
+        $translate   = $this->_owApp->translate;
+        $xsdp = $model->getNamespacePrefix($this->pref["xsd"]);
+        //window title
+        $windowTitle = sprintf($translate->_('Publish contract notice for contract %1$s'), $title);
+        $this->view->placeholder('main.window.title')->set($windowTitle);
+        //CHECK IF PRIOR NOTICE PUBLISHED
+        $res_priorpubished = $publicmodel->sparqlQuery('SELECT ?x
+            WHERE {
+                <'.$resourceuri.'> <'.$this->pref["pc"].'notice> ?x .
+                ?x a <'.$this->pref["pc"].'PriorInformationNotice> .
+                }');
+        if ($res_priorpubished == array()) {
+            //resource does not exist
+            $this->view->placeholder('published_priornotice')->set(false);
+            return; //can not publish notice
+        }
+        $this->view->placeholder('published_priornotice')->set(true);
+        //CHECK EXISTENCE IN PUBLIC STORE
+        $res_inpublic = $publicmodel->sparqlQuery('SELECT ?x
+            WHERE {
+                <'.$resourceuri.'> <'.$this->pref["pc"].'notice> ?x .
+                ?x a <'.$this->pref["pc"].'ContractNotice> .
+                }');
+        if ($res_inpublic !== array()) {
+            //resource already exists
+            $this->view->placeholder('already_published')->set(true);
+            return; //can not republish
+        }
+        $this->view->placeholder('already_published')->set(false);
+        
+        //following similar to prior information notice
+        //CHECK REQUIRED PROPERTIES
+        $required = array();
+        $required[] = EF_RDF_TYPE;
+        $required[] = $this->pref["dcterms"]."title";
+        $required[] = $this->pref["dcterms"]."description";
+        $required[] = $this->pref["pc"]."contact";
+        $required[] = $this->pref["pc"]."contractingAuthority";
+        $required[] = $this->pref["pc"]."tenderDeadline";
+        //TODO: add support for kind + mainObject + procedureType
+        //$required[] = $this->pref["pc"]."kind";
+        //$required[] = $this->pref["pc"]."mainObject";
+        //$required[] = $this->pref["pc"]."procedureType";
+        $required[] = $this->pref["pc"]."referenceNumber";
+        $missing = ContractsHelper::checkRequiredProperties($resourceuri,$required);
+        $this->view->placeholder('missing')->set($missing);
+        //check price: estimatedPrice OR estimatedPriceLower + estimatedPriceUpper
+        $query_prices = 'SELECT ?p ?o ?ov ?oc
+            WHERE {
+                <'.$resourceuri.'> a <'.$this->pref["pc"].'Contract> ;
+                  ?p ?o .
+                ?o a <'.$this->pref["gr"].'PriceSpecification> ;
+                  <'.$this->pref["gr"].'hasCurrencyValue> ?ov ;
+                  <'.$this->pref["gr"].'hasCurrency> ?oc .
+            }';
+        $res_prices = $model->sparqlQuery($query_prices);
+        $ep = $epl = $epu = $price_problem = false;
+        foreach ($res_prices as $r) {
+            if ($r["p"] == $this->pref["pc"].'estimatedPrice') $ep = true;
+            if ($r["p"] == $this->pref["pc"].'estimatedPriceLower') $epl = true;
+            if ($r["p"] == $this->pref["pc"].'estimatedPriceUpper') $epu = true;
+        }
+        if ($ep == ($epl && $epu)) //both missing or both set
+            $price_problem = true;
+        $this->view->placeholder('price_problem')->set($price_problem);
+        //CAN NOT PUBLISH (ERRORS)
+        if (!(($missing == array()) && ($ep xor ($epl && $epu)))) {
+            $this->view->placeholder('published_contractnotice')->set(false);
+            return;
+        }
+        //LOAD CONTRACT DETAILS
+        //stmt array sparql queries
+        $query[0] = 'SELECT ?s ?p ?o WHERE {
+            <'.$resourceuri.'> ?p ?o. }';
+        if ($ep) {
+            $query[1] = 'SELECT ?s ?p ?o WHERE {
+                <'.$resourceuri.'> <'.$this->pref["pc"].'estimatedPrice> ?s.
+                ?s ?p ?o. }';
+        } else {
+            $query[1] = 'SELECT ?s ?p ?o WHERE {
+                <'.$resourceuri.'> <'.$this->pref["pc"].'estimatedPriceLower> ?s.
+                ?s ?p ?o. }';
+            $query[2] = 'SELECT ?s ?p ?o WHERE {
+                <'.$resourceuri.'> <'.$this->pref["pc"].'estimatedPriceUpper> ?s.
+                ?s ?p ?o. }';
+        }
+        $query[] = 'SELECT ?s ?p ?o WHERE {
+            <'.$resourceuri.'> <'.$this->pref["pc"].'location> ?s.
+            ?s ?p ?o. }';
+        $query[] = 'SELECT ?s ?p ?o WHERE {
+            <'.$resourceuri.'> <'.$this->pref["pc"].'contact> ?s.
+            ?s ?p ?o. }';
+        $query[] = 'SELECT ?s ?p ?o WHERE {
+            <'.$resourceuri.'> <'.$this->pref["pc"].'contact> ?x.
+            ?x <'.$this->pref["vcard"].'adr> ?s.
+            ?s ?p ?o. }';
+        $query[] = 'SELECT ?s ?p ?o WHERE {
+            <'.$resourceuri.'> <'.$this->pref["pc"].'contact> ?x.
+            ?x <'.$this->pref["vcard"].'org> ?s.
+            ?s ?p ?o. }';
+        /*$query[] = 'SELECT ?s ?p ?o WHERE {
+            <'.$resourceuri.'> <'.$this->pref["pc"].'awardCriteriaCombination> ?s.
+            ?s ?p ?o. }';*/
+        //invalidate cache //TODO: invalidate only executed queries (not whole model)
+        $cache = $this->_owApp->erfurt->getQueryCache();
+        $cache->invalidateWithModelIri($model->getModelIri());
+        
+        $options = array();
+        $options["default_subject"] = $resourceuri;
+        $options["construct_only"][$resourceuri][] = EF_RDF_TYPE;
+        $options["construct_only"][$resourceuri][] = $this->pref["dcterms"]."title";
+        $options["construct_only"][$resourceuri][] = $this->pref["dcterms"]."description";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."contact";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."contractingAuthority";
+        if ($ep)
+            $options["construct_only"][$resourceuri][] = $this->pref["pc"]."estimatedPrice";
+        else {
+            $options["construct_only"][$resourceuri][] = $this->pref["pc"]."estimatedPriceLower";
+            $options["construct_only"][$resourceuri][] = $this->pref["pc"]."estimatedPriceUpper";
+        }
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."location";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."kind";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."mainObject";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."notice";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."referenceNumber";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."tenderDeadline";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."procedureType";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."estimatedEndDate";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."awardCriteriaCombination";
+        $options["construct_only"][$resourceuri][] = $this->pref["pc"]."previousNotice";
+        $stmtArray1 = ContractsHelper::constuctStmtArray($model,$query,$options);        
+        //CREATION OF CONTRACT NOTICE
+        $pinuri = $resourceuri."/contract-notice/1";
+        $publisheruri = $userprefix.$username;
+        //select creator
+        $query_creator = 'SELECT ?creator WHERE {
+            <'.$resourceuri.'> <'.$this->pref["dcterms"].'creator> ?creator. }';
+        $res = $model->sparqlQuery($query_creator);
+        if ($res == array())
+            $creatoruri = $publisheruri;
+        else
+            $creatoruri = $res[0]["creator"];
+        $publicationdate = Date("Y-m-d");
+        $fillingAppUri = $this->_privateConfig->fillingapp->uri;
+        $stmtArray2 = array(
+            $pinuri => array(
+                EF_RDF_TYPE => array(array(
+                    'type'  => 'uri',
+                    'value' => 'http://purl.org/procurement/public-contracts#ContractNotice' 
+                ),
+                array(
+                    'type'  => 'uri',
+                    'value' => 'http://www.w3.org/ns/prov#Entity' 
+                )),
+                'http://www.w3.org/ns/prov#wasAttributedTo' => array(array(
+                    'type'  => 'uri',
+                    'value' => $fillingAppUri
+                )),
+                'http://purl.org/dc/terms/creator' => array(array( //id toho kdo vytvoril kontrakt
+                    'type'  => 'uri',
+                    'value' => $creatoruri
+                )),
+                'http://purl.org/dc/terms/publisher' => array(array( //id toho kdo publikuje
+                    'type'  => 'uri',
+                    'value' => $publisheruri
+                )),
+                'http://purl.org/procurement/public-contracts#publicationDate' => array(array(
+                    'type'  => 'literal', 'datatype' => $xsdp.':date',
+                    'value' => $publicationdate
+                ))
+        ));
+        //add notice link
+        $stmtArray1[$resourceuri][$this->pref["pc"]."notice"][] = array(
+            'type'  => 'uri',
+            'value' => $pinuri
+        );
+        $stmtArray = array_merge($stmtArray1,$stmtArray2);
+        //print_r($stmtArray);
+        //PUBLISH
+        $store->addMultipleStatements($publicmodel->getModelIri(), $stmtArray, false);
+        $this->view->placeholder('published_contractnotice')->set(true);
     }
     
     /***************************************************************************
@@ -586,7 +872,98 @@ class ContractsController extends OntoWiki_Controller_Component
      */
     public function cancelcontractAction()
     {
-        //TODO
+        $store = $this->_owApp->erfurt->getStore();
+        $model = $this->_owApp->selectedModel;
+        $modeluri = (string)$model;
+        $publicmodeluri = $this->_privateConfig->publicstore;
+        $publicmodel = new Erfurt_Rdf_Model($publicmodeluri);
+        $ontomodeluri = "http://purl.org/procurement/public-contracts#";
+        $ontomodel = new Erfurt_Rdf_Model($ontomodeluri);
+        $resource = $this->_owApp->selectedResource;
+        $resourceuri = (string)$resource;
+        $userprefix = $this->_privateConfig->user->prefix;
+        $user = $this->_owApp->getUser();
+        $username = $user->getUsername();
+        $title = $resource->getTitle();
+        $translate   = $this->_owApp->translate;
+        $xsdp = $model->getNamespacePrefix($this->pref["xsd"]);
+        //window title
+        $windowTitle = sprintf($translate->_('Cancel contract %1$s'), $title);
+        $this->view->placeholder('main.window.title')->set($windowTitle);
+        //CHECK IF PRIOR NOTICE PUBLISHED
+        $res_priorpubished = $publicmodel->sparqlQuery('SELECT ?x
+            WHERE {
+                <'.$resourceuri.'> <'.$this->pref["pc"].'notice> ?x .
+                ?x a <'.$this->pref["pc"].'PriorInformationNotice> .
+                }');
+        if ($res_priorpubished == array()) {
+            //resource does not exist
+            $this->view->placeholder('published_priornotice')->set(false);
+            return; //can not publish notice
+        }
+        $this->view->placeholder('published_priornotice')->set(true);
+        //CHECK EXISTENCE IN PUBLIC STORE
+        $res_inpublic = $publicmodel->sparqlQuery('SELECT ?x
+            WHERE {
+                <'.$resourceuri.'> <'.$this->pref["pc"].'notice> ?x .
+                ?x a <'.$this->pref["pc"].'CancellationNotice> .
+                }');
+        if ($res_inpublic !== array()) {
+            //resource already exists
+            $this->view->placeholder('already_published')->set(true);
+            return; //can not republish
+        }
+        $this->view->placeholder('already_published')->set(false);
+        //CREATION OF CANCELLATION NOTICE
+        $pinuri = $resourceuri."/cancellation-notice/1";
+        $publisheruri = $userprefix.$username;
+        //select creator
+        $query_creator = 'SELECT ?creator WHERE {
+            <'.$resourceuri.'> <'.$this->pref["dcterms"].'creator> ?creator. }';
+        $res = $model->sparqlQuery($query_creator);
+        if ($res == array())
+            $creatoruri = $publisheruri;
+        else
+            $creatoruri = $res[0]["creator"];
+        $publicationdate = Date("Y-m-d");
+        $fillingAppUri = $this->_privateConfig->fillingapp->uri;
+        $stmtArray = array(
+            $resourceuri => array( //add notice link
+                $this->pref["pc"]."notice" => array(array(
+                    'type'  => 'uri',
+                    'value' => $pinuri
+                ))
+            ),
+            $pinuri => array( //create notice
+                EF_RDF_TYPE => array(array(
+                    'type'  => 'uri',
+                    'value' => 'http://purl.org/procurement/public-contracts#CancellationNotice' 
+                ),
+                array(
+                    'type'  => 'uri',
+                    'value' => 'http://www.w3.org/ns/prov#Entity'
+                )),
+                'http://www.w3.org/ns/prov#wasAttributedTo' => array(array(
+                    'type'  => 'uri',
+                    'value' => $fillingAppUri
+                )),
+                'http://purl.org/dc/terms/creator' => array(array( //id toho kdo vytvoril kontrakt
+                    'type'  => 'uri',
+                    'value' => $creatoruri
+                )),
+                'http://purl.org/dc/terms/publisher' => array(array( //id toho kdo publikuje
+                    'type'  => 'uri',
+                    'value' => $publisheruri
+                )),
+                'http://purl.org/procurement/public-contracts#publicationDate' => array(array(
+                    'type'  => 'literal', 'datatype' => $xsdp.':date',
+                    'value' => $publicationdate
+                ))
+        ));
+        //print_r($stmtArray);
+        //PUBLISH
+        $store->addMultipleStatements($publicmodel->getModelIri(), $stmtArray, false);
+        $this->view->placeholder('published_cancellationnotice')->set(true);
     }
 
     /***************************************************************************
@@ -604,10 +981,24 @@ class ContractsController extends OntoWiki_Controller_Component
         $windowTitle = $translate->_('Create tender');
         $this->view->placeholder('main.window.title')->set($windowTitle);
         
+        //check user rights
         $usergroups = ContractsHelper::getContractUseroups();
         $businesses = ContractsHelper::getUserBusiness();
-        //TODO: check which notices were published ????
         if ($usergroups["contractor"] && ($businesses !== false)) {
+            //check if contractNotice was already published
+            $res3 = $model->sparqlQuery('SELECT ?x
+                    WHERE {
+                        <'.$resourceuri.'> <'.$this->pref["pc"].'notice> ?z ;
+                            a <'.$this->pref["pc"].'Contract> .
+                        ?z a <'.$this->pref["pc"].'ContractNotice> .
+                    }');
+            if ($res3 !== array()) {
+                $this->view->placeholder('contract_notice_already_published')->set(true);
+                $this->view->placeholder('added_resource')->set(false);
+                return;
+            }
+            $this->view->placeholder('contract_notice_already_published')->set(false);
+            //check id of previous tender
             $res = $model->sparqlQuery('SELECT ?x
                 WHERE {
                     <'.$resourceuri.'> <'.$this->pref["pc"].'tender> ?x .
@@ -639,7 +1030,7 @@ class ContractsController extends OntoWiki_Controller_Component
                             'type'  => 'uri',
                             'value' => $priceuri 
                         ))
-                        //+supplier?
+                        //TODO: +supplier
                     ),
                     $priceuri => array(
                         EF_RDF_TYPE => array(array(
@@ -647,8 +1038,15 @@ class ContractsController extends OntoWiki_Controller_Component
                             'value' => $this->pref["gr"].'PriceSpecification' 
                         )),
                 ));
-                $store->addMultipleStatements($model->getModelIri(), $stmtArray, false);
+                //print_r($stmtArray);
+                $store->addMultipleStatements($model->getModelIri(), $stmtArray, true);
+                /*$store->addStatement($model->getModelIri(),
+                    $resourceuri, $this->pref["pc"].'tender',
+                    array('value' => $resname, 'type'  => 'uri'), true);*/
                 $this->view->placeholder('added_resource')->set($resname);
+                //invalidate cache (po publish nebylo vidět v properties contractu)
+                $cache = $this->_owApp->erfurt->getQueryCache();
+                $cache->invalidateWithModelIri($model->getModelIri());
             } catch (Exception $e) {
                 $this->view->placeholder('added_resource')->set(false);
             }
@@ -662,18 +1060,24 @@ class ContractsController extends OntoWiki_Controller_Component
     public function awardtenderAction()
     {
         $model = $this->_owApp->selectedModel;
+        $publicmodeluri = $this->_privateConfig->publicstore;
+        $publicmodel = new Erfurt_Rdf_Model($publicmodeluri);
         $translate = $this->_owApp->translate;
         $store = $this->_owApp->erfurt->getStore();
         $user = $this->_owApp->getUser();
         $resource = $this->_owApp->selectedResource;
         $resource_uri = (string)$resource;
+        $userprefix = $this->_privateConfig->user->prefix;
+        $user = $this->_owApp->getUser();
+        $username = $user->getUsername();
+        $xsdp = $model->getNamespacePrefix($this->pref["xsd"]);
         
         $windowTitle = $translate->_('Award tender');
         $this->view->placeholder('main.window.title')->set($windowTitle);
         
+        //check user rights
         $usergroups = ContractsHelper::getContractUseroups();
         $businesses = ContractsHelper::getUserBusiness();
-        //TODO: check which notices were published ????
         if ($usergroups["contractor"] && ($businesses !== false)) {
             //check if tender is linked to contract
             $res = $model->sparqlQuery('SELECT ?x
@@ -686,6 +1090,20 @@ class ContractsController extends OntoWiki_Controller_Component
                 $this->view->placeholder('tender_not_linked')->set(true);
             }
             else {
+                $resource_contract_uri = $res[0]["x"];
+                //check if contractNotice was published //TODO: zjistit zda je toto omezeni platne
+                $res3 = $model->sparqlQuery('SELECT ?x
+                    WHERE {
+                        <'.$resource_contract_uri.'> <'.$this->pref["pc"].'notice> ?z ;
+                            a <'.$this->pref["pc"].'Contract> .
+                        ?z a <'.$this->pref["pc"].'ContractNotice> .
+                    }');
+                if ($res3 !== array()) {
+                    $this->view->placeholder('contract_notice_already_published')->set(true);
+                    $this->view->placeholder('tender_awarded')->set(false);
+                    return;
+                }
+                $this->view->placeholder('contract_notice_already_published')->set(false);
                 //check if there already is awarded tender for contract
                 $res2 = $model->sparqlQuery('SELECT ?y
                     WHERE {
@@ -697,19 +1115,87 @@ class ContractsController extends OntoWiki_Controller_Component
                 if ($res2 != array()) {
                     $contract_already_awarded = $res2[0]["y"];
                     $this->view->placeholder('contract_already_awarded')->set($contract_already_awarded);
+                    $this->view->placeholder('tender_awarded')->set(false);
+                    return;
                 }
                 else {
                     $this->view->placeholder('contract_already_awarded')->set(false);
                     $this->view->placeholder('tender_not_linked')->set(false);
-                    $resource_contract_uri = $res[0]["x"];
                     $this->view->placeholder('tender_contract')->set($resource_contract_uri);
+                    $xsdp = $model->getNamespacePrefix("http://www.w3.org/2001/XMLSchema#");
                     //add :awardedTender property
                     $this->store->addStatement($model->getModelIri(),
                         $resource_contract_uri,
                         $this->pref["pc"].'awardedTender',
                         array('value' => $resource_uri, 'type'  => 'uri'),
                         true);
-                    //TODO: publish award tender notice ??!!
+                    //add :awardDate property
+                    $today = Date("Y-m-d");
+                    $this->store->addStatement($model->getModelIri(),
+                        $resource_contract_uri,
+                        $this->pref["pc"].'awardDate',
+                        array('value' => $today, 'type'  => 'literal', 'datatype' => $xsdp.":date"),
+                        true);
+                    
+                    //CREATION OF CONTRACT AWARD NOTICE
+                    $pinuri = $resource_contract_uri."/contract-award-notice/1";
+                    $publisheruri = $userprefix.$username;
+                    //select creator
+                    $query_creator = 'SELECT ?creator WHERE {
+                        <'.$resource_contract_uri.'> <'.$this->pref["dcterms"].'creator> ?creator. }';
+                    $res = $model->sparqlQuery($query_creator);
+                    if ($res == array())
+                        $creatoruri = $publisheruri;
+                    else
+                        $creatoruri = $res[0]["creator"];
+                    $publicationdate = Date("Y-m-d");
+                    $fillingAppUri = $this->_privateConfig->fillingapp->uri;
+                    //stmtArray for tender
+                    $queryT[0] = 'SELECT ?s ?p ?o WHERE {
+                        <'.$resource_uri.'> ?p ?o. }';
+                    $options = array();
+                    $options["default_subject"] = $resource_uri;
+                    $stmtArray0 = ContractsHelper::constuctStmtArray($model,$queryT,$options); 
+                    $stmtArray = array(
+                        $resource_contract_uri => array( //add notice link
+                            $this->pref["pc"]."notice" => array(array(
+                                'type'  => 'uri',
+                                'value' => $pinuri
+                            )),
+                            $this->pref["pc"].'awardedTender' => array(array(
+                                'type'  => 'uri',
+                                'value' => $resource_uri
+                            )),
+                        ),
+                        $pinuri => array( //create notice
+                            EF_RDF_TYPE => array(array(
+                                'type'  => 'uri',
+                                'value' => 'http://purl.org/procurement/public-contracts#ContractAwardNotice' 
+                            ),
+                            array(
+                                'type'  => 'uri',
+                                'value' => 'http://www.w3.org/ns/prov#Entity'
+                            )),
+                            'http://www.w3.org/ns/prov#wasAttributedTo' => array(array(
+                                'type'  => 'uri',
+                                'value' => $fillingAppUri
+                            )),
+                            'http://purl.org/dc/terms/creator' => array(array( //id toho kdo vytvoril kontrakt
+                                'type'  => 'uri',
+                                'value' => $creatoruri
+                            )),
+                            'http://purl.org/dc/terms/publisher' => array(array( //id toho kdo publikuje
+                                'type'  => 'uri',
+                                'value' => $publisheruri
+                            )),
+                            'http://purl.org/procurement/public-contracts#publicationDate' => array(array(
+                                'type'  => 'literal', 'datatype' => $xsdp.':date',
+                                'value' => $publicationdate
+                            ))
+                    ));
+                    $stmtArray = array_merge($stmtArray,$stmtArray0);
+                    //PUBLISH
+                    $store->addMultipleStatements($publicmodel->getModelIri(), $stmtArray, false);
                     $this->view->placeholder('tender_awarded')->set(true);
                 }
             }
@@ -721,7 +1207,7 @@ class ContractsController extends OntoWiki_Controller_Component
      */
     public function rejecttenderAction()
     {
-        //TODO
+        //TODO: in next version
     }
 
     /***************************************************************************

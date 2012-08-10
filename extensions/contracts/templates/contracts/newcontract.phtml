@@ -1,5 +1,6 @@
 <?php
 $odd = false;
+$ow = OntoWiki::getInstance();
 $store = OntoWiki::getInstance()->erfurt->getStore();//$this->placeholder('erfurt_store')->getValue();
 $model = OntoWiki::getInstance()->selectedModel;
 
@@ -16,13 +17,13 @@ if ($resname === false) {
     echo '<p class="messagebox error">New contract was not created.</p>';
     $usergroups = ContractsHelper::getContractUseroups();
     if (!$usergroups["contractor"])
-        echo '<p class="messagebox info">You must be contractor to be able to create new contracts. Check your <a href="/application/preferences">preferences</a>.</p>';
+        echo '<p class="messagebox info">You must be contractor to be able to create new contracts. Check your <a href="',$ow->getUrlBase(),'application/preferences">preferences</a>.</p>';
     $businesses = ContractsHelper::getUserBusiness();
     if ($businesses === false)
-        echo '<p class="messagebox info">You must create your business entity from your <a href="/application/preferences">preferences</a>.</p>';
+        echo '<p class="messagebox info">Before creating contracts, you must create your own business entity from your <a href="',$ow->getUrlBase(),'application/preferences">preferences</a>.</p>';
 } else {
     $rurl = urlencode($resname);
     echo '<p class="messagebox success">New contract created.</p>';
-    echo '<p>To edit its properties continue <a href="/resource/properties/?r=',$rurl,'">here</a>.</p>';
+    echo '<p>To edit its properties continue <a href="',$ow->getUrlBase(),'resource/properties/?r=',$rurl,'">here</a>.</p>';
 }
 }
