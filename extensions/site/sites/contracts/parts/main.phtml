@@ -1,0 +1,35 @@
+<?php
+    $templateData = loadData();
+    $ow = OntoWiki::getInstance();
+    $user = $ow->getUser();
+    
+    if (isset($_REQUEST["page"]))
+        $page = $_REQUEST["page"];
+    else
+        $page = "welcome";
+    switch($page) {
+        case("searchcontracts"):
+        case("searchmycontracts"):
+            echo $this->partial('contracts/pages/searchcontracts.phtml', $templateData);
+            break;
+        case("searchsuppliers"):
+        case("searchmysuppliers"):
+            echo $this->partial('contracts/pages/searchsuppliers.phtml', $templateData);
+            break;
+        case("login"):
+            echo $this->partial('contracts/pages/login.phtml', $templateData);
+            break;
+        case("preferences"):
+        case("signup"):
+            echo $this->partial('contracts/pages/preferences.phtml', $templateData);
+            break;
+        case("publishbusinessentity"):
+            echo $this->partial('contracts/pages/publishbusinessentity.phtml', $templateData);
+        case("newbusinessentity"):
+        case("businessentity"):
+            echo $this->partial('contracts/pages/businessentity.phtml', $templateData);
+            break;
+        default:
+            echo $this->partial('contracts/pages/welcome.phtml', $templateData);
+            break;
+    }

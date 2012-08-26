@@ -1,0 +1,75 @@
+.firstline {
+    background-color: rgb(71,71,71);
+    color: white;
+}
+
+.searchresults {
+    width: 95%;
+    margin: 10px;
+    border: 1px lightgrey solid;
+}
+.searchresults td {
+    margin: 3px;
+    padding: 3px;
+}
+.searchresults tr {
+    margin: 3px;
+    padding: 0px;
+}
+.searchbutton img {
+    border-width: 0px;
+}
+.searchnavigation {
+    width: 100%;
+    text-align:center;
+    margin-bottom: 10px;
+}
+
+.rightbox table {
+    width: auto;
+}
+
+
+.registertable , .logintable {
+    margin: 10px;
+}
+
+.resourcein {
+    margin: -15px 20px 0px 20px;
+    padding: 0px;
+}
+.rinotitle {
+    margin-top: 0px;
+}
+.resourcein img {
+    margin: 0px;
+    padding: 0px;
+    width: 32px;
+    height: 32px;
+}
+
+.businessedit {
+    width: 95%;
+    margin: 10px;
+    border: 1px lightgrey solid;
+}
+.businessedit .firstcolumn {
+    width: 25%;
+}
+.businessedit input {
+    width: 90%;
+}
+.businessedit .inputspan {
+    display: block;
+    float: left;
+    margin: 0px 2px;
+    width: 90%;
+}
+.businessedit .sourceico {
+    width: 24px;
+    height: 24px;
+}
+.buttonpanel {
+    margin: 10px;
+    /*text-align: center;*/
+}

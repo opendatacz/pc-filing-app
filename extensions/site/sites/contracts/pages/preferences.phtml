@@ -1,0 +1,257 @@
+<?php
+    $templateData = loadData();
+    $ow = OntoWiki::getInstance();
+    $erfurt = $ow->erfurt;
+    $store = $erfurt->getStore();
+    $user = $ow->getUser();
+    $baseUri = $GLOBALS["cBaseUri"];
+
+    $post = $_POST;
+    if ($post)
+    {
+        //= Register user ======================================================
+        if ($user->isAnonymousUser()) {
+            $registeredUsernames      = array();
+            $registeredEmailAddresses = array();
+
+            foreach ($erfurt->getUsers() as $userUri => $userArray) {
+                if (array_key_exists('userName', $userArray)) {
+                    $registeredUsernames[] = $userArray['userName'];
+                }
+
+                if (array_key_exists('userEmail', $userArray)) {
+                    $registeredEmailAddresses[] = str_replace('mailto:', '', $userArray['userEmail']);
+                }
+            }
+
+            $email       = $post['email'];
+            $emailvalue = $email;
+            $username    = $post['username'];
+            $namevalue = $username;
+            $password    = $post['password1'];
+            $passwordTwo = $post['password2'];
+
+            $emailValidator = new Zend_Validate_EmailAddress();
+
+            if (!$erfurt->isActionAllowed('RegisterNewUser') or
+                !($actionConfig = $erfurt->getActionConfig('RegisterNewUser'))) {
+                $message    = 'Action not permitted for the current user.';
+                printMessage($message, OntoWiki_Message::ERROR);
+
+            } else if (trim($email) == '') {
+                $message    = 'Email address must not be empty.';
+                printMessage($message, OntoWiki_Message::ERROR);
+
+            } else if (in_array($email, $registeredEmailAddresses)) {
+                $message    = 'Email address is already registered.';
+                printMessage($message, OntoWiki_Message::ERROR);
+            } else if (
+                isset($actionConfig['mailvalidation']) &&
+                $actionConfig['mailvalidation'] == 'yes' &&
+                !$emailValidator->isValid($email)
+            ) {
+                $message = 'Email address validation failed.';
+                printMessage($message, OntoWiki_Message::ERROR);
+            } else if (
+                in_array($username, $registeredUsernames) ||
+                ($username == $ow->erfurt->getStore()->getDbUser())
+            ) {
+                $message    = 'Username already registered.';
+                printMessage($message, OntoWiki_Message::ERROR);
+            } else if (
+                isset($actionConfig['uidregexp']) &&
+                !preg_match($actionConfig['uidregexp'], $username)
+            ) {
+                $message    = 'Username contains illegal characters.';
+                printMessage($message, OntoWiki_Message::ERROR);
+            } else if ($password !== $passwordTwo) {
+                $message    = 'Passwords do not match.';
+                printMessage($message, OntoWiki_Message::ERROR);
+            } else if (strlen($password) < 5) {
+                $message    = 'Password needs at least 5 characters.';
+                printMessage($message, OntoWiki_Message::ERROR);
+            } else if (
+                isset($actionConfig['passregexp']) &&
+                $actionConfig['passregexp'] != '' &&
+                !@preg_match($actionConfig['passregexp'], $password)
+            ) {
+                $message    = 'Password does not match regular expression set in system configuration';
+                printMessage($message, OntoWiki_Message::ERROR);
+            } else {
+                // add new user
+                if ($erfurt->addUser($username, $password, $email)) { // no default group
+                    $message = 'The user "' . $username . '" has been successfully registered.';
+                    printMessage($message, OntoWiki_Message::SUCCESS);
+                    //PCFA specific user creation actions follows
+                    $useruri = 'http://localhost/OntoWiki/Config/'.$username; //je spolehlive? //TODO: najit lepsi zpusob zjisteni uri uzivatele
+                    
+                    $personalModel = $store->getNewModel($templateData["privatespace"].$username.'/',
+                        '',
+                        Erfurt_Store::MODEL_TYPE_RDFS,
+                        false);
+                    $configModel = $store->getModel('http://localhost/OntoWiki/Config/',false);
+                    //deny access for default group
+                    $store->addStatement($configModel->getModelIri(),
+                        'http://localhost/OntoWiki/Config/DefaultUserGroup',
+                        'http://ns.ontowiki.net/SysOnt/denyModelView',
+                        array('value' => $personalModel->getModelIri(), 'type'  => 'uri'),
+                        false);
+                    //grant access for new user
+                    $store->addStatement($configModel->getModelIri(),
+                        $useruri,
+                        'http://ns.ontowiki.net/SysOnt/grantModelEdit',
+                        array('value' => $personalModel->getModelIri(), 'type'  => 'uri'),
+                        false);
+                    //add information about private store to user profile
+                    $predicate = $templateData["configns"].$templateData["configprivatestorepredicate"];
+                    $store->addStatement($configModel->getModelIri(),
+                        $useruri,
+                        $predicate,
+                        array('value' => $personalModel->getModelIri(), 'type'  => 'uri'),
+                        false);
+                    //add prefixes to privatestore model
+                    $personalModel->addNamespacePrefix("pc","http://purl.org/procurement/public-contracts#");
+                    $personalModel->addNamespacePrefix("dcterms","http://purl.org/dc/terms/");
+                    $personalModel->addNamespacePrefix("vcard","http://www.w3.org/2006/vcard/ns#");
+                    $personalModel->addNamespacePrefix("gr","http://purl.org/goodrelations/v1#");
+                    $personalModel->addNamespacePrefix("br","http://purl.org/business-register#");
+                    //add basic information to privatestore: label
+                    $store->addStatement($personalModel->getModelIri(),
+                        $personalModel->getModelIri(),
+                        'http://www.w3.org/2000/01/rdf-schema#label',
+                        array('value' => "Private data space of user '$username'", 'type'  => 'literal'),
+                        false);
+                    //login the user
+                    $authResult = $erfurt->authenticate($username, $password);
+                    $ow->authResult = $authResult->getMessages();
+                } else {
+                    $message = 'A registration error occured. Please refer to the log entries.';
+                    printMessage($message, OntoWiki_Message::ERROR);
+                }
+            }
+        }
+        //= Update user ========================================================
+        else if(!$user->isAnonymousUser()) {
+            if ($post['email'] != $user->getEmail()) {
+                try {
+                    $erfurt->getAuth()->setEmail($post['email']);
+                    printMessage("Email successfully changed.", OntoWiki_Message::SUCCESS);
+                } catch (Erfurt_Auth_Identity_Exception $e) {
+                    printMessage($e->getMessage(), OntoWiki_Message::ERROR);
+                }
+            }
+            if (isset($post['changepassword']) && $post['changepassword'] === '1') {
+                if ($post['password1'] !== $post['password2']) {
+                    $message = 'Passwords do not match.';
+                    printMessage($message, OntoWiki_Message::ERROR);
+                } else {
+                    try {
+                        $erfurt->getAuth()->getIdentity()->setPassword($post['password1']);
+                        printMessage("Password successfully changed.", OntoWiki_Message::SUCCESS);
+                    } catch (Erfurt_Auth_Identity_Exception $e) {
+                        printMessage($e->getMessage(), OntoWiki_Message::ERROR);
+                    }
+                }
+            }
+        }
+        //= Update user groups =================================================
+        if (!$user->isAnonymousUser()) {
+            $groups = getContractUseroups($ow);
+            $configModel = $store->getModel('http://localhost/OntoWiki/Config/',false);
+            $options['use_ac'] = false;
+            if (isset($post["contractor"]) && ($groups["contractor"] == false)) {
+                $store->addStatement($configModel->getModelIri(),
+                    'http://localhost/OntoWiki/Config/Contractors',
+                    'http://rdfs.org/sioc/ns#has_member',
+                    array('value' => $user->getUri(), 'type'  => 'uri'),
+                    false);
+                printMessage("User set as contractor.", OntoWiki_Message::SUCCESS);
+            } else if (!isset($post["contractor"]) && ($groups["contractor"] == true)) {
+                $store->deleteMatchingStatements($configModel->getModelIri(),
+                    'http://localhost/OntoWiki/Config/Contractors',
+                    'http://rdfs.org/sioc/ns#has_member',
+                    array('value' => $user->getUri(), 'type'  => 'uri'),
+                    $options);
+                printMessage("User is no longer contractor.", OntoWiki_Message::SUCCESS);
+            }
+            if (isset($post["supplier"]) && ($groups["supplier"] == false)) {
+               $store->addStatement($configModel->getModelIri(),
+                    'http://localhost/OntoWiki/Config/Suppliers',
+                    'http://rdfs.org/sioc/ns#has_member',
+                    array('value' => $user->getUri(), 'type'  => 'uri'),
+                    false);
+                printMessage("User set as supplier.", OntoWiki_Message::SUCCESS);
+            } else if (!isset($post["supplier"]) && ($groups["supplier"] == true)) {
+                $store->deleteMatchingStatements($configModel->getModelIri(),
+                    'http://localhost/OntoWiki/Config/Suppliers',
+                    'http://rdfs.org/sioc/ns#has_member',
+                    array('value' => $user->getUri(), 'type'  => 'uri'),
+                    $options);
+                printMessage("User is no longer supplier.", OntoWiki_Message::SUCCESS);
+            }
+        }
+    }
+    
+    if ($user->isAnonymousUser()) {
+        $name = '';
+        $namevalue = "";
+        $emailvalue = "";
+        $submitlabel = "Register";
+        $passwordlabel = "Password";
+        $contractor = '';
+        $supplier = '';
+    }
+    else { //registered
+        $name = 'readonly="readonly" ';
+        $namevalue = $user->getUsername();
+        $emailvalue = $user->getEmail();
+        $submitlabel = "Update changes";
+        $passwordlabel = "New password";
+        $groups = getContractUseroups($ow);
+        $contractor = $groups["contractor"]?'checked="checked"':'';
+        $supplier = $groups["supplier"]?'checked="checked"':'';// 
+    }
+
+?>
+<form action="?page=preferences" method="post" name="registeruser">
+<table class="registertable">
+    <tr>
+        <td>Username</td>
+        <td><input class="text" id="name-input" type="text" name="username" value="<?php echo $namevalue; ?>" <?php echo $name; ?>/></td>
+    </tr>
+    <tr>
+        <td>Email Address</td>
+        <td><input class="text" id="email-input" type="text" name="email" value="<?php echo $emailvalue; ?>" /></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><input class="checkbox" id="supplier-input" type="checkbox" name="supplier" value="1" <?php echo $supplier; ?>/>
+        I am supplier.</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><input class="checkbox" id="contractor-input" type="checkbox" name="contractor" value="1" <?php echo $contractor; ?>/>
+        I am contractor.</td>
+    </tr>
+    <tr>
+        <td><?php echo $passwordlabel; ?></td>
+        <td><input class="text" id="pw1-input" type="password" name="password1" /></td>
+    </tr>
+    <tr>
+        <td><?php echo $passwordlabel; ?> (repeat)</td>
+        <td><input class="text" id="pw2-input" type="password" name="password2" /></td>
+    </tr>
+<?php if (!$user->isAnonymousUser()) { ?>
+    <tr>
+        <td></td>
+        <td><input class="checkbox" id="pwchange-input" type="checkbox" name="changepassword" value="1" />
+        Change Password?</td>
+    </tr>
+<?php } ?>
+    <tr>
+        <td></td>
+        <td><input class="button" id="submit-input" type="submit" name="submitpreferences" value="<?php echo $submitlabel; ?>"/></td>
+    </tr>
+</table>
+
+<?php 

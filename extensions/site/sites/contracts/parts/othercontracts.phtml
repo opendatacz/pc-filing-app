@@ -1,0 +1,12 @@
+<?php
+    $templateData = loadData();
+    $ow = OntoWiki::getInstance();
+    $user = $ow->getUser();
+?>
+<div id="othercontractsbox" class="leftbox">
+    <h3><?php if (!$user->isAnonymousUser()) echo "Contracts of other authorities"; else echo "Public contracts"; ?></h3>
+    <ul>
+        <li><a href="?page=searchcontracts&amp;cht=<?php echo genChT(); ?>">Search in all contracts</a></li>
+        <li><a href="?page=searchsuppliers&amp;cht=<?php echo genChT(); ?>">Search in all suppliers</a></li>
+    </ul>
+</div>
