@@ -18,9 +18,14 @@
     //select only title
     //TODO: select more for filters
     $query = 'SELECT ?b ?t WHERE {
-        ?b <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/goodrelations/v1#BusinessEntity> .
-        OPTIONAL { ?b <http://purl.org/goodrelations/v1#legalName> ?t. } }
+        ?b a <http://purl.org/goodrelations/v1#BusinessEntity> .
+        
+        OPTIONAL { ?b <http://purl.org/goodrelations/v1#legalName> ?t . } }
         ORDER BY ?t';
+    /*
+    ?tender a <http://purl.org/procurement/public-contracts#Tender> ;
+          <http://purl.org/procurement/public-contracts#Supplier> ?b .
+    */
     $query_pubic = $query .
         "LIMIT $limit
         OFFSET $offset";

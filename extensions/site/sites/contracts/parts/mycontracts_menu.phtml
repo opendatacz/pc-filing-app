@@ -2,15 +2,23 @@
     $templateData = loadData();
     $ow = OntoWiki::getInstance();
     $user = $ow->getUser();
+    
+    
 ?>
-<?php if (!$user->isAnonymousUser()) { ?>
+<?php if (!$user->isAnonymousUser()) {
+    $groups = getContractUseroups($ow);
+?>
 <div id="mycontractsbox" class="leftbox">
     <h3>My Contracts</h3>
     <ul>
         <li><a href="?page=searchmycontracts&amp;cht=<?php echo genChT(); ?>">List my contracts</a></li>
         <li><a href="?page=searchmysuppliers&amp;cht=<?php echo genChT(); ?>">List my suppliers</a></li>
-        <!--<li><a href="#">Create new contract</a></li>-->
+        <?php if ($groups["contractor"]) { ?>
+        <li><a href="?page=newcontract">Create new contract</a></li>
+        <?php } ?>
+        <?php if ($groups["any"]) { ?>
         <li><a href="?page=newbusinessentity">Create new supplier</a></li>
+        <?php } ?>
     </ul>
 </div>
 <?php }

@@ -1,0 +1,408 @@
+<?php
+    $templateData = loadData();
+    $ow = OntoWiki::getInstance();
+    $erfurt = $ow->erfurt;
+    $store = $erfurt->getStore();
+    $user = $ow->getUser();
+    $baseUri = $GLOBALS["cBaseUri"];
+    
+    $GLOBALS["IAmContract"] = true;
+        
+    $conuri = false;
+    $inPrivate = $inPublic = false;
+        
+    $basePath = $GLOBALS["cBasePath"];
+    require_once("$basePath/lib/edit.lib.php");
+    
+    //= PROCESS NEW ============================================================
+    $post = $_POST;
+    if ($post && isset($_GET["new"]) && $_GET["new"] == "new")
+    {
+        $psuri = getPrivateSpace($ow);
+        if ($psuri === false) throw new OntoWiki_Exception("User has no private space.");
+        $model = $store->getModel($psuri[0]);
+        $newentityprefix = $templateData["resource"];
+        $username = $user->getUsername();
+        $userprefix = $templateData["user"];
+        $usruri = $userprefix.$username;
+        $usergroups = getContractUseroups($ow);
+        $businesses = getUserBusiness($ow);
+        
+        if ($usergroups["contractor"] && ($businesses !== false)) {
+            //$nid = dechex(rand(16777216,268435455)); //tj mezi 0x1000000 a 0xFFFFFFF
+            $nid = generateGuid();
+            $resname = $newentityprefix.'public-contract/'.$nid;
+            /*$priceflaturi = $resname."/price-specification/1";
+            $priceminuri  = $resname."/price-specification/2";
+            $pricemaxuri  = $resname."/price-specification/3";*/
+            $contacturi  = $resname."/vcard-class/1";
+            $adruri  = $contacturi."/vcard-address-class/1";
+            $orguri  = $contacturi."/vcard-organization-class/1";
+            $business = $businesses[0];
+            
+            $dctp = $model->getNamespacePrefix('http://purl.org/dc/terms/');
+            $xsdp = $model->getNamespacePrefix('http://www.w3.org/2001/XMLSchema#');
+            $title = $post["dct:title"];
+            $description = $post["dct:description"];
+            try {
+                $store->addStatement($model->getModelIri(),
+                    $resname,
+                    EF_RDF_TYPE,
+                    array('value' => 'http://purl.org/procurement/public-contracts#Contract', 'type'  => 'uri'),
+                    true);
+                $store->addStatement($model->getModelIri(),
+                    $resname,
+                    'http://purl.org/dc/terms/title',
+                    array('value' => $title, 'type'  => 'literal'), //, 'datatype' => $xsdp.':string'
+                    true);
+                $store->addStatement($model->getModelIri(),
+                    $resname,
+                    'http://purl.org/dc/terms/description',
+                    array('value' => $description, 'type'  => 'literal'), //, 'datatype' => $xsdp.':string'
+                    true);
+                $store->addStatement($model->getModelIri(),
+                    $resname,
+                    'http://purl.org/procurement/public-contracts#contractingAuthority',
+                    array('value' => $business, 'type'  => 'uri'),
+                    true);
+                //creator id
+                $store->addStatement($model->getModelIri(),
+                    $resname,
+                    'http://purl.org/dc/terms/creator',
+                    array('value' => $usruri, 'type'  => 'uri'), true);
+                //Address & Organization -> get from business
+                
+                //nefunguje na virtuosu
+                /*$options = array();
+                $query2[0] = 'SELECT ?s ?p ?o WHERE {
+                    <'.$business.'> <http://purl.org/business-register#contact> ?y .
+                    ?y <http://www.w3.org/2006/vcard/ns#adr> ?x .
+                    ?x ?p ?o. }';
+                $options["default_subject"] = $adruri;
+                $stmtArray2 = constuctStmtArray($model,$query2,$options);
+                $query3[0] = 'SELECT ?s ?p ?o WHERE {
+                    <'.$business.'> <http://purl.org/business-register#contact> ?y .
+                    ?y <http://www.w3.org/2006/vcard/ns#org> ?x .
+                    ?x ?p ?o. }';
+                $options["default_subject"] = $orguri;
+                $stmtArray3 = constuctStmtArray($model,$query3,$options);
+                $stmtArray = array_merge($stmtArray2,$stmtArray3);*/
+                //funguje na virtuosu
+                $queryao = 'SELECT ?a ?o WHERE {
+                    <'.$business.'> <http://purl.org/business-register#contact> ?c .
+                    ?c <http://www.w3.org/2006/vcard/ns#adr> ?a . 
+                    ?c <http://www.w3.org/2006/vcard/ns#org> ?o .}';
+                $aores = $model->sparqlQuery($queryao);
+                $options = array();
+                $resuris = array();
+                $resuris[] = $aores[0]["a"];
+                $resuris[] = $aores[0]["o"];
+                $stmtArray = constuctStmtArray2($store,$model,$resuris,$options);
+                $stmtArray[$orguri] = $stmtArray[$aores[0]["o"]];
+                $stmtArray[$adruri] = $stmtArray[$aores[0]["a"]];
+                unset($stmtArray[$aores[0]["o"]]);
+                unset($stmtArray[$aores[0]["a"]]);
+                
+                $store->addMultipleStatements($model->getModelIri(), $stmtArray, true);
+                //VCard contact
+                $store->addStatement($model->getModelIri(),
+                    $contacturi, EF_RDF_TYPE,
+                    array('value' => $GLOBALS["ns_var"]["vcard"].'VCard', 'type'  => 'uri'), true);
+                $store->addStatement($model->getModelIri(),
+                    $contacturi, $GLOBALS["ns_var"]["vcard"].'adr',
+                    array('value' => $adruri, 'type'  => 'uri'), true);
+                $store->addStatement($model->getModelIri(),
+                    $contacturi, $GLOBALS["ns_var"]["vcard"].'org',
+                    array('value' => $orguri, 'type'  => 'uri'), true);
+                $store->addStatement($model->getModelIri(),
+                    $resname, 'http://purl.org/procurement/public-contracts#contact',
+                    array('value' => $contacturi, 'type'  => 'uri'), true);
+                $conuri = $resname;
+                printMessage("New contract created.",OntoWiki_Message::SUCCESS);
+            } catch (Exception $e) {
+                //echo $e->getMessage();
+                printMessage("ACL problem.",OntoWiki_Message::ERROR);
+                //no ACL to edit
+            }
+        } else
+            printMessage("Wrong user groups or nonexistent business entity.",OntoWiki_Message::ERROR);
+    }
+    else if (isset($_REQUEST["uri"]))
+    {
+        $req = $_REQUEST;
+        $conuri = $req["uri"];
+    }
+    
+    //= SHOW EDIT ==============================================================
+    //models
+    $publicmodel = new Erfurt_Rdf_Model($templateData["publicspace"]);
+    $privatemodel = false;
+    if (!$user->isAnonymousUser()) {
+        $privatespace = getPrivateSpace($ow);
+        if ($privatespace !== false)
+            $privatemodel = new Erfurt_Rdf_Model($privatespace[0]);
+    }
+    //load from both models
+    $checkQuery = 'SELECT ?t WHERE {<'.$conuri.'> a ?t}';
+    $inPublic = $publicmodel->sparqlQuery($checkQuery);
+    $inPublic = ( $inPublic == array() ? false : true);
+    if ($privatemodel !== false) {
+        $inPrivate = $privatemodel->sparqlQuery($checkQuery);
+        $inPrivate = ( $inPrivate == array() ? false : true);
+    }
+    $canEdit = (!$user->isAnonymousUser()) && $inPrivate;
+    //check published
+    //check if contractNotice was already published
+    $conPubQuery = 'SELECT ?n WHERE {
+        <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'notice> ?n .
+        ?n a <'.$GLOBALS["ns_var"]["pc"].'ContractNotice> . }';
+    $conPubRes = $publicmodel->sparqlQuery($conPubQuery);
+    if ($conPubRes == array())
+        $contractNoticePublished = false;
+    else
+        $contractNoticePublished = true;
+    
+    //address uri
+    $addressQuery = 'SELECT ?a WHERE {
+        <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'contact> ?c . 
+        ?c <'.$GLOBALS["ns_var"]["vcard"].'adr> ?a . }';
+    $addressuri = getUriFromQuery($addressQuery,$publicmodel,$privatemodel,"a");
+    //organization uri
+    $organizationQuery = 'SELECT ?o WHERE {
+        <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'contact> ?c . 
+        ?c <'.$GLOBALS["ns_var"]["vcard"].'org> ?o . }';
+    $organizationuri = getUriFromQuery($organizationQuery,$publicmodel,$privatemodel,"o");
+    //estimatedPrice uri
+    $priceQuery = 'SELECT ?ep WHERE {
+        <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPrice> ?ep . }';
+    $estpriceuri = getUriFromQuery($priceQuery,$publicmodel,$privatemodel,"ep");
+    //estimatedPrice lower and upper uri
+    $priceQuery = 'SELECT ?epl ?epu WHERE {
+        <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPriceLower> ?epl .
+        <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPriceUpper> ?epu . }';
+    $estpriceLuri = getUriFromQuery($priceQuery,$publicmodel,$privatemodel,"epl");
+    $estpriceUuri = getUriFromQuery($priceQuery,$publicmodel,$privatemodel,"epu");
+    //tender values
+    $queryten = 'SELECT ?t ?p WHERE {
+        <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'tender> ?t . 
+        OPTIONAL {
+        ?t <'.$GLOBALS["ns_var"]["pc"].'offeredPrice> ?p . }}';
+    $alltenders1 = $publicmodel->sparqlQuery($queryten);
+    $alltenders2 = $privatemodel->sparqlQuery($queryten);
+    $alltenders = array_merge($alltenders1,$alltenders2);
+    $maxtid = 0;
+    foreach ($alltenders as $tender) {
+        $val = substr($tender["t"],strrpos($tender["t"],"/")+1);
+        if (!is_numeric($val)) {
+            $maxtid = count($alltenders);
+            break;
+        }
+        if ($val > $maxtid)
+            $maxtid = $val;
+    }
+    $pptenders = array();
+    $pptendersprice = array();
+    foreach ($alltenders as $tender) {
+        $pptenders[$tender["t"]] = getPPValues($store,$publicmodel,$privatemodel,$tender["t"]);
+        $pptendersprice[$tender["t"]] = getPPValues($store,$publicmodel,$privatemodel,$tender["p"]);
+    }
+    //contract entity values
+    $ppvalues = getPPValues($store,$publicmodel,$privatemodel,$conuri);
+    $publicvalues = $ppvalues["public"];
+    $privatevalues = $ppvalues["private"];
+    //address values
+    $ppvalues = getPPValues($store,$publicmodel,$privatemodel,$addressuri);
+    $publicvaluesAddress = $ppvalues["public"];
+    $privatevaluesAddress = $ppvalues["private"];
+    //organization values
+    $ppvalues = getPPValues($store,$publicmodel,$privatemodel,$organizationuri);
+    $publicvaluesOrganization = $ppvalues["public"];
+    $privatevaluesOrganization = $ppvalues["private"];
+    //estimatedPrice values
+    $ppvalues = getPPValues($store,$publicmodel,$privatemodel,$estpriceuri);
+    $publicvaluesEstPrice = $ppvalues["public"];
+    $privatevaluesEstPrice = $ppvalues["private"];
+    $showPriceExact = false;
+    if ($ppvalues != array("private" => array(), "public" => array()))
+        $showPriceExact = true;
+    //estimatedPriceLower values
+    $ppvalues = getPPValues($store,$publicmodel,$privatemodel,$estpriceLuri);
+    $publicvaluesEstPriceLower = $ppvalues["public"];
+    $privatevaluesEstPriceLower = $ppvalues["private"];
+    $showPriceBounds = false;
+    if ($ppvalues != array("private" => array(), "public" => array()))
+        $showPriceBounds = true;
+    //estimatedPriceUpper values
+    $ppvalues = getPPValues($store,$publicmodel,$privatemodel,$estpriceUuri);
+    $publicvaluesEstPriceUpper = $ppvalues["public"];
+    $privatevaluesEstPriceUpper = $ppvalues["private"];
+?>
+<h2>Contract</h2>
+<p><small><em><?php echo $conuri; ?></em></small></p>
+<div class="resourcein">
+<?php if ($inPrivate) { ?>
+<img src="<?php echo $baseUri; ?>/img/privatespace.png" alt="in private data space" title="in private data space" />
+in private data space
+&nbsp;&nbsp;&nbsp;&nbsp;
+<?php } if ($inPublic) { ?>
+<img src="<?php echo $baseUri; ?>/img/publicspace.png" alt="in public data space" title="in public data space" />
+in public data space
+<?php } ?>
+</div>
+
+	<div id="form_container">
+		<form id="form_473035" class="appnitro"  method="post" action="?page=contract_edit&amp;uri=<?php echo urlencode($conuri); ?>">				
+			<ul >
+			
+					<li id="li_1" >
+		<label class="description" for="dct:title">Name </label>
+		<div>
+			<?php printInputBox2($privatevalues,$publicvalues,"dct:title",0,$canEdit,false,"large"); ?> 
+		</div><p class="guidelines" id="guide_1"><small>dct:title<br />
+A name given to the contract.</small></p> 
+		</li>		<li id="li_2" >
+		<label class="description" for="dct:description">Description </label>
+		<div>
+            <?php printTextarea2($privatevalues,$publicvalues,"dct:description",0,$canEdit,false); ?>  
+		</div><p class="guidelines" id="guide_2"><small>dct:description<br />
+An account of the contract.</small></p> 
+		</li>		<li id="li_3" >
+		<label class="description" for="element_3">Main contact </label>
+		
+        <div>
+            <?php printInputBox2($privatevaluesOrganization,$publicvaluesOrganization,"vcard:organization-name",0,$canEdit,false,"large"); ?> 
+			<label for="vcard:organization-name">Organization name</label>
+		</div>
+        
+		<div>
+            <?php printInputBox2($privatevaluesAddress,$publicvaluesAddress,"vcard:street",0,$canEdit,false,"large"); ?> 
+			<label for="vcard:street">Street Address</label>
+		</div>
+	
+		<div>
+			<?php printInputBox2($privatevaluesAddress,$publicvaluesAddress,"vcard:locality",0,$canEdit,false,"large"); ?>
+			<label for="vcard:locality">City</label>
+		</div>
+	
+		<div>
+            <?php printInputBox2($privatevaluesAddress,$publicvaluesAddress,"vcard:postal-code",0,$canEdit,false,"small",'maxlength="15"'); ?>
+			<label for="vcard:postal-code">Postal / Zip Code</label>
+		</div>
+	
+		<div>
+			<?php printSelectCountry2($privatevaluesAddress,$publicvaluesAddress,"vcard:country-name",0,$canEdit,false,"large"); ?>
+		<label for="vcard:country-name">Country</label>
+	</div><p class="guidelines" id="guide_3"><small>pc:contact<br />
+Main contact for a contract.</small></p> 
+		</li>
+        
+        <li id="li_4" >
+		<label class="description" for="pc:contractingAuthority">Contracting authority</label>
+		<div>
+            <?php printInputBox2($privatevalues,$publicvalues,"pc:contractingAuthority",0,false,false,"large"); ?>
+		</div><p class="guidelines" id="guide_4"><small>pc:contractingAuthority<br />
+Contracting authority.</small></p> 
+		</li>
+        
+        <li id="li_4aa" >
+		<label class="description" for="pc:tenderDeadline">Time-limit for receipt of tenders</label>
+		<div>
+            <?php printSelectDate2($privatevalues,$publicvalues,"pc:tenderDeadline",0,$canEdit,true); ?>
+		</div><p class="guidelines" id="guide_4aa"><small>pc:tenderDeadline<br />
+Property for time limit for receipt of tenders or requests to participate.</small></p> 
+		</li>
+        
+        <li class="section_break">
+			<h3>Price</h3>
+			<p></p>
+		</li>
+        
+        <li id="li_4a" >
+		<label class="description" for="priceradio">Estimated price</label>
+		<span>
+			<input id="priceradio_1" name="priceradio" class="element radio" type="radio" value="1" onchange="javascript: showExactOrBounds();" 
+                <?php echo ($showPriceExact&&!$showPriceBounds)?'checked="checked"':''; ?> />
+                <label class="choice" for="priceradio_1">Exact price</label>
+            <input  id="priceradio_2" name="priceradio" class="element radio" type="radio" value="2" onchange="javascript: showExactOrBounds();"
+                <?php echo ($showPriceBounds&&!$showPriceExact)?'checked="checked"':''; ?> />
+                <label class="choice" for="priceradio_2">Lower and upper bounds</label>
+		</span><p class="guidelines" id="guide_4a"><small>Choose how to construct estimated price.</small></p> 
+		</li>
+        
+        <li id="li_4b"<?php echo $showPriceExact?"":' style="display: none;"'; ?> >
+		<label class="description" for="pc:estimatedPrice">Exact estimated price</label>
+		  <?php printSelectPrice2($privatevaluesEstPrice,$publicvaluesEstPrice,"gr:hasCurrency","gr:hasCurrencyValue",0,$canEdit,true,""); ?>
+		<p class="guidelines" id="guide_4b"><small>pc:estimatedPrice<br />
+Property for exact estimated price of public contract.</small></p> 
+		</li>
+        
+        <li id="li_4c"<?php echo $showPriceBounds?"":' style="display: none;"'; ?> >
+		<label class="description" for="pc:estimatedPriceLower">Lower range of estimated price</label>
+		  <?php printSelectPrice2($privatevaluesEstPriceLower,$publicvaluesEstPriceLower,"gr:hasCurrency","gr:hasCurrencyValue",1,$canEdit,true,""); ?>
+		<p class="guidelines" id="guide_4c"><small>pc:estimatedPriceLower<br />
+Property for lower bound of estimated price of public contract.</small></p> 
+		</li>
+        
+        <li id="li_4d"<?php echo $showPriceBounds?"":' style="display: none;"'; ?> >
+		<label class="description" for="pc:estimatedPriceUpper">Upper range of estimated price</label>
+		  <?php printSelectPrice2($privatevaluesEstPriceUpper,$publicvaluesEstPriceUpper,"gr:hasCurrency","gr:hasCurrencyValue",2,$canEdit,true,""); ?>
+		<p class="guidelines" id="guide_4d"><small>pc:estimatedPriceUpper<br />
+Property for upper bound of estimated price of public contract.</small></p> 
+		</li>
+        
+        <li class="section_break">
+			<h3>Tenders</h3>
+            <input type="hidden" value="<?php echo $maxtid; ?>" id="tenderCounter" name="tenderCounter" />
+			<p>
+                <?php if ($canEdit && (!$contractNoticePublished)) echo '<a href="javascript:;" onclick="addTender();">Add Tender</a>'; ?>
+                <?php if ($contractNoticePublished) echo "Can't add tenders when contract notice was already published."; ?>
+            </p>
+		</li>
+        
+        <li id="li_4t" >
+        <?php
+            foreach ($pptenders as $uri => $pptender) {
+                printEditTender($pptender,$pptendersprice[$uri],$uri,$canEdit);
+            }
+        ?>
+        <!--<div id="div_4t_1">
+        <label class="description" for="pc:tender">Tender 1</label>
+        <span><input id="pc:tender_gr:hasCurrencyValue1" name="pc:tender_gr:hasCurrencyValue1" class="element text currency" size="10" value="" type="text" /><label for="pc:tender_gr:hasCurrencyValue1">Price</label></span>
+        <span><select class="element select" id="pc:tender_gr:hasCurrency1" name="pc:tender_gr:hasCurrency1"><option value="" selected="selected"></option><option value="CZK">CZK</option><option value="EUR">EUR</option><option value="GBP">GBP</option></select><label for="pc:tender_gr:hasCurrency1">Currency</label></span>
+        <p class="guidelines" id="guide_4t_1"><small>pc:offeredPrice : Property for price offered by a supplier.<br />pc:supplier : Property for supplier submitting the tender.</small></p> 
+        <div><input type="text" id="pc:tender_pc:supplier1" name="pc:tender_pc:supplier1" value="" class="element text large" /><label for="pc:supplier">Supplier</label></div>
+        </div>-->
+        </li>
+        
+        <li class="section_break">
+			<h3>Metadata</h3>
+			<p></p>
+		</li>
+
+		<li id="li_5" >
+		<label class="description" for="rdf:type">Type </label>
+		<div>
+            <?php printInputBox2($privatevalues,$publicvalues,"rdf:type",0,false,false,"large"); ?>
+		</div><p class="guidelines" id="guide_5"><small>rdf:type</small></p> 
+		</li>
+        
+        <!--
+        <li id="li_6" >
+		<label class="description" for="pc:awardDate">Date of contract award </label>
+            <?php printSelectDate2($privatevalues,$publicvalues,"pc:awardDate",0,false,false); ?>
+		<p class="guidelines" id="guide_6"><small>pc:awardDate<br />
+Property for date of contract award to a supplier.</small></p> 
+		</li>
+        -->
+			
+					<li class="buttons">
+			    <input type="hidden" name="form_id" value="473035" />
+			    
+				<input id="saveForm" class="button_text button" type="submit" name="submit" value="Save changes" />
+		</li>
+			</ul>
+		</form>	
+	</div>
+
+<?php
+

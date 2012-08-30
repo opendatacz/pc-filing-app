@@ -8,6 +8,9 @@
     else
         $page = "welcome";
     switch($page) {
+        case("blank"):
+            echo $this->partial('contracts/pages/blank.phtml', $templateData);
+            break;
         case("searchcontracts"):
         case("searchmycontracts"):
             echo $this->partial('contracts/pages/searchcontracts.phtml', $templateData);
@@ -23,11 +26,33 @@
         case("signup"):
             echo $this->partial('contracts/pages/preferences.phtml', $templateData);
             break;
+        case("business_edit"):
+            echo $this->partial('contracts/execute/business_edit.phtml', $templateData);
+            echo $this->partial('contracts/pages/businessentity.phtml', $templateData);
+            break;
         case("publishbusinessentity"):
             echo $this->partial('contracts/pages/publishbusinessentity.phtml', $templateData);
         case("newbusinessentity"):
         case("businessentity"):
             echo $this->partial('contracts/pages/businessentity.phtml', $templateData);
+            break;
+        case("contract_edit"):
+            echo $this->partial('contracts/execute/contract_edit.phtml', $templateData);
+            echo $this->partial('contracts/pages/contract.phtml', $templateData);
+            break;
+        case("newcontract"):
+            echo $this->partial('contracts/pages/newcontract.phtml', $templateData);
+            break;
+        case("contract"):
+            echo $this->partial('contracts/pages/contract.phtml', $templateData);
+            break;
+        case("contract_publish_notice"):
+            echo $this->partial('contracts/execute/contract_publish_notice.phtml', $templateData);
+            echo $this->partial('contracts/pages/contract.phtml', $templateData);
+            break;
+        case("contract_publish_contract"):
+            echo $this->partial('contracts/execute/contract_publish_contract.phtml', $templateData);
+            echo $this->partial('contracts/pages/contract.phtml', $templateData);
             break;
         default:
             echo $this->partial('contracts/pages/welcome.phtml', $templateData);

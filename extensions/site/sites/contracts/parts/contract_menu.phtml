@@ -1,0 +1,38 @@
+<?php
+    $templateData = loadData();
+    $ow = OntoWiki::getInstance();
+    $user = $ow->getUser();
+    
+    $inPrivate = false;
+    $req = $_REQUEST;
+    if (isset($req["uri"])) {
+        $beuri = urldecode($req["uri"]);
+        $checkQuery = 'SELECT ?t WHERE {<'.$beuri.'> <'.EF_RDF_TYPE.'> ?t}';
+        if (!$user->isAnonymousUser()) {
+            $privatespace = getPrivateSpace($ow);
+            if ($privatespace !== false) {
+                $privatemodel = new Erfurt_Rdf_Model($privatespace[0]);
+                $inPrivate = $privatemodel->sparqlQuery($checkQuery);
+                $inPrivate = ( $inPrivate == array() ? false : true);
+            }
+        }
+        if (isset($_REQUEST["page"]) && $inPrivate && 
+            isset($GLOBALS["IAmContract"]) &&
+            $GLOBALS["IAmContract"] == true)
+        {
+?>
+<div id="businessbox" class="rightbox">
+    <h3>Business entity</h3>
+    <p>
+    <a href="?page=contract_publish_notice&amp;uri=<?php echo urlencode($_GET["uri"]); ?>" class="formbutton">Publish prior information notice</a>
+    <br />
+    <a href="?page=contract_publish_contract&amp;uri=<?php echo urlencode($_GET["uri"]); ?>" class="formbutton">Publish contract notice</a>
+    
+    <!--<a href="?page=tender_create&amp;contract_uri=<?php echo urlencode($_GET["uri"]); ?>" class="formbutton">Create tender</a>
+    <a href="?page=contract_cancel&amp;uri=<?php echo urlencode($_GET["uri"]); ?>" class="formbutton">Cancel contract</a>
+    -->
+    </p>
+</div>
+<?php
+        }
+    }

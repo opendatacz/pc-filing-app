@@ -33,7 +33,8 @@
         printMessage("Repubishing business entity...",OntoWiki_Message::INFO);
     }
     
-    $query[0] = 'SELECT ?s ?p ?o WHERE {
+    //nefunguje na virtuosu
+    /*$query[0] = 'SELECT ?s ?p ?o WHERE {
         <'.$resourceuri.'> ?p ?o. }';
     $query[1] = 'SELECT ?s ?p ?o WHERE {
         <'.$resourceuri.'> <http://purl.org/business-register#contact> ?s.
@@ -48,8 +49,21 @@
         ?s ?p ?o. }';
     $options = array();
     $options["default_subject"] = $resourceuri;
-    $stmtArray = constuctStmtArray($model,$query,$options);
-    //print_r($stmtArray);
+    $stmtArray = constuctStmtArray($model,$query,$options);*/
+    //funguje na virtuosu
+    $resuris = array();
+    $options = array();
+    $resuris[] = $resourceuri;
+    $querycoa = 'SELECT ?c ?o ?a WHERE {
+        <'.$resourceuri.'> <http://purl.org/business-register#contact> ?c.
+        ?c <http://www.w3.org/2006/vcard/ns#org> ?o.
+        ?c <http://www.w3.org/2006/vcard/ns#adr> ?a. }';
+    $coares = $model->sparqlQuery($querycoa);
+    $resuris[] = $coares[0]["c"];
+    $resuris[] = $coares[0]["o"];
+    $resuris[] = $coares[0]["a"];
+    $stmtArray = constuctStmtArray2($store,$model,$resuris,$options);
+
     $stmtArray[$resourceuri]["http://purl.org/dc/terms/publisher"] = array(array(
         'type'  => 'uri',
         'value' => $usruri
@@ -59,7 +73,7 @@
         'value' => Date("Y-m-d") 
     ));
     //print_r($stmtArray);
-    $store->addMultipleStatements($publicmodel->getModelIri(), $stmtArray, false)
+    $store->addMultipleStatements($publicmodel->getModelIri(), $stmtArray, false);
     $cache = $erfurt->getQueryCache();
     $cache->invalidateWithModelIri($publicmodel->getModelIri());
     printMessage("Business entity successfully published.",OntoWiki_Message::SUCCESS);

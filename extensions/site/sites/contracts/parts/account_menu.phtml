@@ -7,6 +7,7 @@
 <div id="accountbox" class="leftbox">
 <?php if (!$user->isAnonymousUser()) {
     $be = getUserBusiness($ow);
+    $gr = getContractUseroups($ow);
     
 ?>
     <h3>My Account</h3>
@@ -15,6 +16,8 @@
         <li><a href="?page=preferences&amp;cht=<?php echo genChT(); ?>">Preferences</a></li>
 <?php if ($be !== false) { ?>
         <li><a href="?page=businessentity&amp;uri=<?php echo urlencode($be[0]); ?>">Edit my business entity</a></li>
+<?php } else if ($gr["any"]) { ?>
+        <li><a href="?page=newbusinessentity&amp;self=true">Create my business entity</a></li>
 <?php } ?>
         <li><a href="<?php echo $wikiBaseUri; ?>application/logout">Log out</a></li>
         <li><a href="view">Enter the backend</a> <br /><small>(for advanced users only)</small></li>

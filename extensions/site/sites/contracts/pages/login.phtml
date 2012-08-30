@@ -6,7 +6,11 @@
     $wikiBaseUri = $GLOBALS["wBaseUri"];
     $redirectUri = $wikiBaseUri."?page=welcome";
     
-    if ($user->isAnonymousUser()) {
+    if (!$user->isAnonymousUser()) {
+        //just load preferences
+        echo $this->partial('contracts/pages/preferences.phtml', $templateData);
+    }
+    else {
         //?page=login
 ?>
 <form action="<?php echo $wikiBaseUri; ?>application/login" method="post" name="locallogin">

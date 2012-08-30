@@ -102,6 +102,18 @@
                         'http://ns.ontowiki.net/SysOnt/grantModelEdit',
                         array('value' => $personalModel->getModelIri(), 'type'  => 'uri'),
                         false);
+                    //grant read access to public space for new user
+                    $store->addStatement($configModel->getModelIri(),
+                        $useruri,
+                        'http://ns.ontowiki.net/SysOnt/grantModelView',
+                        array('value' => $templateData["publicspace"], 'type'  => 'uri'),
+                        false);
+                    //grant read access to web for new user
+                    $store->addStatement($configModel->getModelIri(),
+                        $useruri,
+                        'http://ns.ontowiki.net/SysOnt/grantModelView',
+                        array('value' => $templateData["web"], 'type'  => 'uri'),
+                        false);
                     //add information about private store to user profile
                     $predicate = $templateData["configns"].$templateData["configprivatestorepredicate"];
                     $store->addStatement($configModel->getModelIri(),
@@ -124,6 +136,9 @@
                     //login the user
                     $authResult = $erfurt->authenticate($username, $password);
                     $ow->authResult = $authResult->getMessages();
+                    
+                    $user = $ow->getUser();
+                    $signup_useruri = $useruri;
                 } else {
                     $message = 'A registration error occured. Please refer to the log entries.';
                     printMessage($message, OntoWiki_Message::ERROR);
@@ -155,22 +170,28 @@
             }
         }
         //= Update user groups =================================================
-        if (!$user->isAnonymousUser()) {
-            $groups = getContractUseroups($ow);
+        if (!$user->isAnonymousUser() || isset($signup_useruri)) {
+            if (isset($signup_useruri)) {
+                $useruri = $signup_useruri;
+                $groups = array("any" => false, "both" => false, "contractor" => false, "supplier" => false);
+            } else {
+                $useruri = $user->getUri();
+                $groups = getContractUseroups($ow);
+            }
             $configModel = $store->getModel('http://localhost/OntoWiki/Config/',false);
             $options['use_ac'] = false;
             if (isset($post["contractor"]) && ($groups["contractor"] == false)) {
                 $store->addStatement($configModel->getModelIri(),
                     'http://localhost/OntoWiki/Config/Contractors',
                     'http://rdfs.org/sioc/ns#has_member',
-                    array('value' => $user->getUri(), 'type'  => 'uri'),
+                    array('value' => $useruri, 'type'  => 'uri'),
                     false);
                 printMessage("User set as contractor.", OntoWiki_Message::SUCCESS);
             } else if (!isset($post["contractor"]) && ($groups["contractor"] == true)) {
                 $store->deleteMatchingStatements($configModel->getModelIri(),
                     'http://localhost/OntoWiki/Config/Contractors',
                     'http://rdfs.org/sioc/ns#has_member',
-                    array('value' => $user->getUri(), 'type'  => 'uri'),
+                    array('value' => $useruri, 'type'  => 'uri'),
                     $options);
                 printMessage("User is no longer contractor.", OntoWiki_Message::SUCCESS);
             }
@@ -178,17 +199,19 @@
                $store->addStatement($configModel->getModelIri(),
                     'http://localhost/OntoWiki/Config/Suppliers',
                     'http://rdfs.org/sioc/ns#has_member',
-                    array('value' => $user->getUri(), 'type'  => 'uri'),
+                    array('value' => $useruri, 'type'  => 'uri'),
                     false);
                 printMessage("User set as supplier.", OntoWiki_Message::SUCCESS);
             } else if (!isset($post["supplier"]) && ($groups["supplier"] == true)) {
                 $store->deleteMatchingStatements($configModel->getModelIri(),
                     'http://localhost/OntoWiki/Config/Suppliers',
                     'http://rdfs.org/sioc/ns#has_member',
-                    array('value' => $user->getUri(), 'type'  => 'uri'),
+                    array('value' => $useruri, 'type'  => 'uri'),
                     $options);
                 printMessage("User is no longer supplier.", OntoWiki_Message::SUCCESS);
             }
+            $cache = $erfurt->getQueryCache();
+            $cache->invalidateWithModelIri($configModel->getModelIri());
         }
     }
     

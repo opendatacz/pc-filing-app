@@ -1,0 +1,240 @@
+<?php
+    $templateData = loadData();
+    $ow = OntoWiki::getInstance();
+    $user = $ow->getUser();
+    $store = $ow->erfurt->getStore();
+    
+    $username = $user->getUsername();
+    $psuri = getPrivateSpace($ow);
+    if ($psuri === false) throw new OntoWiki_Exception("User has no private space.");
+    $modeluri = $psuri[0];
+    $model = $store->getModel($modeluri);
+    $publicmodeluri = $templateData["publicspace"];
+    $publicmodel = new Erfurt_Rdf_Model($publicmodeluri);
+    //$ontomodeluri = "http://purl.org/procurement/public-contracts#";
+    //$ontomodel = new Erfurt_Rdf_Model($ontomodeluri);
+    if (!isset($_REQUEST["uri"])) throw new OntoWiki_Exception("No resource selected.");//TODO: check type
+    $conuri = $_REQUEST["uri"];
+    $resourceuri = $conuri;
+    $resource = new Erfurt_Rdf_Model($resourceuri);
+    $title = $resource->getTitle();
+    $userprefix = $templateData["user"];
+
+    $xsdp = $model->getNamespacePrefix($GLOBALS["ns_var"]["xsd"]);
+
+    //CHECK EXISTENCE IN PUBLIC STORE
+    //try {
+    $res_inpublic = $publicmodel->sparqlQuery('SELECT ?x
+        WHERE {
+            <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'notice> ?x .
+            ?x a <'.$GLOBALS["ns_var"]["pc"].'PriorInformationNotice> .
+            }');
+    //} catch (Exception $e) { echo $e->getMessage(); }
+    //if (false) {
+    if ($res_inpublic !== array()) {
+        //resource already exists
+        printMessage("Notice already published.",OntoWiki_Message::ERROR);
+        //can not republish
+    } else {
+        //CHECK REQUIRED PROPERTIES
+        $required = array();
+        $required[] = EF_RDF_TYPE;
+        $required[] = $GLOBALS["ns_var"]["dcterms"]."title";
+        $required[] = $GLOBALS["ns_var"]["dcterms"]."description";
+        $required[] = $GLOBALS["ns_var"]["pc"]."contact";
+        $required[] = $GLOBALS["ns_var"]["pc"]."contractingAuthority";
+        /*$required[] = $GLOBALS["ns_var"]["pc"]."estimatedPrice"; //checked further on
+        $required[] = $GLOBALS["ns_var"]["pc"]."estimatedPriceLower";
+        $required[] = $GLOBALS["ns_var"]["pc"]."estimatedPriceUpper";*/
+        /*$required[] = $GLOBALS["ns_var"]["pc"]."notice";*/ //added further on, o check required
+        //TODO: add support for kind + mainObject
+        //$required[] = $GLOBALS["ns_var"]["pc"]."kind";
+        //$required[] = $GLOBALS["ns_var"]["pc"]."mainObject";
+        //TODO: jak s reference number?
+        //$required[] = $GLOBALS["ns_var"]["pc"]."referenceNumber";
+        $missing = checkRequiredProperties($ow,$model,$resourceuri,$required);
+        $missing_str = "";
+        foreach ($missing as $m) $missing_str .= $m.", ";
+        if ($missing_str != "")
+            printMessage("Missing required properties: ".$missing_str,OntoWiki_Message::ERROR);
+        //check price: estimatedPrice OR estimatedPriceLower + estimatedPriceUpper
+        $query_prices = 'SELECT ?p ?o ?ov ?oc
+            WHERE {
+                <'.$resourceuri.'> a <'.$GLOBALS["ns_var"]["pc"].'Contract> ;
+                  ?p ?o .
+                ?o a <'.$GLOBALS["ns_var"]["gr"].'PriceSpecification> ;
+                  <'.$GLOBALS["ns_var"]["gr"].'hasCurrencyValue> ?ov ;
+                  <'.$GLOBALS["ns_var"]["gr"].'hasCurrency> ?oc .
+            }';
+        $res_prices = $model->sparqlQuery($query_prices);
+        $ep = $epl = $epu = $price_problem = false;
+        foreach ($res_prices as $r) {
+            if ($r["p"] == $GLOBALS["ns_var"]["pc"].'estimatedPrice') $ep = true;
+            if ($r["p"] == $GLOBALS["ns_var"]["pc"].'estimatedPriceLower') $epl = true;
+            if ($r["p"] == $GLOBALS["ns_var"]["pc"].'estimatedPriceUpper') $epu = true;
+        }
+        if ($ep == ($epl && $epu)) { //both missing or both set
+            $price_problem = true;
+            printMessage("Problem with prices.<br />You have to set either <em>pc:estimatedPrice</em> or both <em>pc:estimatedPriceLower</em> and <em>pc:estimatedPriceUpper</em>",OntoWiki_Message::ERROR);
+        }
+        //CAN NOT PUBLISH (ERRORS)
+        //if (false) {
+        if (!(($missing == array()) && ($ep xor ($epl && $epu)))) {
+            /* //invalidate cache //TODO: invalidate only executed queries (not whole model)
+            $cache = $this->_owApp->erfurt->getQueryCache();
+            $cache->invalidateWithModelIri($model->getModelIri());*/
+            printMessage("Contract notice could <strong>not</strong> be published to public data space.",OntoWiki_Message::ERROR);
+            //return;
+        }
+        else
+        {
+            //LOAD CONTRACT DETAILS
+            //stmt array sparql queries
+            
+            //nefunguje na virtuosu
+            /*$query[0] = 'SELECT ?s ?p ?o WHERE { 
+                <'.$resourceuri.'> ?p ?o. }';
+            if ($ep) {
+                $query[1] = 'SELECT ?s ?p ?o WHERE {
+                    <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPrice> ?s.
+                    ?s ?p ?o. }';
+            } else {
+                $query[1] = 'SELECT ?s ?p ?o WHERE {
+                    <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPriceLower> ?s.
+                    ?s ?p ?o. }';
+                $query[2] = 'SELECT ?s ?p ?o WHERE {
+                    <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPriceUpper> ?s.
+                    ?s ?p ?o. }';
+            }
+            $query[] = 'SELECT ?s ?p ?o WHERE {
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'location> ?s.
+                ?s ?p ?o. }';
+            $query[] = 'SELECT ?s ?p ?o WHERE {
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'contact> ?s.
+                ?s ?p ?o. }';
+            $query[] = 'SELECT ?s ?p ?o WHERE {
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'contact> ?x.
+                ?x <'.$GLOBALS["ns_var"]["vcard"].'adr> ?s.
+                ?s ?p ?o. }';
+            $query[] = 'SELECT ?s ?p ?o WHERE {
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'contact> ?x.
+                ?x <'.$GLOBALS["ns_var"]["vcard"].'org> ?s.
+                ?s ?p ?o. }';*/
+            /*$query[] = 'SELECT ?s ?p ?o WHERE {
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'mainObject> ?s.
+                ?s ?p ?o. }';*/
+            //invalidate cache //TODO: invalidate only executed queries (not whole model)
+            //$cache = $ow->erfurt->getQueryCache();
+            //$cache->invalidateWithModelIri($model->getModelIri());
+            
+            //funguje na virtuosu
+            $resuris = array();
+            $resuris[] = $resourceuri;
+             //contact+++
+            $querycoa = 'SELECT ?c ?o ?a WHERE {
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'contact> ?c.
+                ?c <'.$GLOBALS["ns_var"]["vcard"].'org> ?o.
+                ?c <'.$GLOBALS["ns_var"]["vcard"].'adr> ?a. }';
+            $coares = $model->sparqlQuery($querycoa);
+            $resuris[] = $coares[0]["c"];
+            $resuris[] = $coares[0]["o"];
+            $resuris[] = $coares[0]["a"];
+             //mainobject
+            $querycoa = 'SELECT ?m WHERE {
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'mainObject> ?m. }';
+                $coares = $model->sparqlQuery($querycoa);
+            if (isset($coares[0]["m"]))
+                $resuris[] = $coares[0]["m"];
+             //location
+            $querycoa = 'SELECT ?l WHERE {
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'location> ?l. }';
+                $coares = $model->sparqlQuery($querycoa);
+            if (isset($coares[0]["l"]))
+                $resuris[] = $coares[0]["l"];
+             //prices
+            $querycoa = 'SELECT ?ep WHERE {
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPrice> ?ep. }';
+                $coares = $model->sparqlQuery($querycoa);
+            if (isset($coares[0]["ep"]))
+                $resuris[] = $coares[0]["ep"];
+            $querycoa = 'SELECT ?epl ?epu WHERE {
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPriceLower> ?epl.
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPriceUpper> ?epu. }';
+                $coares = $model->sparqlQuery($querycoa);
+            if (isset($coares[0]["epl"])) {
+                $resuris[] = $coares[0]["epl"];
+                $resuris[] = $coares[0]["epu"];
+            }
+            
+            $options = array();
+            $options["default_subject"] = $resourceuri;
+            $options["construct_only"][$resourceuri][] = EF_RDF_TYPE;
+            $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["dcterms"]."title";
+            $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["dcterms"]."description";
+            $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."contact";
+            $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."contractingAuthority";
+            if ($ep)
+                $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."estimatedPrice";
+            else {
+                $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."estimatedPriceLower";
+                $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."estimatedPriceUpper";
+            }
+            $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."location";
+            $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."kind";
+            $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."mainObject";
+            $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."notice";
+            $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."referenceNumber";
+            //$stmtArray1 = constuctStmtArray($model,$query,$options); //nefunguje na virtuosu       
+            $stmtArray1 = constuctStmtArray2($store, $model, $resuris, $options); //funguje na virtuosu
+            //CREATION OF PRIOR INFORMATION NOTICE
+            $pinuri = $resourceuri."/prior-information-notice/1";
+            $publisheruri = $userprefix.$username;
+            //select creator
+            $query_creator = 'SELECT ?creator WHERE {
+                <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["dcterms"].'creator> ?creator. }';
+            $res = $model->sparqlQuery($query_creator);
+            if ($res == array())
+                $creatoruri = $publisheruri;
+            else
+                $creatoruri = $res[0]["creator"];
+            $publicationdate = Date("Y-m-d");
+            $fillingAppUri = $templateData["fillingapp"];
+            $stmtArray2 = array(
+                $pinuri => array(
+                    EF_RDF_TYPE => array(array(
+                        'type'  => 'uri',
+                        'value' => 'http://purl.org/procurement/public-contracts#PriorInformationNotice' 
+                    ),
+                    array(
+                        'type'  => 'uri',
+                        'value' => 'http://www.w3.org/ns/prov#Entity' 
+                    )),
+                    'http://www.w3.org/ns/prov#wasAttributedTo' => array(array(
+                        'type'  => 'uri',
+                        'value' => $fillingAppUri
+                    )),
+                    'http://purl.org/dc/terms/creator' => array(array( //id toho kdo vytvoril kontrakt
+                        'type'  => 'uri',
+                        'value' => $creatoruri
+                    )),
+                    'http://purl.org/dc/terms/publisher' => array(array( //id toho kdo publikuje
+                        'type'  => 'uri',
+                        'value' => $publisheruri
+                    )),
+                    'http://purl.org/procurement/public-contracts#publicationDate' => array(array(
+                        'type'  => 'literal', 'datatype' => $xsdp.':date',
+                        'value' => $publicationdate
+                    ))
+            ));
+            //add notice link
+            $stmtArray1[$resourceuri][$GLOBALS["ns_var"]["pc"]."notice"][] = array(
+                'type'  => 'uri',
+                'value' => $pinuri
+            );
+            $stmtArray = array_merge($stmtArray1,$stmtArray2);
+            //print_r($stmtArray);
+            //PUBLISH
+            $store->addMultipleStatements($publicmodel->getModelIri(), $stmtArray, false);
+            printMessage("Prior notice successfully published.",OntoWiki_Message::SUCCESS);
+        }
+    }

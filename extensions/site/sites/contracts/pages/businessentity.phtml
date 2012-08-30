@@ -6,55 +6,10 @@
     $user = $ow->getUser();
     $baseUri = $GLOBALS["cBaseUri"];
     
-    //= FUNCTIONS ==============================================================
-    function printInputBox($privatevalues,$publicvalues,$predicate,$sid=0,$canEdit=false,$new=false)
-    {
-        //$value = getStoredValue($privatevalues,$publicvalues,$predicate,$id);
-        $id = $sid;
-        $privateValues = getValuesForPredicate($privatevalues,$predicate);
-        $publicValues = getValuesForPredicate($publicvalues,$predicate);
-        //if ($predicate == "br:officialNumber")
-        //    print_r($privatevalues);
-        //$allValues = array_keys(array_merge(array_flip($privateValues),array_flip($publicValues)));
-        $allValues = array_unique(array_merge($privateValues,$publicValues));
-        if ($new && $canEdit)
-            echo "<input type=\"text\" id=\"$predicate$id\" name=\"$predicate$id\" value=\"\" />";
-        else foreach ($allValues as $value) {
-            if ($id != $sid)
-                echo "<br />";
-            if ($canEdit && in_array($value,$privateValues))
-                echo "<input type=\"text\" id=\"$predicate$id\" name=\"$predicate$id\" value=\"$value\" />";
-            else
-                echo "<span id=\"$predicate$id\" class=\"inputspan\">$value</span>";
-            if (in_array($value,$privateValues))
-                echo "<img src=\"{$GLOBALS["cBaseUri"]}/img/privatespace.png\" class=\"sourceico\" alt=\"in private data space\" title=\"in private data space\"  />";
-            if (in_array($value,$publicValues))
-                echo "<img src=\"{$GLOBALS["cBaseUri"]}/img/publicspace.png\" class=\"sourceico\" alt=\"in public data space\" title=\"in public data space\"  />";
-            $id++;
-        }
-    }
-    function getFullPredicate($predicate)
-    {
-        $pred = $predicate;
-        $pos = strpos($pred,":");
-        if ($pos !== false) {
-            $pref = substr($predicate,0,$pos);
-            $pred = $GLOBALS["ns_var"][$pref].substr($pred,$pos+1);
-        }
-        return $pred;
-    }
-    function getValuesForPredicate($values,$predicate)
-    {
-        $pred = getFullPredicate($predicate);
-        $vals = array();
-        if (isset($values[$pred]))
-            foreach ($values[$pred] as $value)
-                if (empty($value["content"]))
-                    $vals[] = $value["uri"];
-                else
-                    $vals[] = $value["content"];
-        return $vals;
-    }
+    $GLOBALS["IAmBusiness"] = true;
+    
+    $basePath = $GLOBALS["cBasePath"];
+    require_once("$basePath/lib/edit.lib.php");
     
     //= PROCESS ================================================================
     $post = $_POST;
@@ -169,12 +124,15 @@
                     )
                 );
                 
+                /*print_r($stmtArray);
+                Die();*/
+                
                 $store->addMultipleStatements($model->getModelIri(), $stmtArray, true);
                 $cache = $erfurt->getQueryCache();
                 $cache->invalidateWithModelIri($model->getModelIri());
                 
                 //when creating business entity describing himself
-                if (isset($_GET["self"]) && ($_GET["self"] == "true") && (getUserBusiness() === false)) {
+                if (isset($_GET["self"]) && ($_GET["self"] == "true") && (getUserBusiness($ow) === false)) {
                     $configModel = $store->getModel('http://localhost/OntoWiki/Config/',false);
                     $user = $ow->getUser();
                     $username = $user->getUsername();
@@ -197,7 +155,9 @@
     
     //= EDIT ===================================================================
     $req = $_REQUEST;
-    if ($req["page"] == "businessentity" || $req["page"] == "publishbusinessentity")
+    if ($req["page"] == "businessentity" ||
+        $req["page"] == "publishbusinessentity" ||
+        $req["page"] == "business_edit" )
     {
         if (!isset($req["uri"]))
             Die();
@@ -261,6 +221,8 @@
             if (isset($privatevaluesAddress[$privatemodel->getModelIri()]))
                 $privatevaluesAddress = $privatevaluesAddress[$privatemodel->getModelIri()];
         }
+        
+        //print_r($privatevaluesAddress);
 
         //$privatepredicates = $privateresource->getPredicates();
         //print_r($privatepredicates);
@@ -277,7 +239,8 @@
         print_r($privateData);
         */
 ?>
-<h2>Business entity <small><em><?php echo $beuri; ?></em></small></h2>
+<h2>Business entity</h2>
+<p><small><em><?php echo $beuri; ?></em></small></p>
 <div class="resourcein">
 <?php if ($inPrivate) { ?>
 <img src="<?php echo $baseUri; ?>/img/privatespace.png" alt="in private data space" title="in private data space" />
@@ -288,7 +251,8 @@ in private data space
 in public data space
 <?php } ?>
 </div>
-<form name="businessedit" action="?page=businessentity&amp;uri=<?php echo urlencode($beuri); ?>" method="post">
+<div id="form_container">
+    <form id="form_472917" class="appnitro"  name="businessedit" action="?page=business_edit&amp;uri=<?php echo urlencode($beuri); ?>" method="post">
 <?php
     }
     //= CREATE =================================================================
@@ -302,101 +266,90 @@ in public data space
         $privatevaluesAddress = array();
         $publicvaluesAddress = array();
         echo "<h2>New business entity</h2>";
-        echo '<form name="businessedit" action="?page=businessentity&amp;new=new" method="post">';
+        echo '<div id="form_container">';
+        if (isset($_GET["self"]) && $_GET["self"]=="true")
+            $self = "&amp;self=true"; else $self = "";
+        echo '<form id="form_472917" class="appnitro" name="businessedit" action="?page=businessentity&amp;new=new',$self,'" method="post">';
     }
     
     //= WRITE ==================================================================
-    $odd = false;
+    //$odd = false;
+    //= FORM =
 ?>
+		<ul >
+					<li id="li_1" >
+		<label class="description" for="gr:legalName">Legal name </label>
+		<div>
+            <?php printInputBox2($privatevalues,$publicvalues,"gr:legalName",0,$canEdit,$new,"large"); ?>
+		</div><p class="guidelines" id="guide_1"><small>The legal name of the gr:BusinessEntity.</small></p> 
+		</li>		<li id="li_2" >
+		<label class="description" for="br:officialNumber">Official number </label>
+		<div>
+            <?php printInputBox2($privatevalues,$publicvalues,"br:officialNumber",0,$canEdit,$new,"medium"); ?>
+		</div><p class="guidelines" id="guide_2"><small>Official identification number.</small></p> 
+		</li>		<li id="li_3" >
+		<label class="description" for="element_3">Contact </label>
+		
+		<div>
+            <?php printInputBox2($privatevaluesAddress,$publicvaluesAddress,"vcard:street",0,$canEdit,$new,"large"); ?>
+			<label for="vcard:street">Street Address</label>
+		</div>
+	
+		<div>
+            <?php printInputBox2($privatevaluesAddress,$publicvaluesAddress,"vcard:locality",0,$canEdit,$new,"large"); ?>
+			<label for="vcard:locality">City</label>
+		</div>
+	
+		<div> 
+            <?php printInputBox2($privatevaluesAddress,$publicvaluesAddress,"vcard:postal-code",0,$canEdit,$new,"small",' maxlength="15"'); ?>
+			<label for="vcard:postal-code">Postal / Zip Code</label>
+		</div>
+	
+		<div>
+            <?php printSelectCountry2($privatevaluesAddress,$publicvaluesAddress,"vcard:country-name",0,$canEdit,$new,"large"); ?>
+		<label for="vcard:country-name">Country</label>
+	</div><p class="guidelines" id="guide_3"><small>Organization contact.</small></p> 
+		</li>
 
-<table class="businessedit">
-<tr class="firstline">
-    <th colspan="2">Basic information</th>
-</tr>
-<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
-    <td class="firstcolumn"><span title="gr:legalName">Legal name</span></td>
-    <td>
-        <?php printInputBox($privatevalues,$publicvalues,"gr:legalName",0,$canEdit,$new); ?>
-    </td>
-</tr>
-<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
-    <td class="firstcolumn"><span title="br:officialNumber">Official number</span></td>
-    <td>
-        <?php printInputBox($privatevalues,$publicvalues,"br:officialNumber",0,$canEdit,$new); ?>
-    </td>
-</tr>
-
-<tr class="firstline">
-    <th colspan="2">Contact</th>
-</tr>
-<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
-    <td class="firstcolumn"><span title="vcard:country-name">Country code</span></td>
-    <td>
-        <?php printInputBox($privatevaluesAddress,$publicvaluesAddress,"vcard:country-name",0,$canEdit,$new); ?>
-    </td>
-</tr>
-<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
-    <td class="firstcolumn"><span title="vcard:locality">Locality (e.g. city)</span></td>
-    <td>
-        <?php printInputBox($privatevaluesAddress,$publicvaluesAddress,"vcard:locality",0,$canEdit,$new); ?>
-    </td>
-</tr>
-<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
-    <td class="firstcolumn"><span title="vcard:postal-code">Postal code</span></td>
-    <td>
-        <?php printInputBox($privatevaluesAddress,$publicvaluesAddress,"vcard:postal-code",0,$canEdit,$new); ?>
-    </td>
-</tr>
-<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
-    <td class="firstcolumn"><span title="vcard:street">Street</span></td>
-    <td>
-        <?php printInputBox($privatevaluesAddress,$publicvaluesAddress,"vcard:street",0,$canEdit,$new); ?>
-    </td>
-</tr>
-
-<?php if ($req["page"] != "newbusinessentity") { ?>
-<tr class="firstline">
-    <th colspan="2">Metadata</th>
-</tr>
-<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
-    <td class="firstcolumn"><span title="rdf:type">Type</span></td>
-    <td>
-        <?php printInputBox($privatevalues,$publicvalues,"rdf:type",0,false,$new); ?>
-    </td>
-</tr>
-<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
-    <td class="firstcolumn"><span title="dct:creator">Creator</span></td>
-    <td>
-        <?php printInputBox($privatevalues,$publicvalues,"dct:creator",0,false,$new); ?>
-    </td>
-</tr>
-<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
-    <td class="firstcolumn"><span title="dct:publisher">Publisher</span></td>
-    <td>
-        <?php printInputBox($privatevalues,$publicvalues,"dct:publisher",0,false,$new); ?>
-    </td>
-</tr>
-<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
-    <td class="firstcolumn"><span title="dct:created">Creation date</span></td>
-    <td>
-        <?php printInputBox($privatevalues,$publicvalues,"dct:created",0,false,$new); ?>
-    </td>
-</tr>
-<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
-    <td class="firstcolumn"><span title="pc:publicationDate">Publication date</span></td>
-    <td>
-        <?php printInputBox($privatevalues,$publicvalues,"pc:publicationDate",0,false,$new); ?>
-    </td>
-</tr>
+<?php   //= METADATA =
+    if ($req["page"] != "newbusinessentity") { ?>
+        <li class="section_break">
+			<h3>Metadata</h3>
+			<p></p>
+		</li>		<li id="li_5" >
+		<label class="description" for="rdf:type">Type </label>
+		<div>
+            <?php printInputBox2($privatevalues,$publicvalues,"rdf:type",0,false,$new,"large"); ?>
+		</div><p class="guidelines" id="guide_5"><small>rdf:type</small></p> 
+		</li>		<li id="li_6" >
+		<label class="description" for="dct:creator">Creator </label>
+		<div>
+            <?php printInputBox2($privatevalues,$publicvalues,"dct:creator",0,false,$new,"large"); ?>
+		</div><p class="guidelines" id="guide_6"><small>dct:creator</small></p> 
+		</li>		<li id="li_7" >
+		<label class="description" for="dct:publisher">Publisher </label>
+		<div>
+            <?php printInputBox2($privatevalues,$publicvalues,"dct:publisher",0,false,$new,"large"); ?>
+		</div><p class="guidelines" id="guide_7"><small>dct:publisher</small></p> 
+		</li>		<li id="li_8" >
+		<label class="description" for="dct:created">Date of creation </label>
+		<?php printSelectDate2($privatevalues,$publicvalues,"dct:created",0,false,$new); ?>
+		<p class="guidelines" id="guide_8"><small>dct:created</small></p> 
+		</li>		<li id="li_9" >
+		<label class="description" for="element_9">Date of publication </label>
+		<?php printSelectDate2($privatevalues,$publicvalues,"pc:publicationDate",0,false,$new); ?>
+		<p class="guidelines" id="guide_9"><small>pc:publicationDate</small></p> 
+		</li>
 <?php } ?>
 
-</table>
-<div class="buttonpanel">
+<li class="buttons">
+    <input type="hidden" name="form_id" value="472917" />
 <?php if ($new || $inPrivate) { ?>
-    <input type="submit" class="button" value="<?php echo $submittext; ?>" />
+	<input id="saveForm" class="button_text button" type="submit" name="submit" value="<?php echo $submittext; ?>" />
 <?php } ?>
-</div>
-</form>
-
+		</li>
+			</ul>
+		</form>
+    </div>
 
 <?php 

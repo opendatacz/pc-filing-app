@@ -1,0 +1,173 @@
+    <div id="form_container">
+		<!--<h1><a>Business entity</a></h1>-->
+		<form id="form_472917" class="appnitro"  method="post" action="">
+					<div class="form_description">
+			<h2>Business entity</h2>
+			<p>Create (or edit) business entity.</p>
+		</div>						
+			<ul >
+			
+					<li id="li_1" >
+		<label class="description" for="gr:legalName">Legal name </label>
+		<div>
+			<input id="gr:legalName" name="gr:legalName" class="element text medium" type="text" maxlength="255" value=""/> 
+		</div><p class="guidelines" id="guide_1"><small>The legal name of the gr:BusinessEntity.</small></p> 
+		</li>		<li id="li_2" >
+		<label class="description" for="br:officialNumber">Official number </label>
+		<div>
+			<input id="br:officialNumber" name="br:officialNumber" class="element text medium" type="text" maxlength="255" value=""/> 
+		</div><p class="guidelines" id="guide_2"><small>Official identification number.</small></p> 
+		</li>		<li id="li_3" >
+		<label class="description" for="element_3">Contact </label>
+		
+		<div>
+			<input id="vcard:street" name="vcard:street" class="element text large" value="" type="text">
+			<label for="vcard:street">Street Address</label>
+		</div>
+	
+		<div>
+			<input id="vcard:locality" name="vcard:locality" class="element text large" value="" type="text">
+			<label for="vcard:locality">City</label>
+		</div>
+	
+		<div> 
+			<input id="vcard:postal-code" name="vcard:postal-code" class="element text small" maxlength="15" value="" type="text">
+			<label for="vcard:postal-code">Postal / Zip Code</label>
+		</div>
+	
+		<div>
+			<select class="element select large" id="vcard:country-name" name="vcard:country-name"> 
+			<option value="" selected="selected"></option>
+<option value="Albania" >Albania</option>
+<option value="Andorra" >Andorra</option>
+<option value="Austria" >Austria</option>
+<option value="Belarus" >Belarus</option>
+<option value="Belgium" >Belgium</option>
+<option value="Bosnia and Herzegovina" >Bosnia and Herzegovina</option>
+<option value="Bulgaria" >Bulgaria</option>
+<option value="Croatia" >Croatia</option>
+<option value="Czech Republic" >Czech Republic</option>
+<option value="Denmark" >Denmark</option>
+<option value="Estonia" >Estonia</option>
+<option value="Finland" >Finland</option>
+<option value="France" >France</option>
+<option value="Georgia" >Georgia</option>
+<option value="Germany" >Germany</option>
+<option value="Greece" >Greece</option>
+<option value="Hungary" >Hungary</option>
+<option value="Iceland" >Iceland</option>
+<option value="Ireland" >Ireland</option>
+<option value="Italy" >Italy</option>
+<option value="Latvia" >Latvia</option>
+<option value="Liechtenstein" >Liechtenstein</option>
+<option value="Lithuania" >Lithuania</option>
+<option value="Luxembourg" >Luxembourg</option>
+<option value="Macedonia" >Macedonia</option>
+<option value="Malta" >Malta</option>
+<option value="Monaco" >Monaco</option>
+<option value="Montenegro" >Montenegro</option>
+<option value="Netherlands" >Netherlands</option>
+<option value="Norway" >Norway</option>
+<option value="Poland" >Poland</option>
+<option value="Portugal" >Portugal</option>
+<option value="Romania" >Romania</option>
+<option value="Russia" >Russia</option>
+<option value="Serbia and Montenegro" >Serbia and Montenegro</option>
+<option value="Slovakia" >Slovakia</option>
+<option value="Slovenia" >Slovenia</option>
+<option value="Spain" >Spain</option>
+<option value="Sweden" >Sweden</option>
+<option value="Switzerland" >Switzerland</option>
+<option value="Turkey" >Turkey</option>
+<option value="Ukraine" >Ukraine</option>
+<option value="United Kingdom" >United Kingdom</option>
+<option value="Vatican City" >Vatican City</option>
+			</select>
+		<label for="vcard:country-name">Country</label>
+	</div><p class="guidelines" id="guide_3"><small>Organization contact.</small></p> 
+		</li>		<li class="section_break">
+			<h3>Metadata</h3>
+			<p></p>
+		</li>		<li id="li_5" >
+		<label class="description" for="rdf:type">Type </label>
+		<div>
+			<input id="rdf:type" name="rdf:type" class="element text large" type="text" maxlength="255" value="http://"/> 
+		</div><p class="guidelines" id="guide_5"><small>rdf:type</small></p> 
+		</li>		<li id="li_6" >
+		<label class="description" for="dct:creator">Creator </label>
+		<div>
+			<input id="dct:creator" name="dct:creator" class="element text large" type="text" maxlength="255" value="http://"/> 
+		</div><p class="guidelines" id="guide_6"><small>dct:creator</small></p> 
+		</li>		<li id="li_7" >
+		<label class="description" for="dct:publisher">Publisher </label>
+		<div>
+			<input id="dct:publisher" name="dct:publisher" class="element text large" type="text" maxlength="255" value="http://"/> 
+		</div><p class="guidelines" id="guide_7"><small>dct:publisher</small></p> 
+		</li>		<li id="li_8" >
+		<label class="description" for="element_8">Date of creation </label>
+		<span>
+			<input id="element_8_1" name="element_8_1" class="element text" size="2" maxlength="2" value="" type="text"> /
+			<label for="element_8_1">MM</label>
+		</span>
+		<span>
+			<input id="element_8_2" name="element_8_2" class="element text" size="2" maxlength="2" value="" type="text"> /
+			<label for="element_8_2">DD</label>
+		</span>
+		<span>
+	 		<input id="element_8_3" name="element_8_3" class="element text" size="4" maxlength="4" value="" type="text">
+			<label for="element_8_3">YYYY</label>
+		</span>
+	
+		<span id="calendar_8">
+			<img id="cal_img_8" class="datepicker" src="calendar.gif" alt="Pick a date.">	
+		</span>
+		<script type="text/javascript">
+			Calendar.setup({
+			inputField	 : "element_8_3",
+			baseField    : "element_8",
+			displayArea  : "calendar_8",
+			button		 : "cal_img_8",
+			ifFormat	 : "%B %e, %Y",
+			onSelect	 : selectDate
+			});
+		</script>
+		<p class="guidelines" id="guide_8"><small>dct:created</small></p> 
+		</li>		<li id="li_9" >
+		<label class="description" for="element_9">Date of publication </label>
+		<span>
+			<input id="element_9_1" name="element_9_1" class="element text" size="2" maxlength="2" value="" type="text"> /
+			<label for="element_9_1">MM</label>
+		</span>
+		<span>
+			<input id="element_9_2" name="element_9_2" class="element text" size="2" maxlength="2" value="" type="text"> /
+			<label for="element_9_2">DD</label>
+		</span>
+		<span>
+	 		<input id="element_9_3" name="element_9_3" class="element text" size="4" maxlength="4" value="" type="text">
+			<label for="element_9_3">YYYY</label>
+		</span>
+	
+		<span id="calendar_9">
+			<img id="cal_img_9" class="datepicker" src="calendar.gif" alt="Pick a date.">	
+		</span>
+		<script type="text/javascript">
+			Calendar.setup({
+			inputField	 : "element_9_3",
+			baseField    : "element_9",
+			displayArea  : "calendar_9",
+			button		 : "cal_img_9",
+			ifFormat	 : "%B %e, %Y",
+			onSelect	 : selectDate
+			});
+		</script>
+		<p class="guidelines" id="guide_9"><small>pc:publicationDate</small></p> 
+		</li>
+			
+					<li class="buttons">
+			    <input type="hidden" name="form_id" value="472917" />
+			    
+				<input id="saveForm" class="button_text button" type="submit" name="submit" value="Submit" />
+		</li>
+			</ul>
+		</form>
+    </div>

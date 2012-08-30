@@ -9,6 +9,59 @@ $GLOBALS["ns_var"] = array(
         'dcterms' => 'http://purl.org/dc/terms/',
         'xsd' => 'http://www.w3.org/2001/XMLSchema#'
     );
+$GLOBALS["all_countries"] = array(
+    "" => "",
+    "AL" => "Albania",
+    "AD" => "Andorra",
+    "AT" => "Austria",
+    "BY" => "Belarus",
+    "BE" => "Belgium",
+    "BA" => "Bosnia and Herzegovina",
+    "BG" => "Bulgaria",
+    "HR" => "Croatia",
+    "CZ" => "Czech Republic",
+    "DK" => "Denmark",
+    "EE" => "Estonia",
+    "FI" => "Finland",
+    "FR" => "France",
+    "GE" => "Georgia",
+    "DE" => "Germany",
+    "GR" => "Greece",
+    "HU" => "Hungary",
+    "IS" => "Iceland",
+    "IE" => "Ireland",
+    "IT" => "Italy",
+    "LV" => "Latvia",
+    "LI" => "Liechtenstein",
+    "LT" => "Lithuania",
+    "LU" => "Luxembourg",
+    "MK" => "Macedonia",
+    "MT" => "Malta",
+    "MC" => "Monaco",
+    "ME" => "Montenegro",
+    "NL" => "Netherlands",
+    "NO" => "Norway",
+    "PL" => "Poland",
+    "PT" => "Portugal",
+    "RO" => "Romania",
+    "RU" => "Russia",
+    "RS" => "Serbia",
+    "SK" => "Slovakia",
+    "SI" => "Slovenia",
+    "ES" => "Spain",
+    "SE" => "Sweden",
+    "CH" => "Switzerland",
+    "TR" => "Turkey",
+    "UA" => "Ukraine",
+    "GB" => "United Kingdom",
+    "VA" => "Vatican City State",
+    );
+$GLOBALS["all_currencies"] = array(
+    "" => "",
+    "CZK" => "CZK",
+    "EUR" => "EUR",
+    "GBP" => "GBP",
+);
 
 function genChT()
 {
@@ -180,6 +233,7 @@ function loadData()
     $templateData = array();
     //models
     $templateData["publicspace"] = "http://ld.opendata.cz/resource/";
+    $templateData["web"] = "http://contracts.opendata.cz/web/";
     //extended config
     $templateData["configns"] = "http://localhost/OntoWiki/Config2/";
     $templateData["configprivatestorepredicate"] = "PrivateStore";
@@ -215,10 +269,11 @@ function constuctStmtArray($model, $query, $options)
         $constructOnly = $options["construct_only"];
     //loop for subjects
     for ($i=0;$i<count($query);$i++) {
+        //echo $query[$i];
         $res = $model->sparqlQuery($query[$i]);
         //if (count($res) == 0) break;
         if (count($res) == 0) continue;
-        if (!empty($res[0]["s"]))
+        if (isset($res[0]["s"]) && !empty($res[0]["s"]))
             $subject = $res[0]["s"];
         else
             $subject = $defaultsubject;
@@ -241,4 +296,69 @@ function constuctStmtArray($model, $query, $options)
         }
     }
     return $stmtArray;
+}
+
+/**
+ * param $model Erfurt_Rdf_Model to be queried
+ * param $resources array of resource names
+ *         
+ * @return array statment array usable by Erfurt_Rdf_Model->addMultipleStatements()
+ */         
+function constuctStmtArray2($store, $model, $resourceuris, $options)
+{
+    $stmtArray = array();
+    $constructOnly = array();
+    if (isset($options["construct_only"]))
+        $constructOnly = $options["construct_only"];
+    //loop for subjects
+    for ($i=0;$i<count($resourceuris);$i++) {
+        $subject = $resourceuris[$i];
+        $resource = new OntoWiki_Model_Resource($store,$model,$subject);
+        $values = $resource->getValues();
+        if ($values == array()) //resource dn exist -> continue with next
+            continue;
+        $values = $values[$model->getModelIri()];
+        $stmtArray[$subject] = array();
+        //loop for predicates
+        foreach ($values as $predicate => $predicate_values) {
+            //not allowed predicate for this subject
+            if (isset($constructOnly[$subject]) && !in_array($predicate,$constructOnly[$subject]))
+                continue;
+            foreach ($predicate_values as $value)
+            {
+                if (!empty($value["uri"])) {
+                    $type = "uri";
+                    $content = $value["uri"];
+                    $stmtArray[$subject][$predicate][] = array( "type" => $type,
+                        "value" => $content);
+                }
+                else {
+                    $type = "literal";
+                    $content = $value["content"];
+                    $datatype = $value["datatype"];
+                    $lang = $value["lang"];
+                    $stmtArray[$subject][$predicate][] = array( "type" => $type,
+                        "value" => $content,
+                        "datatype" => $datatype,
+                        "lang" => $lang );
+                }
+            }
+        }
+    }
+    return $stmtArray;
+}
+
+function checkRequiredProperties($ow,$graph,$object,$required)
+{
+    $app = $ow;
+    $store = $app->erfurt->getStore();
+    $model = new OntoWiki_Model_Resource($store, $graph, (string)$object);
+    $ojectpredicates = $model->getPredicates();
+    $predicates = array_keys($ojectpredicates[(string)$graph]);
+    $missing = array();
+    foreach ($required as $onereq) {
+        if (!in_array($onereq,$predicates))
+            $missing[] = $onereq;
+    }
+    return $missing;
 }
