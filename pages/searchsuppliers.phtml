@@ -1,0 +1,99 @@
+<?php
+    $templateData = loadData();
+    $ow = OntoWiki::getInstance();
+    $user = $ow->getUser();
+    $baseUri = $GLOBALS["cBaseUri"];
+    
+    $excludeGet = array("lim","off");
+    //load limit and offset
+    if (isset($_REQUEST["lim"]) && is_numeric($_REQUEST["lim"]))
+        $limit = $_REQUEST["lim"];
+    else
+        $limit = 20;
+    if (isset($_REQUEST["off"]) && is_numeric($_REQUEST["off"]))
+        $offset = $_REQUEST["off"];
+    else
+        $offset = 0;
+    //create model object
+    $publicmodel = new Erfurt_Rdf_Model($templateData["publicspace"]);
+    //select only title
+    //TODO: select more for filters
+    //note: selects only supplier (which has associated tender)
+    $query = 'SELECT ?b ?t WHERE {
+        ?b a <http://purl.org/goodrelations/v1#BusinessEntity> .
+        ?tender a <http://purl.org/procurement/public-contracts#Tender> ;
+            <http://purl.org/procurement/public-contracts#supplier> ?b .
+        OPTIONAL { ?b <http://purl.org/goodrelations/v1#legalName> ?t . }';
+    //= FILTERS =============================
+    $post = $_GET;
+    if (isset($post["filter_supplier_number"]))
+        $fs_number = str_replace('"',"'",$post["filter_supplier_number"]); else $fs_number = "";
+    if (isset($post["filter_supplier_name"]))
+        $fs_name = str_replace('"',"'",$post["filter_supplier_name"]); else $fs_name = "";
+    if ($fs_number != "" || $fs_name != "") {
+        $query .= "OPTIONAL { ?b <http://purl.org/business-register#officialNumber> ?on . }
+            OPTIONAL { ?b <http://purl.org/goodrelations/v1#legalName> ?ln . }";
+    }
+    if ($fs_number != "") {
+        $query .= "FILTER (regex(str(?on),\"$fs_number\"))";
+    }
+    if ($fs_name != "") {
+        $query .= "FILTER (regex(str(?ln),\"$fs_name\"))";
+    }
+    //= ...
+    $query .= " } ";
+    $query_pubic = $query .
+        "LIMIT $limit
+        OFFSET $offset";
+    $results = $publicmodel->sparqlQuery($query_pubic);
+    $searchmysuppliers = false;
+    //is in privatespace?
+    $privateresources = array();
+    if (!$user->isAnonymousUser()) {
+        $privatespace = getPrivateSpace($ow);
+        if ($privatespace !== false) {
+            $privatemodel = new Erfurt_Rdf_Model($privatespace[0]);
+            $privateresults = $privatemodel->sparqlQuery($query);
+            foreach ($privateresults as $result)
+                $privateresources[] = $result["b"];
+        }
+        //list only personal resources
+        if ($_REQUEST["page"] === "searchmysuppliers") {
+            $results = $privatemodel->sparqlQuery($query_pubic);
+            $searchmysuppliers = true;
+        }
+    }
+    $odd = false;
+?>
+<h2>Search contracts</h2>
+<div class="resourcein">
+<?php if ($searchmysuppliers) { ?>
+<img src="<?php echo $baseUri; ?>/img/privatespace.png" alt="in private data space" title="in private data space" />
+in private data space
+<?php } else { ?>
+<img src="<?php echo $baseUri; ?>/img/publicspace.png" alt="in public data space" title="in public data space" />
+in public data space
+<?php } ?>
+</div>
+
+<table class="searchresults">
+<tr class="firstline"><th>n.</th><th>Name</th><th></th></tr>
+<?php foreach ($results as $i => $result) { ?>
+<tr class="<?php if($odd = !$odd) echo "odd"; else echo "even"; ?>">
+<td><?php echo $offset+$i+1; ?></td>
+<td><?php echo $result["t"]; ?></td>
+<td><a href="?page=businessentity&amp;uri=<?php echo urlencode($result["b"]); ?>&amp;cht=<?php echo genChT(); ?>" class="searchbutton">
+<?php if (in_array($result["b"],$privateresources)) echo '<img src="',$baseUri,'/img/eye_pencil.png" alt="view or edit" title="view or edit"/>'; else echo '<img src="',$baseUri,'/img/eye.png" alt="view" title="view"/>'; ?>
+</a></td>
+</tr>
+<?php } ?>
+</table>
+<div class="searchnavigation">
+<?php if ($offset > 0) { ?>
+<a class="formbutton" href="<?php echo propagateGet($excludeGet); ?>lim=<?php echo $limit; ?>&amp;off=<?php echo $offset-$limit; ?>&amp;cht=<?php echo genChT(); ?>">&lt;&lt; Previous</a>
+<?php } ?>
+<a class="formbutton" href="<?php echo propagateGet($excludeGet); ?>lim=<?php echo $limit; ?>&amp;off=<?php echo $offset+$limit; ?>&amp;cht=<?php echo genChT(); ?>">Next &gt;&gt;</a>
+</div>
+
+<?php
+

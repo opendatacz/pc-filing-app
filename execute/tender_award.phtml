@@ -1,0 +1,146 @@
+<?php
+    $templateData = loadData();
+    $ow = OntoWiki::getInstance();
+    $user = $ow->getUser();
+    $store = $ow->erfurt->getStore();
+
+    $username = $user->getUsername();
+    $psuri = getPrivateSpace($ow);
+    if ($psuri === false) throw new OntoWiki_Exception("User has no private space.");
+    $modeluri = $psuri[0];
+    $model = $store->getModel($modeluri);
+    $publicmodeluri = $templateData["publicspace"];
+    $publicmodel = new Erfurt_Rdf_Model($publicmodeluri);
+    if (!isset($_REQUEST["turi"])) throw new OntoWiki_Exception("No resource selected."); //TODO: check type
+    $turi = $_REQUEST["turi"];
+    $resource_uri = $turi;
+    $resource = new Erfurt_Rdf_Model($resourceuri);
+    $userprefix = $templateData["user"];
+    $xsdp = $model->getNamespacePrefix($GLOBALS["ns_var"]["xsd"]);
+    
+    //check user rights
+    $usergroups = getContractUseroups($ow);
+    $businesses = getUserBusiness($ow);
+    
+    if ($usergroups["contractor"] && ($businesses !== false)) {
+        //check if tender is linked to contract
+        $res = $model->sparqlQuery('SELECT ?x
+            WHERE {
+                ?x <'.$GLOBALS["ns_var"]["pc"].'tender> <'.$resource_uri.'> ;
+                    a <'.$GLOBALS["ns_var"]["pc"].'Contract> .
+                <'.$resource_uri.'> a <'.$GLOBALS["ns_var"]["pc"].'Tender> .
+            }');
+        if ($res == array()) {
+            printMessage("Unexpected error. Tender not linked or wrong types.",OntoWiki_Message::ERROR);
+        }
+        else {
+            $resource_contract_uri = $res[0]["x"];
+            /*
+            //check if contractNotice was published //TODO: zjistit zda je toto omezeni platne
+            $res3 = $model->sparqlQuery('SELECT ?x
+                WHERE {
+                    <'.$resource_contract_uri.'> <'.$GLOBALS["ns_var"]["pc"].'notice> ?z ;
+                        a <'.$GLOBALS["ns_var"]["pc"].'Contract> .
+                    ?z a <'.$GLOBALS["ns_var"]["pc"].'ContractNotice> .
+                }');
+            if ($res3 !== array()) {
+                printMessage("Contract notice was already published. Can't award tender.",OntoWiki_Message::ERROR);
+            }
+            */
+            //check if there already is awarded tender for contract
+            $res2 = $model->sparqlQuery('SELECT ?y
+                WHERE {
+                    ?x <'.$GLOBALS["ns_var"]["pc"].'tender> <'.$resource_uri.'> ;
+                        a <'.$GLOBALS["ns_var"]["pc"].'Contract> ;
+                        <'.$GLOBALS["ns_var"]["pc"].'awardedTender> ?y.
+                    <'.$resource_uri.'> a <'.$GLOBALS["ns_var"]["pc"].'Tender> .
+                }');
+            if ($res2 != array()) {
+                $contract_already_awarded = $res2[0]["y"];
+                printMessage("Contract was already awarded to tender <em>$contract_already_awarded</em>",OntoWiki_Message::ERROR);
+            }
+            else {
+                $xsdp = $model->getNamespacePrefix("http://www.w3.org/2001/XMLSchema#");
+                //add :awardedTender property
+                $store->addStatement($model->getModelIri(),
+                    $resource_contract_uri,
+                    $GLOBALS["ns_var"]["pc"].'awardedTender',
+                    array('value' => $resource_uri, 'type'  => 'uri'),
+                    true);
+                //add :awardDate property
+                $today = Date("Y-m-d");
+                $store->addStatement($model->getModelIri(),
+                    $resource_contract_uri,
+                    $GLOBALS["ns_var"]["pc"].'awardDate',
+                    array('value' => $today, 'type'  => 'literal', 'datatype' => $xsdp.":date"),
+                    true);
+                
+                //CREATION OF CONTRACT AWARD NOTICE
+                $pinuri = $resource_contract_uri."/contract-award-notice/1"; //canuri
+                $publisheruri = $userprefix.$username;
+                //select creator
+                $query_creator = 'SELECT ?creator WHERE {
+                    <'.$resource_contract_uri.'> <'.$GLOBALS["ns_var"]["dcterms"].'creator> ?creator. }';
+                $res = $model->sparqlQuery($query_creator);
+                if ($res == array())
+                    $creatoruri = $publisheruri;
+                else
+                    $creatoruri = $res[0]["creator"];
+                $publicationdate = Date("Y-m-d");
+                $fillingAppUri = $templateData["fillingapp"];
+                //stmtArray for tender
+                $queryT[0] = 'SELECT ?p ?o WHERE {
+                    <'.$resource_uri.'> ?p ?o. }';
+                $options = array();
+                $options["default_subject"] = $resource_uri;
+                $stmtArray0 = constuctStmtArray($model,$queryT,$options); 
+                $stmtArray = array(
+                    $resource_contract_uri => array( //add notice link
+                        $GLOBALS["ns_var"]["pc"]."notice" => array(array(
+                            'type'  => 'uri',
+                            'value' => $pinuri
+                        )),
+                        $GLOBALS["ns_var"]["pc"].'awardedTender' => array(array(
+                            'type'  => 'uri',
+                            'value' => $resource_uri
+                        )),
+                        $GLOBALS["ns_var"]["pc"].'awardDate' => array(array(
+                            'type'  => 'literal',
+                            'value' => $today, 'datatype' => $xsdp.":date"
+                        ))
+                    ),
+                    $pinuri => array( //create notice
+                        EF_RDF_TYPE => array(array(
+                            'type'  => 'uri',
+                            'value' => 'http://purl.org/procurement/public-contracts#ContractAwardNotice' 
+                        ),
+                        array(
+                            'type'  => 'uri',
+                            'value' => 'http://www.w3.org/ns/prov#Entity'
+                        )),
+                        'http://www.w3.org/ns/prov#wasAttributedTo' => array(array(
+                            'type'  => 'uri',
+                            'value' => $fillingAppUri
+                        )),
+                        'http://purl.org/dc/terms/creator' => array(array( //id toho kdo vytvoril kontrakt
+                            'type'  => 'uri',
+                            'value' => $creatoruri
+                        )),
+                        'http://purl.org/dc/terms/publisher' => array(array( //id toho kdo publikuje
+                            'type'  => 'uri',
+                            'value' => $publisheruri
+                        )),
+                        'http://purl.org/procurement/public-contracts#publicationDate' => array(array(
+                            'type'  => 'literal', 'datatype' => $xsdp.':date',
+                            'value' => $publicationdate
+                        ))
+                ));
+                $stmtArray = array_merge($stmtArray,$stmtArray0);
+                //PUBLISH
+                $store->addMultipleStatements($publicmodel->getModelIri(), $stmtArray, false);
+                $this->view->placeholder('tender_awarded')->set(true);
+            }
+        }
+    }
+    /*
+    */

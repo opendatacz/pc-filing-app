@@ -1,0 +1,33 @@
+<?php
+    $templateData = loadData();
+    $ow = OntoWiki::getInstance();
+    $user = $ow->getUser();
+    
+    $post = $_GET;
+    
+    if (isset($_REQUEST["page"]) &&
+       ($_REQUEST["page"] == "searchsuppliers" ||
+        $_REQUEST["page"] == "searchmysuppliers"
+       ))
+    {
+        if (isset($post["filter_supplier_number"]))
+            $fs_number = $post["filter_supplier_number"]; else $fs_number = "";
+        if (isset($post["filter_supplier_name"]))
+            $fs_name = $post["filter_supplier_name"]; else $fs_name = "";
+?>
+<form action="" method="get">
+<input type="hidden" name="page" value="<?php echo $_REQUEST["page"]; ?>" >
+<div id="filterbox" class="rightbox">
+    <h3>Filter</h3>
+    <table class="filter">
+    <tr><th colspan="2">Supplier</th></tr>
+    <tr><td class="col100">Official number:</td><td><input type="text" id="filter_supplier_number" name="filter_supplier_number" value="<?php echo $fs_number; ?>" /></td></tr>
+    <tr><td>Legal name:</td><td><input type="text" id="filter_supplier_name" name="filter_supplier_name" value="<?php echo $fs_name; ?>"/></td></tr>
+    </table>
+    <div class="filterbuttons">
+    <input class="button" type="submit" value="Filter" />
+    </div>
+</div>
+</form>
+<?php
+    }

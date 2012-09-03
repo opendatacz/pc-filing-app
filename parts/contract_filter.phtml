@@ -1,0 +1,56 @@
+<?php
+    $templateData = loadData();
+    $ow = OntoWiki::getInstance();
+    $user = $ow->getUser();
+    
+    $post = $_GET;
+    
+    if (isset($_REQUEST["page"]) &&
+       ($_REQUEST["page"] == "searchcontracts" ||
+        $_REQUEST["page"] == "searchmycontracts"
+       ))
+    {
+        if (isset($post["filter_contract_currency"]))
+            $fc_currency = $post["filter_contract_currency"]; else $fc_currency = "";
+        if (isset($post["filter_contract_min"]))
+            $fc_min = $post["filter_contract_min"]; else $fc_min = "";
+        if (isset($post["filter_contract_max"]))
+            $fc_max = $post["filter_contract_max"]; else $fc_max = "";
+        if (isset($post["filter_contract_number"]))
+            $fc_number = $post["filter_contract_number"]; else $fc_number = "";
+        if (isset($post["filter_contract_name"]))
+            $fc_name = $post["filter_contract_name"]; else $fc_name = "";
+?>
+<form action="" method="get">
+<input type="hidden" name="page" value="<?php echo $_REQUEST["page"]; ?>" >
+<div id="filterbox" class="rightbox">
+    <h3>Filter</h3>
+    <table class="filter">
+    <tr><th colspan="4">Estimated price</th></tr>
+    <tr><td colspan="2">Currency:</td><td colspan="2">
+    <select class="element select" id="filter_contract_currency" name="filter_contract_currency">
+    <?php
+        foreach ($GLOBALS["all_currencies"] as $code => $currency) {
+            if ($fc_currency == $code)
+                $selected = ' selected="selected"';
+            else $selected = "";
+            echo "<option value=\"$code\"$selected>$currency</option>";
+        }
+    ?>
+    </select>
+    </td></tr>
+    <tr><td>Min: </td><td><input type="text" style="width:90%;" id="filter_contract_min" name="filter_contract_min" value="<?php echo $fc_min; ?>" /></td>
+    <td>Max: </td><td><input type="text" id="filter_contract_max" name="filter_contract_max" value="<?php echo $fc_max; ?>" /></td></tr>
+    </table>
+    <table class="filter">
+    <tr><th colspan="2">Contractor</th></tr>
+    <tr><td class="col100">Official number:</td><td><input type="text" id="filter_contract_number" name="filter_contract_number" value="<?php echo $fc_number; ?>" /></td></tr>
+    <tr><td>Legal name:</td><td><input type="text" id="filter_contract_name" name="filter_contract_name" value="<?php echo $fc_name; ?>"/></td></tr>
+    </table>
+    <div class="filterbuttons">
+    <input class="button" type="submit" value="Filter" />
+    </div>
+</div>
+</form>
+<?php
+    }
