@@ -17,7 +17,7 @@
     //create model object
     $publicmodel = new Erfurt_Rdf_Model($templateData["publicspace"]);
     //select only title
-    $query = 'SELECT ?c ?t WHERE {
+    $query = 'SELECT DISTINCT ?c ?t WHERE {
         ?c <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/procurement/public-contracts#Contract> .
         OPTIONAL { ?c <http://purl.org/dc/terms/title> ?t. } ';
     //= FILTERS =============================

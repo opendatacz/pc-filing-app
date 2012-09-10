@@ -14,6 +14,15 @@
     $basePath = $GLOBALS["cBasePath"];
     require_once("$basePath/lib/edit.lib.php");
     
+    /*$psuri = getPrivateSpace($ow);
+    $privatemodel = $store->getModel($psuri[0]);
+    $publicmodeluri = $templateData["publicspace"];
+    $publicmodel = new Erfurt_Rdf_Model($publicmodeluri);
+    $requri = $_REQUEST["uri"];
+    $conobj = new ContractsApp_Contract($store, $publicmodel, $privatemodel, $requri);
+    $constate = $conobj->getState();
+    print_r($constate);*/
+    
     //= PROCESS NEW ============================================================
     $post = $_POST;
     if ($post && isset($_GET["new"]) && $_GET["new"] == "new")
@@ -132,6 +141,24 @@
         $req = $_REQUEST;
         $conuri = $req["uri"];
     }
+    else if (isset($_REQUEST["turi"]))
+    {
+        $model = false;
+        if (!$user->isAnonymousUser()) {
+            $privatespace = getPrivateSpace($ow);
+            if ($privatespace !== false)
+                $model = new Erfurt_Rdf_Model($privatespace[0]);
+            $req = $_REQUEST;
+            $tenuri = $req["turi"];
+            $tenquery = 'SELECT ?x WHERE {
+                ?x <'.$GLOBALS["ns_var"]["pc"].'tender> <'.$tenuri.'> ;
+                    a <'.$GLOBALS["ns_var"]["pc"].'Contract> .
+                <'.$tenuri.'> a <'.$GLOBALS["ns_var"]["pc"].'Tender> . }';
+            $tenpriv = $model->sparqlQuery($tenquery);
+            if ($tenpriv != array())
+                $conuri = $tenpriv[0]["x"];
+        }
+    }
     
     //= SHOW EDIT ==============================================================
     //models
@@ -150,7 +177,10 @@
         $inPrivate = $privatemodel->sparqlQuery($checkQuery);
         $inPrivate = ( $inPrivate == array() ? false : true);
     }
-    $canEdit = (!$user->isAnonymousUser()) && $inPrivate;
+    //load Contract object
+    $conobj = new ContractsApp_Contract($store, $publicmodel, $privatemodel, $conuri);
+    //set if can edit
+    $canEdit = (!$user->isAnonymousUser()) && $inPrivate && $conobj->getState()->canEdit();
     //check published
     //check if prior notice was already published
     $pinPubQuery = 'SELECT ?n WHERE {
@@ -170,10 +200,20 @@
         $contractNoticePublished = false;
     else
         $contractNoticePublished = true;
+    //check if CancellationNotice  was already published
+    $clnPubQuery = 'SELECT ?n WHERE {
+        <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'notice> ?n .
+        ?n a <'.$GLOBALS["ns_var"]["pc"].'CancellationNotice> . }';
+    $clnPubRes = $publicmodel->sparqlQuery($clnPubQuery);
+    if ($clnPubRes == array())
+        $cancellationNoticePublished = false;
+    else
+        $cancellationNoticePublished = true;
     //check if award tender was already published
     $conAwTenQuery = 'SELECT ?at WHERE {
         <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'awardedTender> ?at . }';
     $conAwTenRes = $publicmodel->sparqlQuery($conAwTenQuery);
+    //print_r($conAwTenRes);
     if ($conAwTenRes == array())
         $tenderAwardPublished = false;
     else
@@ -199,6 +239,22 @@
         <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPriceUpper> ?epu . }';
     $estpriceLuri = getUriFromQuery($priceQuery,$publicmodel,$privatemodel,"epl");
     $estpriceUuri = getUriFromQuery($priceQuery,$publicmodel,$privatemodel,"epu");
+    //award tender
+    if ($tenderAwardPublished) {
+        $queryawten = 'SELECT ?at ?p WHERE {
+            <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'awardedTender> ?at . 
+            OPTIONAL {
+            ?at <'.$GLOBALS["ns_var"]["pc"].'offeredPrice> ?p . }}';
+        $awtender1 = $publicmodel->sparqlQuery($queryawten);
+        $awtender2 = array();
+        if ($privatemodel !== false)
+            $awtenders2 = $privatemodel->sparqlQuery($queryawten);
+        $awtender = array_merge($awtender1,$awtender2);
+        $awtenuri = $awtender[0]["at"];
+        $awtenpriceuri = $awtender[0]["p"];
+        $ppawtender = getPPValues($store,$publicmodel,$privatemodel,$awtenuri);
+        $ppawtenderprice = getPPValues($store,$publicmodel,$privatemodel,$awtenpriceuri);
+    }
     //tender values
     $queryten = 'SELECT ?t ?p WHERE {
         <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'tender> ?t . 
@@ -266,6 +322,12 @@
         $ppvalues = getPPValues($store,$publicmodel,$privatemodel,$conPubRes[0]["n"]);
         $publicvaluesCn = $ppvalues["public"];
         $privatevaluesCn = $ppvalues["private"];
+    }
+    //contract notice values
+    if ($cancellationNoticePublished) {
+        $ppvalues = getPPValues($store,$publicmodel,$privatemodel,$clnPubRes[0]["n"]);
+        $publicvaluesCln = $ppvalues["public"];
+        $privatevaluesCln = $ppvalues["private"];
     }
 ?>
 <h2>Contract</h2>
@@ -386,17 +448,31 @@ Property for upper bound of estimated price of public contract.</small></p>
             <input type="hidden" value="<?php echo $maxtid; ?>" id="tenderCounter" name="tenderCounter" />
 			<p>
                 <?php
-                    if ($canEdit && (!$contractNoticePublished) && (!$tenderAwardPublished)) echo '<a href="javascript:;" onclick="addTender();">Add Tender</a>';
-                    if ($contractNoticePublished) echo "Can't add tenders when contract notice was already published.";
-                    else if ($tenderAwardPublished) echo "Can't add tenders when contract is already awarded.";
+                    if ($canEdit && $conobj->getState()->canPublishContractAward()) echo '<a href="javascript:;" onclick="addTender();">Add Tender</a>'; //if ($canEdit && (!$contractNoticePublished) && (!$tenderAwardPublished)) 
+                    else echo "Can't add tenders when contract is already awarded.";
+                    //if ($contractNoticePublished) echo "Can't add tenders when contract notice was already published.";
+                    //else if ($tenderAwardPublished) echo "Can't add tenders when contract is already awarded.";
                 ?>
             </p>
 		</li>
         
+        <?php if ($tenderAwardPublished) { ?>
+        <li id="li_4at" >
+        <?php
+            printEditTender($ppawtender,$ppawtenderprice,$awtenuri,false,false,"Awarded tender");
+        ?>
+        <p class="guidelines" id="guide_4at"><small><strong>pc:awardedTender</strong><br /><strong>pc:offeredPrice</strong><br /> Property for price offered by a supplier.<br /><strong>pc:supplier</strong><br /> Property for supplier submitting the tender.</small></p> 
+        </li>
+        <?php } ?>
+        
         <li id="li_4t" >
         <?php
+            $canEditTender = $canEdit;
+            $canPubishTender = $canEdit && $conobj->getState()->canPublishContractAward(); //previously: && !$tenderAwardPublished;
+            if ($tenderAwardPublished)
+                $canEditTender = false;
             foreach ($pptenders as $uri => $pptender) {
-                printEditTender($pptender,$pptendersprice[$uri],$uri,$canEdit,$canEdit && !$tenderAwardPublished);
+                printEditTender($pptender,$pptendersprice[$uri],$uri,$canEditTender,$canPubishTender);
             }
         ?>
         <!--<div id="div_4t_1">
@@ -463,6 +539,34 @@ An entity responsible for making the resource available.</small></p>
 Date of publication of contract notice.</small></p> 
 		</li>
         <?php } ?>
+
+        <?php if ($cancellationNoticePublished) { /*****************************/ ?>
+        <li class="section_break">
+			<h3>Cancellation notice</h3>
+			<p></p>
+		</li>
+        <li id="li_4cn_1" >
+		<label class="description" for="dct:creator">Creator</label>
+		<div>
+			<?php printInputBox2($privatevaluesCln,$publicvaluesCln,"dct:creator",0,false,false,"large"); ?> 
+		</div><p class="guidelines" id="guide_4cn_1"><small>dct:creator<br />
+An entity primarily responsible for making the resource.</small></p> 
+		</li>
+        <li id="li_4cn_2" >
+		<label class="description" for="dct:publisher">Publisher</label>
+		<div>
+			<?php printInputBox2($privatevaluesCln,$publicvaluesCln,"dct:publisher",0,false,false,"large"); ?> 
+		</div><p class="guidelines" id="guide_4cn_2"><small>dct:publisher<br />
+An entity responsible for making the resource available.</small></p> 
+		</li>
+        <li id="li_4cn_3" >
+		<label class="description" for="pc:publicationDate">Notice publication date</label>
+		<div>
+            <?php printSelectDate2($privatevaluesCln,$publicvaluesCln,"pc:publicationDate",0,false,false); ?>
+		</div><p class="guidelines" id="guide_4cn_1"><small>pc:publicationDate<br />
+Date of publication of contract notice.</small></p> 
+		</li>
+        <?php } ?>
         
         <li class="section_break">
 			<h3>Metadata</h3>
@@ -495,4 +599,4 @@ Property for date of contract award to a supplier.</small></p>
 	</div>
 
 <?php
-
+    $GLOBALS["ContractUri"] = $conuri;

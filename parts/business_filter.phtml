@@ -20,9 +20,11 @@
 <div id="filterbox" class="rightbox">
     <h3>Filter</h3>
     <table class="filter">
-    <tr><th colspan="2">Supplier</th></tr>
+    <tr><th colspan="2">Business entity</th></tr>
     <tr><td class="col100">Official number:</td><td><input type="text" id="filter_supplier_number" name="filter_supplier_number" value="<?php echo $fs_number; ?>" /></td></tr>
     <tr><td>Legal name:</td><td><input type="text" id="filter_supplier_name" name="filter_supplier_name" value="<?php echo $fs_name; ?>"/></td></tr>
+    <tr><td colspan="2"><input type="checkbox" <?php if (isset($post["filter_supplier_supplier"])) echo 'checked="checked" '; ?>class="checkbox chbox" id="filter_supplier_supplier" name="filter_supplier_supplier" />Only suppliers</td></tr>
+    <tr><td colspan="2"><input type="checkbox" <?php if (isset($post["filter_supplier_contractor"])) echo 'checked="checked" '; ?>class="checkbox chbox" id="filter_supplier_contractor" name="filter_supplier_contractor" />Only contracting authorities</td></tr>
     </table>
     <div class="filterbuttons">
     <input class="button" type="submit" value="Filter" />

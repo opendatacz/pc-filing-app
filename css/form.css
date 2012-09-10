@@ -807,6 +807,11 @@ font-weight: bold;
 
 /* additional */
 
+input.inlinecheckbox {
+    display: inline;
+    margin: 0px 3px;
+}
+
 label small {
     font-weight: normal;
 }
@@ -833,4 +838,9 @@ label small {
     width: 100%;
     text-align: center;
 }
-
+.filter .chbox {
+    width: auto;
+    display: inline;
+    line-height: 1em;
+    margin: 0px 3px;
+}

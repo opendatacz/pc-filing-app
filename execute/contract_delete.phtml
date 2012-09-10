@@ -1,0 +1,76 @@
+<?php
+    $templateData = loadData();
+    $ow = OntoWiki::getInstance();
+    $user = $ow->getUser();
+    $store = $ow->erfurt->getStore();
+
+    $username = $user->getUsername();
+    $psuri = getPrivateSpace($ow);
+    if ($psuri === false) throw new OntoWiki_Exception("User has no private space.");
+    $modeluri = $psuri[0];
+    $model = $store->getModel($modeluri);
+    $publicmodeluri = $templateData["publicspace"];
+    $publicmodel = new Erfurt_Rdf_Model($publicmodeluri);
+    //$ontomodeluri = "http://purl.org/procurement/public-contracts#";
+    //$ontomodel = new Erfurt_Rdf_Model($ontomodeluri);
+    if (!isset($_REQUEST["uri"])) throw new OntoWiki_Exception("No resource selected.");//TODO: check type
+    $conuri = $_REQUEST["uri"];
+    $resourceuri = $conuri;
+    $resource = new Erfurt_Rdf_Model($resourceuri);
+    $title = $resource->getTitle();
+    $userprefix = $templateData["user"];
+
+    $xsdp = $model->getNamespacePrefix($GLOBALS["ns_var"]["xsd"]);
+    
+    $conobj = new ContractsApp_Contract($store, $publicmodel, $model, $conuri);
+    
+    if (!$conobj->getState()->canDelete()) {
+        printMessage("Invalid state.",OntoWiki_Message::ERROR);
+    } else {
+        $query_delete = 'SELECT DISTINCT ?c ?a ?o ?t ?op ?ep ?epl ?epu
+            WHERE {
+                <'.$conuri.'> a <'.$GLOBALS["ns_var"]["pc"].'Contract> .
+                <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'contact> ?c .
+                ?c <'.$GLOBALS["ns_var"]["vcard"].'adr> ?a .
+                ?c <'.$GLOBALS["ns_var"]["vcard"].'org> ?o .
+                OPTIONAL {
+                    <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'tender> ?t .
+                    ?t <'.$GLOBALS["ns_var"]["pc"].'offeredPrice> ?op .
+                }
+                OPTIONAL { <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPrice> ?ep . }
+                OPTIONAL { <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPriceLower> ?epl . }
+                OPTIONAL { <'.$conuri.'> <'.$GLOBALS["ns_var"]["pc"].'estimatedPriceUpper> ?epu . }
+            }';
+        //echo $query_delete;
+        $res = $model->sparqlQuery($query_delete);
+        $resources = array();
+        $resources[] = $conuri;
+        foreach ($res as $r) {
+            if (!empty($r["c"]))
+                $resources[] = $r["c"];
+            if (!empty($r["a"]))
+                $resources[] = $r["a"];
+            if (!empty($r["o"]))
+                $resources[] = $r["o"];
+            if (!empty($r["t"]))
+                $resources[] = $r["t"];
+            if (!empty($r["op"]))
+                $resources[] = $r["op"];
+            if (!empty($r["ep"]))
+                $resources[] = $r["ep"];
+            if (!empty($r["epl"]))
+                $resources[] = $r["epl"];
+            if (!empty($r["epu"]))
+                $resources[] = $r["epu"];
+        }
+        //print_r($resources);
+        
+        foreach ($resources as $r) {
+            //echo $r;
+            deleteResource($store,$model->getModelIri(),$r);
+        }
+        
+        printMessage("Contract successfully deleted.",OntoWiki_Message::SUCCESS);
+    
+    }
+    

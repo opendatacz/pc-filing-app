@@ -21,19 +21,23 @@
     $userprefix = $templateData["user"];
 
     $xsdp = $model->getNamespacePrefix($GLOBALS["ns_var"]["xsd"]);
+    
+    $conobj = new ContractsApp_Contract($store, $publicmodel, $model, $conuri);
 
     //CHECK EXISTENCE IN PUBLIC STORE
     //try {
-    $res_inpublic = $publicmodel->sparqlQuery('SELECT ?x
+    /*$res_inpublic = $publicmodel->sparqlQuery('SELECT ?x
         WHERE {
             <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'notice> ?x .
             ?x a <'.$GLOBALS["ns_var"]["pc"].'PriorInformationNotice> .
-            }');
+            }');*/
     //} catch (Exception $e) { echo $e->getMessage(); }
     //if (false) {
-    if ($res_inpublic !== array()) {
-        //resource already exists
-        printMessage("Notice already published.",OntoWiki_Message::ERROR);
+    //if ($res_inpublic !== array()) {
+    if (!$conobj->getState()->canPublishPriorInformationNotice()) {
+        //resource already exists OR further notice published
+        //printMessage("Notice already published.",OntoWiki_Message::ERROR);
+        printMessage("Invalid state.",OntoWiki_Message::ERROR);
         //can not republish
     } else {
         //CHECK REQUIRED PROPERTIES

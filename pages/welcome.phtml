@@ -7,6 +7,16 @@
     
     //= SETUP ==================================================================
     /*$configModel = $store->getModel('http://localhost/OntoWiki/Config/',false);
+    $store->deleteMatchingStatements($configModel->getModelIri(),
+        'http://ns.ontowiki.net/SysOnt/Anonymous',
+        'http://ns.ontowiki.net/SysOnt/grantModelView',
+        array('value' => 'http://ns.ontowiki.net/SysOnt/AnyModel', 'type'  => 'uri'),
+        false);
+    $store->deleteMatchingStatements($configModel->getModelIri(),
+        'http://ns.ontowiki.net/SysOnt/Anonymous',
+        'http://ns.ontowiki.net/SysOnt/grantModelEdit',
+        array('value' => 'http://ns.ontowiki.net/SysOnt/AnyModel', 'type'  => 'uri'),
+        false);
     $store->addStatement($configModel->getModelIri(),
         'http://ns.ontowiki.net/SysOnt/Admin',
         'http://ns.ontowiki.net/SysOnt/grantModelEdit',
@@ -17,6 +27,11 @@
         echo "Configuring...";
         $configModel = $store->getModel('http://localhost/OntoWiki/Config/',false);
         $store->addStatement($configModel->getModelIri(),
+            'http://ns.ontowiki.net/SysOnt/Anonymous',
+            'http://ns.ontowiki.net/SysOnt/grantModelView',
+            array('value' => 'http://contracts.opendata.cz/web/', 'type'  => 'uri'),
+            false);
+        $store->addStatement($configModel->getModelIri(),
                 'http://ns.ontowiki.net/SysOnt/Anonymous',
                 'http://ns.ontowiki.net/SysOnt/grantModelView',
                 array('value' => 'http://ld.opendata.cz/resource/', 'type'  => 'uri'),
@@ -25,11 +40,11 @@
         $store->deleteMatchingStatements($configModel->getModelIri(),
                 'http://ns.ontowiki.net/SysOnt/Anonymous',
                 'http://ns.ontowiki.net/SysOnt/grantModelView',
-                array('value' => 'http://ns.ontowiki.net/SysOnt/AnyModel ', 'type'  => 'uri'), $options);
+                array('value' => 'http://ns.ontowiki.net/SysOnt/AnyModel ', 'type'  => 'uri'), $options); //false??
         $store->deleteMatchingStatements($configModel->getModelIri(),
                 'http://ns.ontowiki.net/SysOnt/Anonymous',
                 'http://ns.ontowiki.net/SysOnt/grantModelEdit',
-                array('value' => 'http://ns.ontowiki.net/SysOnt/AnyModel ', 'type'  => 'uri'), $options);
+                array('value' => 'http://ns.ontowiki.net/SysOnt/AnyModel ', 'type'  => 'uri'), $options); //false??
         
         $groups = array('Contractors' => 'http://localhost/OntoWiki/Config/Contractors',
                         'Suppliers'   => 'http://localhost/OntoWiki/Config/Suppliers');

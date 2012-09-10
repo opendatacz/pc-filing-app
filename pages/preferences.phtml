@@ -193,7 +193,7 @@
                     'http://rdfs.org/sioc/ns#has_member',
                     array('value' => $useruri, 'type'  => 'uri'),
                     $options);
-                printMessage("User is no longer contractor.", OntoWiki_Message::SUCCESS);
+                printMessage("User is no longer contracting authority.", OntoWiki_Message::SUCCESS);
             }
             if (isset($post["supplier"]) && ($groups["supplier"] == false)) {
                $store->addStatement($configModel->getModelIri(),
@@ -248,13 +248,13 @@
     </tr>
     <tr>
         <td></td>
-        <td><input class="checkbox" id="supplier-input" type="checkbox" name="supplier" value="1" <?php echo $supplier; ?>/>
+        <td><input class="checkbox inlinecheckbox" id="supplier-input" type="checkbox" name="supplier" value="1" <?php echo $supplier; ?>/>
         I am supplier.</td>
     </tr>
     <tr>
         <td></td>
-        <td><input class="checkbox" id="contractor-input" type="checkbox" name="contractor" value="1" <?php echo $contractor; ?>/>
-        I am contractor.</td>
+        <td><input class="checkbox inlinecheckbox" id="contractor-input" type="checkbox" name="contractor" value="1" <?php echo $contractor; ?>/>
+        I am contracting authority.</td>
     </tr>
     <tr>
         <td><?php echo $passwordlabel; ?></td>

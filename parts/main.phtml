@@ -54,6 +54,17 @@
             echo $this->partial('contracts/execute/contract_publish_contract.phtml', $templateData);
             echo $this->partial('contracts/pages/contract.phtml', $templateData);
             break;
+        case("contract_cancel"):
+            echo $this->partial('contracts/execute/contract_cancel.phtml', $templateData);
+            echo $this->partial('contracts/pages/contract.phtml', $templateData);
+            break;
+        case("contract_delete"):
+            echo $this->partial('contracts/execute/contract_delete.phtml', $templateData);
+            break;
+        case("tender_award"):
+            echo $this->partial('contracts/execute/tender_award.phtml', $templateData);
+            echo $this->partial('contracts/pages/contract.phtml', $templateData);
+            break;
         default:
             echo $this->partial('contracts/pages/welcome.phtml', $templateData);
             break;

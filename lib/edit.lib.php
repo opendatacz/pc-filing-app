@@ -223,7 +223,7 @@ function printSelectPrice2($privatevalues,$publicvalues,$predicate,$predicate2,$
         $id++;
     }
 }
-function printEditTender($ppvalues,$pppricevalues,$uri,$canEdit,$canPublish)
+function printEditTender($ppvalues,$pppricevalues,$uri,$canEdit,$canPublish,$title=false)
 {
     //zjednodusena logika - nepocita s rozdily v public a private store a s vice hodnotami
     $tid = substr($uri,strrpos($uri,"/")+1);
@@ -233,13 +233,18 @@ function printEditTender($ppvalues,$pppricevalues,$uri,$canEdit,$canPublish)
     $supplierVal = getValuesForPredicate($ppvalues[$getfrom],"pc:supplier");
     $currencyVal = getValuesForPredicate($pppricevalues[$getfrom],"gr:hasCurrency");
     $priceVal = getValuesForPredicate($pppricevalues[$getfrom],"gr:hasCurrencyValue");
+    $disabled=' disabled="disabled"';
+    if ($canEdit)
+        $disabled = '';
     echo '<div id="div_4t_',$tid,'">';
-    echo '<label class="description" for="pc:tender">Tender ',$tid;
+    if ($title === false)
+        $title = 'Tender '.$tid;
+    echo '<label class="description" for="pc:tender">',$title;
     if ($canEdit)
         echo "<small> <a href=\"javascript:;\" onclick=\"removeTender('div_4t_$tid')\">(Remove tender)</a></small>";
     echo '</label>';
-    echo '<span><input id="pc:tender_gr:hasCurrencyValue',$tid,'" name="pc:tender_gr:hasCurrencyValue',$tid,'" class="element text currency" size="10" value="',$priceVal[0],'" type="text" /><label for="pc:tender_gr:hasCurrencyValue',$tid,'">Price</label></span>';
-    echo '<span><select class="element select" id="pc:tender_gr:hasCurrency',$tid,'" name="pc:tender_gr:hasCurrency',$tid,'">';
+    echo '<span><input',$disabled,' id="pc:tender_gr:hasCurrencyValue',$tid,'" name="pc:tender_gr:hasCurrencyValue',$tid,'" class="element text currency" size="10" value="',$priceVal[0],'" type="text" /><label for="pc:tender_gr:hasCurrencyValue',$tid,'">Price</label></span>';
+    echo '<span><select',$disabled,' class="element select" id="pc:tender_gr:hasCurrency',$tid,'" name="pc:tender_gr:hasCurrency',$tid,'">';
     foreach ($GLOBALS["all_currencies"] as $code => $currency) {
             if ($currencyVal[0] == $code)
                 $selected = ' selected="selected"';
@@ -256,7 +261,7 @@ function printEditTender($ppvalues,$pppricevalues,$uri,$canEdit,$canPublish)
         echo "| $aopen<img src=\"{$GLOBALS["cBaseUri"]}/img/publicspace_publish.png\" class=\"sourceico\" alt=\"publish to public data space\" title=\"publish to public data space\" /></a>{$aopen}Award tender</a>";
     }
     //echo '<p class="guidelines" id="guide_4t_',$tid,'"><small>pc:offeredPrice : Property for price offered by a supplier.<br />pc:supplier : Property for supplier submitting the tender.</small></p>'; 
-    echo '<div><input type="text" id="pc:tender_pc:supplier',$tid,'" name="pc:tender_pc:supplier',$tid,'" value="',$supplierVal[0],'" class="element text large" /><label for="pc:supplier">Supplier</label></div>';
+    echo '<div><input',$disabled,' type="text" id="pc:tender_pc:supplier',$tid,'" name="pc:tender_pc:supplier',$tid,'" value="',$supplierVal[0],'" class="element text large" /><label for="pc:supplier">Supplier</label></div>';
     echo '</div>';
 }
 

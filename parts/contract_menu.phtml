@@ -1,12 +1,16 @@
 <?php
     $templateData = loadData();
     $ow = OntoWiki::getInstance();
+    $erfurt = $ow->erfurt;
+    $store = $erfurt->getStore();
     $user = $ow->getUser();
     
     $inPrivate = false;
+    $privatemodel = false;
     $req = $_REQUEST;
-    if (isset($req["uri"])) {
-        $beuri = urldecode($req["uri"]);
+    if (isset($GLOBALS["ContractUri"])) { //if (isset($req["uri"])) {
+        //$beuri = urldecode($req["uri"]);
+        $beuri = $GLOBALS["ContractUri"];
         $checkQuery = 'SELECT ?t WHERE {<'.$beuri.'> <'.EF_RDF_TYPE.'> ?t}';
         if (!$user->isAnonymousUser()) {
             $privatespace = getPrivateSpace($ow);
@@ -20,14 +24,28 @@
             isset($GLOBALS["IAmContract"]) &&
             $GLOBALS["IAmContract"] == true)
         {
+            $publicmodel = new Erfurt_Rdf_Model($templateData["publicspace"]);
+            $conuri = $GLOBALS["ContractUri"];
+            $conobj = new ContractsApp_Contract($store, $publicmodel, $privatemodel, $conuri);
+            //print_r($conobj->getState());
 ?>
 <div id="businessbox" class="rightbox">
-    <h3>Business entity</h3>
+    <h3>Contract</h3>
     <p>
+    <?php if ($conobj->getState()->canDelete()) { ?>
+    <a href="?page=contract_delete&amp;uri=<?php echo urlencode($_GET["uri"]); ?>" class="formbutton">Delete contract</a>
+    <br />
+    <?php } if ($conobj->getState()->canPublishPriorInformationNotice()) { ?>
     <a href="?page=contract_publish_notice&amp;uri=<?php echo urlencode($_GET["uri"]); ?>" class="formbutton">Publish prior information notice</a>
     <br />
+    <?php } if ($conobj->getState()->canPublishContractNotice()) { ?>
     <a href="?page=contract_publish_contract&amp;uri=<?php echo urlencode($_GET["uri"]); ?>" class="formbutton">Publish contract notice</a>
-    
+    <br />
+    <?php } if ($conobj->getState()->canCancel()) { ?>
+    <a href="?page=contract_cancel&amp;uri=<?php echo urlencode($_GET["uri"]); ?>" class="formbutton">Cancel contract</a>
+    <?php
+        }
+    ?>
     <!--<a href="?page=tender_create&amp;contract_uri=<?php echo urlencode($_GET["uri"]); ?>" class="formbutton">Create tender</a>
     <a href="?page=contract_cancel&amp;uri=<?php echo urlencode($_GET["uri"]); ?>" class="formbutton">Cancel contract</a>
     -->

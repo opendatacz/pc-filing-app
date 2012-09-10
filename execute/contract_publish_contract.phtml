@@ -22,28 +22,34 @@
     
     $xsdp = $model->getNamespacePrefix($GLOBALS["ns_var"]["xsd"]);
     
+    $conobj = new ContractsApp_Contract($store, $publicmodel, $model, $conuri);
+    
     //CHECK IF PRIOR NOTICE PUBLISHED
-    $res_priorpubished = $publicmodel->sparqlQuery('SELECT ?x
+    /*$res_priorpubished = $publicmodel->sparqlQuery('SELECT ?x
         WHERE {
             <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'notice> ?x .
             ?x a <'.$GLOBALS["ns_var"]["pc"].'PriorInformationNotice> .
-            }');
-    if ($res_priorpubished == array()) {
+            }');*/
+    //if ($res_priorpubished == array()) {
+    if (!$conobj->getState()->canPublishContractNotice()) {
         //resource does not exist
-        printMessage("Prior information notice was not published.",OntoWiki_Message::ERROR);
+        //printMessage("Prior information notice was not published.",OntoWiki_Message::ERROR);
+        printMessage("Invalid state.",OntoWiki_Message::ERROR);
         //can not publish notice
     } else {
         //CHECK EXISTENCE IN PUBLIC STORE
-        $res_inpublic = $publicmodel->sparqlQuery('SELECT ?x
+        /*$res_inpublic = $publicmodel->sparqlQuery('SELECT ?x
             WHERE {
                 <'.$resourceuri.'> <'.$GLOBALS["ns_var"]["pc"].'notice> ?x .
                 ?x a <'.$GLOBALS["ns_var"]["pc"].'ContractNotice> .
-                }');
-        if ($res_inpublic !== array()) {
+                }');*/
+        //if ($res_inpublic !== array()) {
+        if (!$conobj->getState()->canPublishContractNotice()) {
             //resource already exists
-            printMessage("Contract notice was already published to public data space.",OntoWiki_Message::ERROR);
+            //printMessage("Contract notice was already published to public data space.",OntoWiki_Message::ERROR);
+            printMessage("Invalid state.",OntoWiki_Message::ERROR);
             //can not republish
-        } else {          
+        } else {
             //following similar to prior information notice
             //CHECK REQUIRED PROPERTIES
             $required = array();
@@ -145,7 +151,7 @@
                 $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."estimatedEndDate";
                 $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."awardCriteriaCombination";
                 $options["construct_only"][$resourceuri][] = $GLOBALS["ns_var"]["pc"]."previousNotice";
-                $stmtArray1 = constuctStmtArray($model,$query,$options);        
+                $stmtArray1 = constuctStmtArray($model,$query,$options);
                 //CREATION OF CONTRACT NOTICE
                 $pinuri = $resourceuri."/contract-notice/1";
                 $publisheruri = $userprefix.$username;

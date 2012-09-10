@@ -19,13 +19,17 @@
     //select only title
     //TODO: select more for filters
     //note: selects only supplier (which has associated tender)
-    $query = 'SELECT ?b ?t WHERE {
+    $query = 'SELECT DISTINCT ?b ?t WHERE {
         ?b a <http://purl.org/goodrelations/v1#BusinessEntity> .
-        ?tender a <http://purl.org/procurement/public-contracts#Tender> ;
-            <http://purl.org/procurement/public-contracts#supplier> ?b .
         OPTIONAL { ?b <http://purl.org/goodrelations/v1#legalName> ?t . }';
     //= FILTERS =============================
     $post = $_GET;
+    if (isset($post["filter_supplier_supplier"]))
+        $query .= '?tender a <http://purl.org/procurement/public-contracts#Tender> ;
+            <http://purl.org/procurement/public-contracts#supplier> ?b .';
+    if (isset($post["filter_supplier_contractor"]))
+        $query .= '?contract a <http://purl.org/procurement/public-contracts#Contract> ;
+            <http://purl.org/procurement/public-contracts#contractingAuthority> ?b .';
     if (isset($post["filter_supplier_number"]))
         $fs_number = str_replace('"',"'",$post["filter_supplier_number"]); else $fs_number = "";
     if (isset($post["filter_supplier_name"]))
@@ -65,7 +69,7 @@
     }
     $odd = false;
 ?>
-<h2>Search contracts</h2>
+<h2>Search suppliers</h2>
 <div class="resourcein">
 <?php if ($searchmysuppliers) { ?>
 <img src="<?php echo $baseUri; ?>/img/privatespace.png" alt="in private data space" title="in private data space" />
