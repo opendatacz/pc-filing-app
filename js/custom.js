@@ -33,7 +33,8 @@ function addTender() {
         + '<span><input id="pc:tender_gr:hasCurrencyValue'+num+'" name="pc:tender_gr:hasCurrencyValue'+num+'" class="element text currency" size="10" value="" type="text" /><label for="pc:tender_gr:hasCurrencyValue'+num+'">Price</label></span>'
         + '<span><select class="element select" id="pc:tender_gr:hasCurrency'+num+'" name="pc:tender_gr:hasCurrency'+num+'"><option value="" selected="selected"></option><option value="CZK">CZK</option><option value="EUR">EUR</option><option value="GBP">GBP</option></select><label for="pc:tender_gr:hasCurrency'+num+'">Currency</label></span>'
         //+ '<p class="guidelines" id="guide_4t_'+num+'"><small>pc:offeredPrice : Property for price offered by a supplier.<br />pc:supplier : Property for supplier submitting the tender.</small></p>' 
-        + '<div><input type="text" id="pc:tender_pc:supplier'+num+'" name="pc:tender_pc:supplier'+num+'" value="" class="element text large" /><label for="pc:supplier">Supplier</label></div>';
+        + '<div><input type="text" id="pc:tender_pc:supplier'+num+'" name="pc:tender_pc:supplier'+num+'" value="" class="element text large ac_input" autocomplete="off" />'
+        + '<label for="pc:supplier">Supplier</label></div>';
     container_elem.appendChild(newdiv);
 }
 

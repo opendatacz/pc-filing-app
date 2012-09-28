@@ -22,6 +22,29 @@
         'http://ns.ontowiki.net/SysOnt/grantModelEdit',
         array('value' => 'http://localhost/OntoWiki/Config/', 'type'  => 'uri'),
         false);*/
+    //add model from virtuoso    
+    /*$configModel = $store->getModel('http://localhost/OntoWiki/Config/',false);    
+    $store->addStatement($configModel->getModelIri(),
+        'http://contracts.opendata.cz/resource/dataset/test',
+        'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+        array('value' => 'http://ns.ontowiki.net/SysOnt/Model', 'type'  => 'uri'),
+        false);
+    $store->addStatement($configModel->getModelIri(),
+        'http://ns.ontowiki.net/SysOnt/Anonymous',
+        'http://ns.ontowiki.net/SysOnt/grantModelView',
+        array('value' => 'http://contracts.opendata.cz/resource/dataset/test', 'type'  => 'uri'),
+        false);*/
+    /*$configModel = $store->getModel('http://localhost/OntoWiki/Config/',false);    
+    $store->addStatement($configModel->getModelIri(),
+        'http://purl.org/weso/datasets/pscs/cpv/2008/',
+        'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+        array('value' => 'http://ns.ontowiki.net/SysOnt/Model', 'type'  => 'uri'),
+        false);
+    $store->addStatement($configModel->getModelIri(),
+        'http://ns.ontowiki.net/SysOnt/Anonymous',
+        'http://ns.ontowiki.net/SysOnt/grantModelView',
+        array('value' => 'http://purl.org/weso/datasets/pscs/cpv/2008/', 'type'  => 'uri'),
+        false);*/
     $setup = false; //rewrite to true and load page once then change back to false
     if ($setup) {
         echo "Configuring...";

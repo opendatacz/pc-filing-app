@@ -26,7 +26,7 @@ function printInputBox($privatevalues,$publicvalues,$predicate,$sid=0,$canEdit=f
         $id++;
     }
 }
-function printInputBox2($privatevalues,$publicvalues,$predicate,$sid=0,$canEdit=false,$new=false,$class="medium",$additional="")
+function printInputBox2($privatevalues,$publicvalues,$predicate,$sid=0,$canEdit=false,$new=false,$class="medium",$additional="",$elemid=false)
 {
     //$value = getStoredValue($privatevalues,$publicvalues,$predicate,$id);
     $id = $sid;
@@ -36,25 +36,84 @@ function printInputBox2($privatevalues,$publicvalues,$predicate,$sid=0,$canEdit=
     $publicValues = getValuesForPredicate($publicvalues,$predicate);
     //if ($predicate == "br:officialNumber")
     //    print_r($privatevalues);
+    if ($elemid == false)
+        $elemid = $predicate.$id;
     //$allValues = array_keys(array_merge(array_flip($privateValues),array_flip($publicValues)));
     $allValues = array_unique(array_merge($privateValues,$publicValues));
     if ($new && $canEdit)
-        echo "<input type=\"text\" id=\"$predicate$id\" name=\"$predicate$id\" value=\"\" class=\"element text $class\"$additional />";
+        echo "<input type=\"text\" id=\"$elemid\" name=\"$predicate$id\" value=\"\" class=\"element text $class\"$additional />";
     else if ($allValues == array())
-        echo "<input disabled=\"disabled\" type=\"text\" id=\"$predicate$id\" name=\"$predicate$id\" value=\"\" class=\"element text $class\"$additional />";
+        echo "<input disabled=\"disabled\" type=\"text\" id=\"$elemid\" name=\"$predicate$id\" value=\"\" class=\"element text $class\"$additional />";
     else foreach ($allValues as $value) {
         if ($id != $sid)
             echo "<br />";
         if ($canEdit && in_array($value,$privateValues))
-            echo "<input type=\"text\" id=\"$predicate$id\" name=\"$predicate$id\" value=\"$value\" class=\"element text $class\"$additional />";
+            echo "<input type=\"text\" id=\"$elemid\" name=\"$predicate$id\" value=\"$value\" class=\"element text $class\"$additional />";
         else
-            echo "<input disabled=\"disabled\" type=\"text\" id=\"$predicate$id\" name=\"$predicate$id\" value=\"$value\" class=\"element text $class\"$additional />";
+            echo "<input disabled=\"disabled\" type=\"text\" id=\"$elemid\" name=\"$predicate$id\" value=\"$value\" class=\"element text $class\"$additional />";
         if (in_array($value,$privateValues))
             echo "<img src=\"{$GLOBALS["cBaseUri"]}/img/privatespace.png\" class=\"sourceico\" alt=\"in private data space\" title=\"in private data space\"  />";
         if (in_array($value,$publicValues))
             echo "<img src=\"{$GLOBALS["cBaseUri"]}/img/publicspace.png\" class=\"sourceico\" alt=\"in public data space\" title=\"in public data space\"  />";
         $id++;
     }
+}
+function printRatingBox($review,$sid=0,$canEdit=false,$class="medium",$additional="")
+{
+    //$contract,$user_uri
+    //$review = $contract->getReviewBy($user_uri);
+    $id = $sid;
+    $predicate = "schema:reviewBody";
+    $new = false;
+    if ($review == null)
+        $new = true;
+    else
+        $value = $review->getText();
+    
+    if ($new && $canEdit) {
+        echo "<input type=\"text\" id=\"$predicate$id\" name=\"$predicate$id\" value=\"\" class=\"element text $class\"$additional />";
+    }
+    else if ($review == null)
+        echo "<input disabled=\"disabled\" type=\"text\" id=\"$predicate$id\" name=\"$predicate$id\" value=\"\" class=\"element text $class\"$additional />";
+    else {
+        if ($canEdit)
+            echo "<input type=\"text\" id=\"$predicate$id\" name=\"$predicate$id\" value=\"$value\" class=\"element text $class\"$additional />";
+        else
+            echo "<input disabled=\"disabled\" type=\"text\" id=\"$predicate$id\" name=\"$predicate$id\" value=\"$value\" class=\"element text $class\"$additional />";
+        echo "<img src=\"{$GLOBALS["cBaseUri"]}/img/publicspace.png\" class=\"sourceico\" alt=\"in public data space\" title=\"in public data space\"  />";
+        
+    }
+}
+function printRatingStars($review,$sid=0,$canEdit=false,$class="medium",$additional="")
+{
+    //$contract,$user_uri
+    //$review = $contract->getReviewBy($user_uri);
+    $id = $sid;
+    $predicate = "schema:ratingValue";
+    $new = false;
+    $value = "";
+    if ($review == null)
+        $new = true;
+    else
+        $value = $review->getRating();
+    if ($new && $canEdit)
+        $disabled = "";
+    else if ($review == null)
+        $disabled = ' disabled="disabled"';
+    else {
+        if ($canEdit)
+            $disabled = "";
+        else
+            $disabled = ' disabled="disabled"';
+    }
+    echo '<select',$disabled,' class="element select ',$class,'" id="',$predicate,$id,'" name="',$predicate,$id,'">';
+    echo "<option value=\"0\"></option>";
+    for ($i = 1; $i <= 5; $i++)
+        echo "<option ",(($i==$value)?"selected=\"selected\" ":""),"value=\"$i\">$i</option>";
+    echo '</select> stars';
+    if (!$new)
+        echo "<img src=\"{$GLOBALS["cBaseUri"]}/img/publicspace.png\" class=\"sourceico\" alt=\"in public data space\" title=\"in public data space\"  />";
+
 }
 function printTextarea2($privatevalues,$publicvalues,$predicate,$sid=0,$canEdit=false,$new=false)
 {
@@ -261,7 +320,8 @@ function printEditTender($ppvalues,$pppricevalues,$uri,$canEdit,$canPublish,$tit
         echo "| $aopen<img src=\"{$GLOBALS["cBaseUri"]}/img/publicspace_publish.png\" class=\"sourceico\" alt=\"publish to public data space\" title=\"publish to public data space\" /></a>{$aopen}Award tender</a>";
     }
     //echo '<p class="guidelines" id="guide_4t_',$tid,'"><small>pc:offeredPrice : Property for price offered by a supplier.<br />pc:supplier : Property for supplier submitting the tender.</small></p>'; 
-    echo '<div><input',$disabled,' type="text" id="pc:tender_pc:supplier',$tid,'" name="pc:tender_pc:supplier',$tid,'" value="',$supplierVal[0],'" class="element text large" /><label for="pc:supplier">Supplier</label></div>';
+    echo '<div><input',$disabled,' type="text" id="pc:tender_pc:supplier',$tid,'" name="pc:tender_pc:supplier',$tid,'" value="',$supplierVal[0],'" class="element text large ac_input" autocomplete="off" />
+    <label for="pc:supplier">Supplier</label></div>';
     echo '</div>';
 }
 

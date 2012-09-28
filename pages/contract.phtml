@@ -168,6 +168,9 @@
         $privatespace = getPrivateSpace($ow);
         if ($privatespace !== false)
             $privatemodel = new Erfurt_Rdf_Model($privatespace[0]);
+        $username = $user->getUsername();
+        $userprefix = $templateData["user"];
+        $usruri = $userprefix.$username;
     }
     //load from both models
     $checkQuery = 'SELECT ?t WHERE {<'.$conuri.'> a ?t}';
@@ -323,7 +326,7 @@
         $publicvaluesCn = $ppvalues["public"];
         $privatevaluesCn = $ppvalues["private"];
     }
-    //contract notice values
+    //cancel notice values
     if ($cancellationNoticePublished) {
         $ppvalues = getPPValues($store,$publicmodel,$privatemodel,$clnPubRes[0]["n"]);
         $publicvaluesCln = $ppvalues["public"];
@@ -442,6 +445,24 @@ Property for lower bound of estimated price of public contract.</small></p>
 		<p class="guidelines" id="guide_4d"><small>pc:estimatedPriceUpper<br />
 Property for upper bound of estimated price of public contract.</small></p> 
 		</li>
+        
+        <!-- CPV -->
+        <!--
+        <li class="section_break">
+			<h3>Common Procurement Vocabulary</h3>
+			<p></p>
+		</li>
+        <li id="li_4cn_1" >
+		<label class="description" for="dct:creator">Main object of contract</label>
+		<div>
+			<?php
+                $newcpv = true;
+                printInputBox2($privatevalues,$publicvalues,"pc:mainObject",0,$canEdit,$newcpv,"large","","pc_mainObject");
+            ?> 
+		</div><p class="guidelines" id="guide_4cn_1"><small>pc:mainObject<br />
+CPV (Common Procurement Vocabulary) code describing the main object of a public contract.</small></p> 
+		</li>
+        -->
         
         <li class="section_break">
 			<h3>Tenders</h3>
@@ -574,7 +595,7 @@ Date of publication of contract notice.</small></p>
 		</li>
 
 		<li id="li_5" >
-		<label class="description" for="rdf:type">Type </label>
+		<label class="description" for="rdf:type">Type</label>
 		<div>
             <?php printInputBox2($privatevalues,$publicvalues,"rdf:type",0,false,false,"large"); ?>
 		</div><p class="guidelines" id="guide_5"><small>rdf:type</small></p> 
@@ -588,6 +609,55 @@ Date of publication of contract notice.</small></p>
 Property for date of contract award to a supplier.</small></p> 
 		</li>
         -->
+        
+<?php if ($inPublic) { ?>
+        <li class="section_break">
+			<h3>Annotations</h3>
+			<p></p>
+		</li>
+        
+<?php if (!$user->isAnonymousUser()) { ?>
+        <li id="li_7" >
+		<label class="description" for="schema:reviewBody">Your review</label>
+		<div>
+<?php 
+    //$user_uri = $usruri; //$templateData["user"].$username;
+    $review = $conobj->getReviewBy($usruri);
+    printRatingBox($review,0,true,"large");
+?>
+		</div>
+        <label class="description" for="schema:ratingValue">Your rating</label>
+		<div>
+<?php 
+    printRatingStars($review,0,true);
+?>
+		</div>
+        <p class="guidelines" id="guide_7"><small><strong>schema:Review</strong><br /><strong>reviewBody</strong><br />
+        The body of the review.<br /><br /><strong>schema:Rating</strong><br /><strong>schema:ratingValue</strong><br />
+        The rating for the content.</small></p> 
+		</li>
+<?php } ?>
+
+        <li id="li_8" >
+		<label class="description" for="schema:reviewBody">Annotations of other users</label>
+		<div>
+<?php
+    $reviews = $conobj->getReviews();
+    foreach ($reviews as $r) {
+        if ((!$user->isAnonymousUser()) && ($r->getAuthorUri() == $usruri))
+            continue;
+        if ($r->getRating() == "")
+            $rrating = "(not rated)";
+        else
+            $rrating = $r->getRating()."/5";
+        echo "<p><small><em>{$r->getAuthorUri()}</em></small> <img src=\"{$GLOBALS["cBaseUri"]}/img/publicspace.png\" class=\"sourceico\" alt=\"in public data space\" title=\"in public data space\"  />
+            <br />{$r->getText()} <em>$rrating</em>";
+    }
+?>
+        </div>
+        <p class="guidelines" id="guide_8"><small>User ratings and reviews.</small></p> 
+		</li>
+<?php } /*end if ($inPublic)*/ ?>
 			
 					<li class="buttons">
 			    <input type="hidden" name="form_id" value="473035" />
@@ -595,7 +665,45 @@ Property for date of contract award to a supplier.</small></p>
 				<input id="saveForm" class="button_text button" type="submit" name="submit" value="Save changes" />
 		</li>
 			</ul>
-		</form>	
+		</form>
+
+<script type="text/javascript">
+    function findValue(li) {
+        if( li == null ) return alert("No match!");
+        if( !!li.extra ) var sValue = li.extra[0];
+        else var sValue = li.selectValue;
+        alert("The value you selected was: " + sValue);
+    }
+    function selectItem(li) {
+        findValue(li);
+    }
+    function formatItem(row) {
+        return row[0] + " (id: " + row[1] + ")";
+    }
+    function lookupAjax2(){
+        var oSuggest = $("#pc_mainObject")[0].autocompleter;
+        oSuggest.findValue();
+        return false;
+    }
+    var extra = new Array()
+    extra["autocomplete"] = "cpv";
+    $("#pc_mainObject").autocomplete(
+        "http://lod2.vse.cz/ontowiki/",
+        {
+            delay:10,
+            minChars:2,
+            matchSubset:1,
+            matchContains:1,
+            cacheLength:10,
+            onItemSelect:selectItem,
+            onFindValue:findValue,
+            formatItem:formatItem,
+            autoFill:true,
+            extraParams:extra
+        }
+    );
+</script>
+        
 	</div>
 
 <?php

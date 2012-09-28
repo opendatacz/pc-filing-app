@@ -9,6 +9,21 @@
     $GLOBALS["cBasePath"] = $this->basePath;
     $GLOBALS["wBaseUri"] = $this->wikiBaseUrl;
     
+    if (isset($_GET["ajax"])) {
+        include($this->basePath."/ajax.php");
+        Die();
+    }
+    
+    if (isset($_GET["q"]) && isset($_GET["autocomplete"])) {
+        include($this->basePath."/autocomplete.php");
+        Die();
+    }
+    
+    /*if (isset($_GET["autocomplete"])) {
+        include($this->basePath."/autocomplete.php");
+        Die();
+    }*/
+    
     echo "<",'?xml version="1.0" encoding="utf-8"?',">\n";
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
@@ -31,12 +46,14 @@
     <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUri ?>/css/main.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUri ?>/css/elements.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUri ?>/css/form.css" media="screen" />
-    
+    <!--<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUri ?>/css/jquery.autocomplete.css" media="screen" />-->
+
     <!-- jQuery -->
     <script type="text/javascript" src="<?php echo $this->themeUrlBase ?>scripts/libraries/jquery.js"></script>
     <script type="text/javascript" src="<?php echo $this->themeUrlBase ?>scripts/libraries/jquery-ui.js"></script>
 
     <!--script type="text/javascript" src="<?php echo $this->baseUri ?>/js/jquery-fluid16.js"></script-->
+    <!--<script type="text/javascript" src="<?php echo $this->baseUri ?>/js/jquery.autocomplete.js"></script>-->
     <script type="text/javascript" src="<?php echo $this->baseUri ?>/js/calendar.js"></script>
     <script type="text/javascript" src="<?php echo $this->baseUri ?>/js/view.js"></script>
     <script type="text/javascript" src="<?php echo $this->baseUri ?>/js/custom.js"></script>

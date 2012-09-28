@@ -1,6 +1,7 @@
 <?php
 $GLOBALS["ns_var"] = array(
         'rdf' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+        'rdfs' => 'http://www.w3.org/2000/01/rdf-schema#',
         'pc' => 'http://purl.org/procurement/public-contracts#',
         'br' => 'http://purl.org/business-register#',
         'gr' => 'http://purl.org/goodrelations/v1#',
@@ -8,7 +9,10 @@ $GLOBALS["ns_var"] = array(
         'dct' => 'http://purl.org/dc/terms/',
         'dcterms' => 'http://purl.org/dc/terms/',
         'xsd' => 'http://www.w3.org/2001/XMLSchema#',
-        'prov' => 'http://www.w3.org/ns/prov#'
+        'prov' => 'http://www.w3.org/ns/prov#',
+        'skos' => 'http://www.w3.org/2004/02/skos/core#',
+        'cpv-def' => 'http://purl.org/weso/pscs/cpv/ontology/',
+        'schema' => 'http://schema.org/'
     );
 $GLOBALS["all_countries"] = array(
     "" => "",
@@ -257,6 +261,8 @@ function loadData()
     $templateData["resource"] = "http://ld.opendata.cz/resource/";
     //app uri
     $templateData["fillingapp"] = "http://ld.opendata.cz/resource/fillingApp";
+    //cpv model uri
+    $templateData["cpv"] = "http://purl.org/weso/datasets/pscs/cpv/2008/";
     
     return $templateData;
 }

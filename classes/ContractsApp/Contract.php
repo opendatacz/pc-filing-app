@@ -45,7 +45,6 @@ class ContractsApp_Contract
     
     /**
      * Constructor
-     * @param ContractsApp $contractsApp
      * @param string $uri
      */
     public function __construct($store, $model_public, $model_private, $uri)
@@ -120,6 +119,34 @@ class ContractsApp_Contract
     public function getState()
     {
         return $this->_state;
+    }
+    
+    public function getReviews()
+    {
+        $curi = $this->_uri;
+        $reviewQuery = "SELECT ?rev WHERE {
+            ?rev a <{$GLOBALS["ns_var"]["schema"]}Review> .
+            ?rev <{$GLOBALS["ns_var"]["schema"]}itemReviewed> <$curi> .
+            }";
+        $result = $this->_model_public->sparqlQuery($reviewQuery);
+        $reviews = array();
+        foreach ($result as $r)
+            $reviews[] = new ContractsApp_Contract_Review($this->_store, $this->_model_public, $r["rev"]);
+        return $reviews;
+    }
+    
+    public function getReviewBy($author_uri)
+    {
+        $curi = $this->_uri;
+        $reviewQuery = "SELECT ?rev WHERE {
+            ?rev a <{$GLOBALS["ns_var"]["schema"]}Review> .
+            ?rev <{$GLOBALS["ns_var"]["schema"]}author> <$author_uri> .
+            ?rev <{$GLOBALS["ns_var"]["schema"]}itemReviewed> <$curi> .
+            }";
+        $result = $this->_model_public->sparqlQuery($reviewQuery);
+        if ($result == array())
+            return null;
+        return new ContractsApp_Contract_Review($this->_store, $this->_model_public, $result[0]["rev"]);
     }
     
 }

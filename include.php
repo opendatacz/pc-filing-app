@@ -2,6 +2,7 @@
 require_once($this->basePath."/classes/ContractsApp.php");
 require_once($this->basePath."/classes/ContractsApp/Exception.php");
 require_once($this->basePath."/classes/ContractsApp/Contract.php");
+require_once($this->basePath."/classes/ContractsApp/Contract/Review.php");
 require_once($this->basePath."/classes/ContractsApp/Contract/State.php");
 require_once($this->basePath."/classes/ContractsApp/Contract/State/PublishedPriorInformationNotice.php");
 require_once($this->basePath."/classes/ContractsApp/Contract/State/PublishedContractNotice.php");

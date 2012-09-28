@@ -17,13 +17,32 @@
     $conuri = $_REQUEST["uri"];
     $post = $_POST;
     
+    if ($post) {
+        //REVIEWS
+        $review_text = $post["schema:reviewBody0"];
+        $review_rating = $post["schema:ratingValue0"];
+        $publicmodel = new Erfurt_Rdf_Model($templateData["publicspace"]);
+        $conobj = new ContractsApp_Contract($store, $publicmodel, $model, $conuri);
+        $userprefix = $templateData["user"];
+        $usruri = $userprefix.$username;
+        $review = $conobj->getReviewBy($usruri);
+        //print_r($review);
+        //echo "_",$review->getText(),"---",$review->getRating(),"_";
+        //echo "_",$review_text,"---",$review_rating,"_";
+        if ($review == null && (!empty($review_text) || (!empty($review_rating) && $review_rating != 0))) {
+            $review = ContractsApp_Contract_Review::newReview($store, $publicmodel, $conuri, $usruri);
+        }
+        $review->setReview($review_text,$review_rating);
+    }
+    
+    try {
     if ($post) //melo by byt
     {
         $resm = new OntoWiki_Model_Resource($store,$model,$conuri);
         $vals = $resm->getValues();
         if (isset($vals[$model->getModelIri()]))
             $vals = $vals[$model->getModelIri()];
-        else throw new OntoWiki_Exception("Unknown error.");
+        else throw new OntoWiki_Exception("Not in private store.");
         //title
         literalEdit($store,$model,$conuri,$GLOBALS["ns_var"]["dct"]."title",
             $post["dct:title0"],$vals[$GLOBALS["ns_var"]["dct"]."title"][0]["content"]);
@@ -346,5 +365,7 @@
         }
 
     
+    }
+    } catch (OntoWiki_Exception $e) { //catching OntoWiki_Exception("Not in private store.");
     }
 
