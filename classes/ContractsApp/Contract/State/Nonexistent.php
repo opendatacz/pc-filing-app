@@ -6,5 +6,7 @@
  */
 class ContractsApp_Contract_State_Nonexistent extends ContractsApp_Contract_State
 {
-
+    public function __toString() {
+        return "Nonexistent contract";
+    }
 }

@@ -31,6 +31,7 @@
 ?>
 <div id="businessbox" class="rightbox">
     <h3>Contract</h3>
+    <p><?php echo $conobj->getState(); ?></p>
     <p>
     <?php if ($conobj->getState()->canDelete()) { ?>
     <a href="?page=contract_delete&amp;uri=<?php echo urlencode($_GET["uri"]); ?>" class="formbutton">Delete contract</a>

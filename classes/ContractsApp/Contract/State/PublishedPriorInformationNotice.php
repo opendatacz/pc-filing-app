@@ -6,6 +6,10 @@
  */
 class ContractsApp_Contract_State_PublishedPriorInformationNotice extends ContractsApp_Contract_State
 {
+    public function __toString() {
+        return "Contract with publsihed prior information notice";
+    }
+    
     public function canPublishContractNotice() {
         return true;
     }

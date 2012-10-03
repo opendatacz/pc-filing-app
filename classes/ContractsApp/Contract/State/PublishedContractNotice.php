@@ -6,6 +6,10 @@
  */
 class ContractsApp_Contract_State_PublishedContractNotice extends ContractsApp_Contract_State
 {
+    public function __toString() {
+        return "Contract with published contract notice";
+    }
+    
     public function canPublishContractAward() {
         return true;
     }

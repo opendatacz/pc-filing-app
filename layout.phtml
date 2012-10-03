@@ -10,19 +10,14 @@
     $GLOBALS["wBaseUri"] = $this->wikiBaseUrl;
     
     if (isset($_GET["ajax"])) {
-        include($this->basePath."/ajax.php");
+        include($this->basePath."/ajax-test.php");
         Die();
     }
     
-    if (isset($_GET["q"]) && isset($_GET["autocomplete"])) {
+    if (isset($_GET["term"]) && isset($_GET["autocomplete"])) {
         include($this->basePath."/autocomplete.php");
         Die();
     }
-    
-    /*if (isset($_GET["autocomplete"])) {
-        include($this->basePath."/autocomplete.php");
-        Die();
-    }*/
     
     echo "<",'?xml version="1.0" encoding="utf-8"?',">\n";
 ?>
@@ -80,5 +75,6 @@
         <?php echo $this->partial('contracts/parts/businessentity_menu.phtml', $templateData) ?>
     </div>
 </div>
+
 </body>
 </html>

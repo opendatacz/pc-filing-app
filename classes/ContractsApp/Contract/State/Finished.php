@@ -6,6 +6,10 @@
  */
 class ContractsApp_Contract_State_Finished extends ContractsApp_Contract_State
 {
+    public function __toString() {
+        return "Finished contract";
+    }
+    
     public function canView() {
         return true;
     }

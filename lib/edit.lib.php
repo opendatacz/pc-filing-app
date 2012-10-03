@@ -41,16 +41,16 @@ function printInputBox2($privatevalues,$publicvalues,$predicate,$sid=0,$canEdit=
     //$allValues = array_keys(array_merge(array_flip($privateValues),array_flip($publicValues)));
     $allValues = array_unique(array_merge($privateValues,$publicValues));
     if ($new && $canEdit)
-        echo "<input type=\"text\" id=\"$elemid\" name=\"$predicate$id\" value=\"\" class=\"element text $class\"$additional />";
+        echo "<input type=\"text\" id=\"$elemid\" name=\"$elemid\" value=\"\" class=\"element text $class\"$additional />";
     else if ($allValues == array())
-        echo "<input disabled=\"disabled\" type=\"text\" id=\"$elemid\" name=\"$predicate$id\" value=\"\" class=\"element text $class\"$additional />";
+        echo "<input disabled=\"disabled\" type=\"text\" id=\"$elemid\" name=\"$elemid\" value=\"\" class=\"element text $class\"$additional />";
     else foreach ($allValues as $value) {
         if ($id != $sid)
             echo "<br />";
         if ($canEdit && in_array($value,$privateValues))
-            echo "<input type=\"text\" id=\"$elemid\" name=\"$predicate$id\" value=\"$value\" class=\"element text $class\"$additional />";
+            echo "<input type=\"text\" id=\"$elemid\" name=\"$elemid\" value=\"$value\" class=\"element text $class\"$additional />";
         else
-            echo "<input disabled=\"disabled\" type=\"text\" id=\"$elemid\" name=\"$predicate$id\" value=\"$value\" class=\"element text $class\"$additional />";
+            echo "<input disabled=\"disabled\" type=\"text\" id=\"$elemid\" name=\"$elemid\" value=\"$value\" class=\"element text $class\"$additional />";
         if (in_array($value,$privateValues))
             echo "<img src=\"{$GLOBALS["cBaseUri"]}/img/privatespace.png\" class=\"sourceico\" alt=\"in private data space\" title=\"in private data space\"  />";
         if (in_array($value,$publicValues))

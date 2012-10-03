@@ -6,6 +6,10 @@
  */
 abstract class ContractsApp_Contract_State
 {
+    public function __toString() {
+        return "Unknown contract state";
+    }
+
     /**
      * Can delete contract in private space?
      * Only if the contract is not published
