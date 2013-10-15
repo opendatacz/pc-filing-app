@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>PC Filing App</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<!-- Le styles -->
+	<link href="./bootstrap/css/bootstrap.css" rel="stylesheet">	
+	<link href="./bootstrap/css/won.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<style type="text/css">
+	body {
+		padding-top: 60px;
+		padding-bottom: 40px;
+	}
+	
+	.sidebar-nav {
+		padding: 9px 0;
+	}
+	</style>
+	<link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+	<link href="css/jquery-ui.css" rel="stylesheet">
+
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+      	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+   	<![endif]-->
+</head>
+
+<body>
+
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span
+					class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="#">PC Filing App</a>
+				<div class="nav-collapse collapse">
+					<p class="navbar-text pull-right">
+						Logged in as <a id="username" href="#" class="navbar-link"></a> <a href="SystemManager?action=logout&forward=.%2F%3Ft%3Dinfo%26m%3D%3Cstrong%3EYou%20have%20been%20successfully%20logged%20out.%3C%2Fstrong%3E" class="navbar-link" style="margin-left: 1em "><i class="icon-off icon-white"></i></a> 						
+					</p>
+					<ul class="nav">
+						<li><a href="#" id="enableGuide" onclick="userHelper('on')">Help</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span2">
+				<div class="well sidebar-nav">
+					<ul class="nav nav-list">						
+						<li class="nav-header">Invitations</li>						
+						<li ><a href="supplier-invitations.html">My invitations</a></li>
+						<li class="divider"></li>
+						<li class="nav-header">My tenders</li>
+						<li class=""><a href="supplier-prepared.html">Prepared tenders</a></li>
+						<li class=""><a href="supplier-submitted.html">Submitted tenders</a></li>
+						<li class=""><a href="supplier-withdrawn.html">Withdrawn tenders</a></li>
+						<li class="divider"></li>
+						<li class=""><a href="supplier-for-cancelled.html">Tenders for cancelled calls</a></li>
+						<li class=""><a href="supplier-rejected.html">Rejected tenders</a></li><li><a href="supplier-nonawarded.html">Non-awarded tenders</a></li>						
+						<li class=""><a href="supplier-awarded.html">Awarded tenders</a></li>
+						<li class=""><a href="supplier-for-withdrawn.html">Tenders for withdrawn calls</a></li>
+						<li class=""><a href="supplier-submitted.html">Completed tenders</a></li>
+						<li class="divider"></li>
+						<li class="nav-header">Calls for tenders</li>
+						<li class=""><a href="supplier-calls.html">Open calls</a></li>
+						<li class="divider"></li>
+						<li class="nav-header">Analytics</li>
+						<li class="disabled"> <a href="#">Pricing</a></li>
+              			<li class="disabled"> <a href="#">Saving</a></li>              			
+              			<li class="disabled"><a href="#" class="btn" style="margin: 10px;">Create analysis</a></li>             			
+					</ul>
+				</div>
+			</div>
+
+			<div class="span10">
+		
+          <h3>Edit tender for '<span style="display:inline;" id="tenderTitle"></span>'</h3>
+
+          <hr>
+    
+          <!-- <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm" enctype="multipart/form-data"> -->
+          <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm">
+		    <input name="action" type="hidden" value="editTender">
+	        <input name="forward" type="hidden" value="supplier-edit-tender.html">
+	        <input name="buyerURL" id="buyerURL" type="hidden" value="">
+	        <input name="tenderURL" id="tenderURL" type="hidden" value="">
+            
+            <div class="control-group">
+			<h4>Basic Information</h4>              
+            <div class="control-group">
+              <label class="control-label" for="inputDescription">Description</label>
+              <div class="controls">
+                <textarea name="description" id="inputDescription"></textarea>
+              </div>
+            </div>
+            </div>
+            <hr>            
+            <div class="control-group">                        
+            <h4>Pricing and timing</h4>
+            <label class="control-label" for="inputPrice">Offered price <font color="red">*</font></label>
+              <div class="controls">              
+                <input type="number" step="0.01" name="price" id="inputPrice">
+                <select name="currency" id="inputCurrency">
+                  <option>USD</option>
+                  <option>EUR</option>
+                  <option>CZK</option>
+                </select>                
+              </div>            
+			</div>
+			
+			<div class="control-group">
+              <label title="Contract duration" class="control-label" for="inputStartDate">Estimated start - end date <font color="red">*</font></label>
+              <div class="controls">
+                <input required name="startDate" type="text" id="inputStartDate"> - <input required id="inputEndDate" name="endDate" type="text">
+              </div>
+            </div>
+            
+            <hr>
+            
+            <h4>Documents</h4>
+            
+            <div class="control-group hide">			
+              <label class="control-label" for="inputFileOffer">Full tender/offer</label>
+              <div class="controls">       
+              	<ul id="fileOffer" class="docList"></ul>                                       
+              </div>
+            </div>
+            
+            <div class="control-group hide">			
+              <label class="control-label" for="inputFileTechSpecs">Technical specs and brochures</label>
+              <div class="controls">     
+              	<ul id="fileTechSpecs" class="docList"></ul>                                         
+              </div>
+            </div>
+            
+            <div class="control-group hide">			
+              <label class="control-label" for="inputFilePriceDelivery">Price and delivery tables</label>
+              <div class="controls">           
+              	<ul id="filePriceDelivery" class="docList"></ul>                                   
+              </div>
+            </div>
+            
+            <div class="control-group hide">			
+              <label class="control-label" for="inputFileRequested">Requested forms</label>
+              <div class="controls">      
+              	<ul id="fileRequested" class="docList"></ul>                
+              </div>
+            </div>
+            
+            <div class="control-group">			
+              <label class="control-label" for="addDocument">Add a document</label>
+              <div class="controls">                                              
+                <select id="addDocSelect">
+                	<option value="Offer">Full tender/offer</option>
+                	<option value="TechSpecs">Technical specs and brochures</option>
+                	<option value="PriceDelivery">Price and delivery tables</option>
+                	<option value="Requested">Requested forms</option>
+                </select>                
+                <button name="addDocument" id="addDoc" class="btn" type="button">Add</button>
+                <ul id="docsList">                
+                </ul>
+              </div>
+            </div>
+            
+            <hr>
+            
+            <div class="control-group">
+			<h4>Attachments</h4>
+              <label class="control-label" for="inputFileCerts">Quality certificates</label>
+              <div class="controls">               
+              	<ul id="fileCerts" class="docList"></ul>                               
+                <select id="inputFileCerts" name="inputFileCerts">
+                	<option value="">---select---</option>
+                </select>                
+              </div>
+            </div>
+            
+            <div class="control-group">			
+              <label class="control-label" for="inputFileProfile">Company profile</label>
+              <div class="controls">                          
+              	<ul id="fileProfile" class="docList"></ul>                    
+                <select id="inputFileProfile" name="inputFileProfile">
+                	<option value="">---select---</option>
+                </select>                
+              </div>
+            </div>
+            
+            <div class="control-group">			
+              <label class="control-label" for="inputFinStatements">Financial statements (Profit and loss account and balance sheet)</label>
+              <div class="controls">      
+              	<ul id="fileFinStatements" class="docList"></ul>                                        
+                <select id="inputFileFinStatements" name="inputFileFinStatements">
+                	<option value="">---select---</option>
+                </select>                
+              </div>
+            </div>
+          	
+          	<div class="control-group">
+              <div class="form-actions">
+                <input type="submit" class="btn btn-primary" title="Click to save the tender to the list of prepared tenders. The tender will be visible only to you but not to the public and buyer." value="Save">
+                <a href="supplier-prepared.html" class="btn">Cancel</a>
+              </div>
+            </div>
+          			
+          </form>
+        </div>
+      </div>
+    </div>
+
+	
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	  
+	<script src="bootstrap/js/jquery.js"></script>
+	<script src="js/sessionstorage.1.4.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script src="js/functions.js"></script>
+	<script src="js/cpvs.js"></script>
+	<script src="js/date.format.js"></script>
+	<script src="js/toolsSupplier.js"></script>
+	<script src="js/table.js"></script>
+	<script src="js/script.js"></script>
+    <script src="bootstrap/js/bootstrap-transition.js"></script>
+    <script src="bootstrap/js/bootstrap-alert.js"></script>
+    <script src="bootstrap/js/bootstrap-modal.js"></script>
+    <script src="bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="bootstrap/js/bootstrap-tab.js"></script>
+    <script src="bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="bootstrap/js/bootstrap-popover.js"></script>
+    <script src="bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="bootstrap/js/bootstrap-carousel.js"></script>
+    <script src="bootstrap/js/bootstrap-typeahead.js"></script>
+	
+    <script>      
+      $("a").tooltip();
+	  $("button").tooltip();
+	  $("label").tooltip();
+	  $("#inputDeadline").datepicker({ dateFormat: 'yy-mm-dd' });
+	  $("#inputStartDate").datepicker({ dateFormat: 'yy-mm-dd' });
+	  $("#inputEndDate").datepicker({ dateFormat: 'yy-mm-dd' });
+	  
+	  var contractURL = sessionStorage.tenderURL;
+	  var title = sessionStorage.contractTitle;
+	  var buyerURL = sessionStorage.buyerURL;
+	  
+	  $(window).ready(function() {
+		checkUser();
+		$('#tenderTitle').append(title);
+		$('#buyerURL').attr('value',buyerURL);
+		$('#tenderURL').attr('value',tenderURL);
+		
+		loadForm();
+		loadDocs();
+		
+		$("#addDoc").on('click',function(){						
+		  	var nD = newDoc($("#addDocSelect").val(),$("#addDocSelect option:selected").text());			
+		  	$('#docsList').append(nD);
+		  	nD.fadeIn();			
+		  });
+	  });
+	  
+	  
+	function loadForm() {
+		
+		$.getJSON("PCFilingApp?action=getTenderJson&editTenderURL="+encodeURIComponent(sessionStorage.editTenderURL), function(data)
+				{
+					if (data == null || data.length == 0) {
+						sessionStorage.clear();
+						window.location.href = "./";
+					} else {
+					
+						$("#tenderURL").val(sessionStorage.editTenderURL);
+						$("#inputDescription").html(data.description);
+						$("#inputCurrency").val(data.currency);
+						$("#inputPrice").val(data.price);
+						$("#inputStartDate").val(data.startDate);
+						$("#inputEndDate").val(data.endDate);
+						
+						$.each(data.documents,function(){
+							var field;
+							switch ( this.docType ) {
+							case "Offer":								
+								field = $("#fileOffer");																
+								break;
+								
+							case "TechSpecs":								
+								field = $("#fileTechSpecs");																
+								break;
+								
+							case "PriceDelivery":								
+								field = $("#filePriceDelivery");																
+								break;
+								
+							case "Requested":								
+								field = $("#fileRequested");																
+								break;
+								
+							case "QualityCertificate":								
+								field = $("#fileCerts");																
+								break;
+								
+							case "CompanyProfile":								
+								field = $("#fileProfile");																
+								break;
+								
+							case "FinancialStatements":								
+								field = $("#fileFinStatements");																
+								break;								
+							}
+							
+							field.append('<li id="doc-'+this.token+'"><span class="removeDoc" onclick="unlinkTenderDocument(\''+this.token+'\')" ><i class="icon-remove-sign"></i></span> <a href="PCFilingApp?action=document&token='+this.token+'">'+this.fileName+'</a></li>');
+							field.closest('.control-group').show();
+						});		
+						
+					}
+				});		
+	}
+	
+	function checkUser() {
+		if (sessionStorage.username != undefined) {
+			$("#username").append(sessionStorage.username);
+		}
+		$.getJSON("SystemManager?action=getuser", function(data)
+		{
+			if (data == null || data.length == 0) {
+				sessionStorage.clear();
+				window.location.href = "./";
+			} else {
+				$("#username").html(data);
+				sessionStorage.username = data;
+			}
+		});
+	}
+	
+	function loadDocs() {
+		$.getJSON("PCFilingApp?action=getSupplierDocs", function(data) {
+			if ( data != null && data.docs ) {
+				$.each(data.docs,function(){
+					switch ( this.docType ) {
+					case "QualityCertificate":
+						$("#inputFileCerts").append('<option value="'+this.token+'">'+this.fileName+'</option>');
+						break;
+						
+					case "CompanyProfile":
+						$("#inputFileProfile").append('<option value="'+this.token+'">'+this.fileName+'</option>');
+						break;
+						
+					case "FinancialStatements":
+						$("#inputFileFinStatements").append('<option value="'+this.token+'">'+this.fileName+'</option>');
+						break;
+					}
+				});
+			}	
+		});
+	}
+	
+	function unlinkTenderDocument(token) {		
+		$.getJSON("PCFilingApp?action=unlinkTenderDocument&tenderURL="+encodeURIComponent(sessionStorage.editTenderURL)+"&token="+token, function(data) {
+			if ( data != null  ) {
+				if ( data.success )	{					
+					$("#doc-"+token).remove();
+				}
+			}	
+		});
+		
+	}
+    </script>
+  </body>
+</html>

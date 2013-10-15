@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <weight>1</weight>
+  <geoProvider>local</geoProvider>
+  <useCache>true</useCache>
+  <maxDistance>2000</maxDistance>
+</config>
