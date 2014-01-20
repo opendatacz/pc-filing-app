@@ -1,0 +1,17 @@
+views.main.title = PC Filling App
+views.main.login = Log in
+views.index.heading = Welcome to the PC Filling App
+views.index.text = This is an app for public procurement.
+views.index.buyers = Buyers
+views.index.sellers = Sellers
+views.index.public = Public
+views.index.buyersText = Brisket meatball short loin prosciutto ball tip, boudin shoulder beef. Ham pancetta ground round, tenderloin andouille boudin short loin drumstick bresaola t-bone pork belly sausage turducken strip steak bacon. Bresaola kielbasa chuck leberkas tenderloin venison ribeye salami flank pork chop beef ribs ball tip. Pork loin corned beef bresaola ribeye short loin. Brisket andouille chicken, tenderloin hamburger ribeye bacon short loin. Pancetta andouille chuck, frankfurter biltong turkey sirloin salami tenderloin flank pork filet mignon jerky.
+views.index.sellersText = Doner pork loin ham hock strip steak spare ribs jerky t-bone pork chop boudin meatloaf shankle tri-tip. Hamburger drumstick ham hock, brisket swine tail turducken chuck bresaola beef ribs venison. Frankfurter shankle tongue, ball tip chuck tail shoulder meatloaf andouille beef ribs drumstick pork. Bresaola kielbasa beef, shoulder beef ribs shank prosciutto venison capicola ham hock.
+views.index.publicText = Shank pig biltong, boudin shankle jowl turkey bacon pancetta flank. Jerky pastrami shankle tongue venison drumstick meatloaf flank tenderloin strip steak meatball pork. Boudin leberkas pig kielbasa t-bone corned beef shankle cow. Frankfurter capicola short ribs, pork brisket shoulder doner short loin ribeye. Flank filet mignon pork chop tenderloin kevin turducken salami. Short ribs capicola shankle shoulder biltong. Ribeye filet mignon sirloin ham meatball.
+views.index.buyersLogin = Log in as a buyer
+views.index.sellersLogin = Log in as a seller
+views.index.buyersRegister = Register as a buyer
+views.index.sellersRegister = Register as a seller
+views.index.intro = Brisket meatball short loin prosciutto ball tip, boudin shoulder beef. Ham pancetta ground round, tenderloin andouille boudin short loin drumstick bresaola t-bone pork belly sausage turducken strip steak bacon. Bresaola kielbasa chuck leberkas tenderloin venison ribeye salami flank pork chop beef ribs ball tip. Pork loin corned beef bresaola ribeye short loin. Brisket andouille chicken, tenderloin hamburger ribeye bacon short loin. Pancetta andouille chuck, frankfurter biltong turkey sirloin salami tenderloin flank pork filet mignon jerky.
+views.index.registration = Registration
+views.index.registrationIntro = Register as a buyer or a seller
