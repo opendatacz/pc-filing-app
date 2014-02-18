@@ -8,5 +8,14 @@ GET     /                           controllers.Application.index()
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
-# Registration submit
-GET     /                           controllers.Application.register()
+# Registration form
+GET     /register                   controllers.Application.register()
+
+# Login form
+GET		/login						controllers.Application.login()
+
+# Login result
+GET		/loginResult				controllers.Application.loginResult()
+
+# Registration result
+GET		/registerResult				controllers.Application.registerResult()

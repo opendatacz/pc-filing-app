@@ -1,11 +1,11 @@
 @(registerForm: Form[User])
 @import play.i18n._
-@import helper.twitterBootstrap._
+@import helper._
+
 
 @main("Welcome to Play") {
 
-    <div class="container">
-      <!-- Example row of columns -->
+   
       <div class="row">
         <div class="col-md-6">
           <h2>@Messages.get("views.main.title")</h2>
@@ -15,17 +15,17 @@
           <h2>@Messages.get("views.index.registration")</h2>
           <p>@Messages.get("views.index.registrationIntro")</p>
           <p>
-       		@helper.form(action = routes.Application.register()) {
+       		@helper.form(action = routes.Application.register, args = 'id -> "registerform") {
 
-    @helper.inputText(registerForm("email"))
+    @helper.inputText(field = registerForm("email"))
 
-    @helper.inputPassword(registerForm("password"))
-	<input type="submit" value="Submit">
+    @helper.inputPassword(field = registerForm("password"))
+    
+	<input type="submit">
 }
 		
           </p>
        </div>
       </div>
 
-    </div> <!-- /container -->
 }
