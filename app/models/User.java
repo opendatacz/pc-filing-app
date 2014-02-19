@@ -1,6 +1,10 @@
 package models;
 
+
+import javax.persistence.*;
+
 import play.data.validation.Constraints.Required;
+import play.db.ebean.Model;
 
 
 /**
@@ -9,12 +13,17 @@ import play.data.validation.Constraints.Required;
  * @author Jan Cerny
  * 
  */
-public class User {
+@Entity
+@Table(name="users")
+public class User extends Model {
+	@Id
+	public Long id;
+	
 	@Required
 	public String email;
 	@Required
 	public String password;
-	@Required
+	
 	public int role;	
 	
 	/**
@@ -25,4 +34,7 @@ public class User {
 		return null;
 	}
 	
+	public static Finder<Long,User> find = new Finder<Long,User>(
+		    Long.class, User.class
+	); 	
 }

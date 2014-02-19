@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import com.avaje.ebean.Ebean;
 import com.ning.http.util.Base64;
 
 import models.User;
@@ -27,6 +28,7 @@ import org.mindrot.jbcrypt.BCrypt;
 public class Application extends Controller {
 
 	public static Form<User> registerForm = Form.form(User.class);
+	public static Form<UserLogin> loginForm = Form.form(UserLogin.class);
     public static Result index() {
     	System.out.println("Index");
         return ok(index.render(form(User.class)));
@@ -46,7 +48,8 @@ public class Application extends Controller {
     	SecureRandom random = new SecureRandom();        
         String hashedPassword = BCrypt.hashpw(newUser.password, BCrypt.gensalt());
         
-        
+        User e2 = Ebean.find(User.class, 1);  
+        System.out.println("Got "+e2.email);  
     	
     	return ok(register.render(form(User.class)));
     }
@@ -61,25 +64,34 @@ public class Application extends Controller {
     }
     
     public static Result loginResult() {
-    	return ok(loginResult.render("Ok"));
+    	Form<UserLogin> filledForm = loginForm.bindFromRequest();
+    	UserLogin loggingUser = filledForm.get();
+    	
+    	User user = Ebean.find(User.class).where().eq("email", loggingUser.email).findUnique();
+    	
+    	
+    	
+    	if (BCrypt.checkpw(loggingUser.password, user.password)) {
+    		return ok(loginResult.render("Ok"));
+    	}
+    	else {
+    		return ok(loginResult.render("Login failed"));
+    	}
+
+    	
+    	
     }
     
     public static Result registerResult() {
     	Form<User> filledForm = registerForm.bindFromRequest();
     	User newUser = filledForm.get();
-    	
-    	SecureRandom random = new SecureRandom();        
+    	    	        
         String hashedPassword = BCrypt.hashpw(newUser.password, BCrypt.gensalt());
+        newUser.password = hashedPassword;
+    
         
-        DataSource ds = DB.getDataSource();
-        try {
-        	Connection conn = ds.getConnection();
-        }
-        catch (SQLException e) {
-        	e.printStackTrace();
-        }
+        Ebean.save(newUser);
         
-    	
     	return ok(registerResult.render("Ok"));
     }
     
