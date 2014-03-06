@@ -19,3 +19,5 @@ GET		/loginResult				controllers.Application.loginResult()
 
 # Registration result
 GET		/registerResult				controllers.Application.registerResult()
+
+GET     /jenaTest					controllers.Application.jenaTest()

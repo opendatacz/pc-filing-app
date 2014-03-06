@@ -23,6 +23,9 @@ import play.data.*;
 import static play.data.Form.*;
 import play.data.validation.Constraints.*;
 
+import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class Application extends Controller {
@@ -36,7 +39,7 @@ public class Application extends Controller {
     
     /**
      * TODO - delete this
-     * @return
+     * @returnLiteral label = soln.getLiteral("label") ;   // Get a result variable - must be a literal
      */
     public static Result registerUser() {
     	System.out.println("Register");
@@ -95,5 +98,41 @@ public class Application extends Controller {
     	return ok(registerResult.render("Ok"));
     }
     
+    public static Result jenaTest() {
+    	String rs = getPublicContractData();
+    	return ok(jenaTest.render(rs));
+    }
     
+    public static String getPublicContractData() {
+
+		/* @formatter:off */
+		Query query = QueryFactory.create(
+				"PREFIX pc: <http://purl.org/procurement/public-contracts#> " +
+					"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+					"SELECT ?label ?desc ?startDate " +
+					"WHERE { GRAPH <http://ld.opendata.cz/tenderstats/dataset/isvzus.cz> {"+
+					  "?g a pc:Contract ."+
+					  "?g rdfs:label ?label ."+ 
+					  "?g <http://purl.org/dc/terms/description> ?desc ."+
+					  "?g pc:startDate ?startDate ."+
+					"}"+
+					"}"+
+					"LIMIT 10");
+		
+		ResultSet rs = QueryExecutionFactory.sparqlService("http://localhost:3030/public/sparql", query).execSelect();
+		String table = "<table><tr><th>Label</th><th>Description</th><th>Start date</th></tr>";
+		 for ( ; rs.hasNext() ; )
+		    {
+		      QuerySolution soln = rs.nextSolution() ;
+		      Literal label = soln.getLiteral("label") ;   // Get a result variable - must be a literal
+		      Literal desc = soln.getLiteral("desc") ;   // Get a result variable - must be a literal
+		      Literal startDate = soln.getLiteral("startDate") ;   // Get a result variable - must be a literal
+		      
+		      table+= "<tr><td>" + label.getString() + "</td><td>" + desc.getString() + "</td><td>" + startDate.getString()+ "</td></tr>";
+		    }
+		 table += "</table>";
+		return table;
+		
+
+	}
 }
