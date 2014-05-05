@@ -808,7 +808,7 @@ public class Matchmaker extends AbstractComponent {
 			double percent = (int) (1000 * c.getTotalScore() / maxScore) / 10f;
 
 			String triplesURL =
-					"http://xrg15.projekty.ms.mff.cuni.cz:3030/public/sparql?query="
+					"http://lod2.vse.cz:3030/public/sparql?query="
 							+ "CONSTRUCT+{+%3FcontractURI+%3Fp1+%3Fo1+.+%3Fo1+%3Fp2+%3Fo2+.++%3Fo2+%3Fp3+%3Fo3+.+}"
 							+ "+WHERE+{+%3FcontractURI+%3Fp1+%3Fo1+.+OPTIONAL++{+%3Fo1+%3Fp2+%3Fo2+OPTIONAL+"
 							+ "{+%3Fo2+%3Fp3+%3Fo3+}+}+}+VALUES+%3FcontractURI+{+%3C" + c.getUrl()

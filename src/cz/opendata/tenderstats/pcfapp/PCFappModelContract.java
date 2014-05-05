@@ -541,7 +541,7 @@ public class PCFappModelContract implements Serializable {
 				"    ?o3 ?p4 ?o4 . " + 
 				"    ?o4 ?p5 ?o5 .} " + 	
 				// TODO removed because our default graph contains union of all datasets -> needed for ContractsComponent
-				"FROM <" + config.getPreference("publicGraphName") + "> " +
+				//"FROM <" + config.getPreference("publicGraphName") + "> " +
 				"WHERE " + 
 				"  { ?contractURI ?p1 ?o1 . " + 
 				"    ?contractURI a pc:Contract " + 

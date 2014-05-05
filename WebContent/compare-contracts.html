@@ -206,10 +206,10 @@
 	<script type="text/javascript">
 	
 	var contractURL = sessionStorage.contractURL;
-	var title = sessionStorage.contractTitle;
+	var title = sessionStorage.contractTitle ;
 	var description = sessionStorage.contractDescription;
 	//var cpvString = sessionStorage.contractCpvString;
-	var price = sessionStorage.contractPrice;
+	var price = sessionStorage.contractPrice ;
 	var currency = sessionStorage.contractCurrency;
 	var place = sessionStorage.contractPlace;
 	
@@ -231,8 +231,18 @@
 		$('#title1').append(title);
 		$('#title2').append(title2);
 		
-		$('#price1').append(price + " " + currency);
-		$('#price2').append(price2 + " " + currency2);
+	
+		if (price == "undefined" && currency == "undefined")
+		{
+			$('#price1').append("undefined");
+		}
+		else $('#price1').append(price + " " + currency);
+		if (price2 == "undefined" && currency2 == "undefined")
+		{
+			$('#price2').append("undefined");
+		}
+		else $('#price2').append(price2 + " " + currency2);
+		
 			
 		$('#place1').append(place);
 		$('#place2').append(place2);

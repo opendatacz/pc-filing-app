@@ -1,5 +1,6 @@
 package cz.opendata.tenderstats.matchmaker;
 
+import java.io.File;
 import java.util.Collection;
 
 import org.apache.commons.configuration.CompositeConfiguration;

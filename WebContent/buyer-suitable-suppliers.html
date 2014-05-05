@@ -269,8 +269,8 @@
 			$('#contractTable').fadeIn('slow');	
 			$('#contractTable tbody').remove();	
 			$.each(data, function(i,data){
-				var div_data = '<tr style="vertical-align: middle;"><td style="text-align: center;"><a href="#">' + 
-				htmlEncode(data.percent.toFixed(1)) + '%</a></td>                  <td>' + htmlEncode(data.name) +
+				var div_data = '<tr style="vertical-align: middle;"><td style="text-align: center;">' + 
+				htmlEncode(data.percent.toFixed(1)) + '%</td>                  <td>' + htmlEncode(data.name) +
 				'</td><td>' + htmlEncode(data.place) + 
 				'<br></td><td style="vertical-align:middle;"><a onclick="sendNotification();" href="#" ' + 
 				' class="btn btn-small"><i class="icon-envelope"></i></a> &nbsp;&nbsp;&nbsp; <a href="' + 
