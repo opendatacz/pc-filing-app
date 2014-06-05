@@ -91,6 +91,28 @@
 		  </div>
           
           <div class="view hide"> 
+			<h4>I'm interested in: </h4>
+			<br>
+          <form action="SystemManager" method="post" class="form-horizontal" >
+      		<input name="action" type="hidden" value="updateCPVs">
+			<input name="forward" id="fwd" type="hidden" value="supplier-calls.html">
+			<input name="forward-if-fail" type="hidden" value="supplier-calls.html?t=error&m=<strong>We are sorry, but preference update failed.</strong>">
+			<div class="control-group">
+			  <label class="control-label" for="inputDescription">CPV codes <font color="red">*</font></label>
+			  <div class="controls">
+				<input required id="cpv1" type="text" name="cpv1" placeholder="First CPV" autocomplete="off">&nbsp;&nbsp;&nbsp;
+				<input id="cpv2" type="text" name="cpv2" placeholder="Second CPV" autocomplete="off">&nbsp;&nbsp;&nbsp;
+				<input id="cpv3" type="text" name="cpv3" placeholder="Third CPV" autocomplete="off">&nbsp;&nbsp;&nbsp;
+			  </div>
+			</div>
+            <div class="control-group">
+              <div class="form-actions">
+                <input type="submit" class="btn btn-primary" value="Save">                
+              </div>
+            </div>            
+            </form>
+
+
           <h4 style="margin-bottom: 20px;">Documents</h4>
           
           <!-- <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm" enctype="multipart/form-data"> -->
@@ -166,12 +188,40 @@
     <script src="bootstrap/js/bootstrap-carousel.js"></script>
     <script src="bootstrap/js/bootstrap-typeahead.js"></script>
 
+	<script type="text/javascript" src="js/cpv-codes.js"></script>
 	<script type="text/javascript">
 	
+	function searchStringInArray (str, strArray) {
+	    for (var j=0; j<strArray.length; j++) {
+	        if (strArray[j].match(str)) return j;
+	    }
+	    return -1;
+	}
 	
 	$(window).ready(function() {
 		
-		loadDocs();
+		  $("#cpv1").typeahead({ source: collection });
+		  $("#cpv2").typeahead({ source: collection });
+		  $("#cpv3").typeahead({ source: collection });
+
+		  $.getJSON("SystemManager?action=getUserPreferences", function(data) {
+				if ( data != null ) {
+					if (data.cpv1) {
+						var index = searchStringInArray(data.cpv1, collection);
+						if (index > -1) $("#cpv1").val(collection[index]);
+					}
+					if (data.cpv2) {
+						var index = searchStringInArray(data.cpv2, collection);
+						if (index > -1) $("#cpv2").val(collection[index]);
+					}
+					if (data.cpv3) {
+						var index = searchStringInArray(data.cpv3, collection);
+						if (index > -1) $("#cpv3").val(collection[index]);
+					}
+				}
+		  });
+		  
+		  loadDocs();
 		
 		$("#addDoc").on('click',function(){						
 		  	var nD = newDoc($("#addDocSelect").val(),$("#addDocSelect option:selected").text());			

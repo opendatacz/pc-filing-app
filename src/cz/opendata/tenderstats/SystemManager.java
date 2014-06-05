@@ -179,7 +179,7 @@ public class SystemManager extends AbstractComponent {
 						"INSERT DATA " +
 						"{ " +
 						"	GRAPH <" + namedGraph +"> { " +
-						"		<" + beURL + ">			dc:title				\"" + businessName + "\"@en ;" +
+						"		<" + beURL + ">			gr:legalName				\"" + businessName + "\"@en ;" +
 						"								a 						gr:BusinessEntity ." +
 						"	} " +
 						"}");
@@ -197,7 +197,7 @@ public class SystemManager extends AbstractComponent {
 						"INSERT DATA " +
 						"{ " +
 						"	GRAPH <" + config.getPreference("publicGraphName") +"> { " +
-						"		<" + beURL + ">			dc:title				\"" + businessName + "\"@en ;" +
+						"		<" + beURL + ">			gr:legalName				\"" + businessName + "\"@en ;" +
 						"								a 						gr:BusinessEntity ." +
 						"	} " +
 						"}");
@@ -218,8 +218,8 @@ public class SystemManager extends AbstractComponent {
 
 	public boolean updateUserPreference(UserContext uc, String preference, String value) {
 
-		if (!preference.matches("user.*"))
-			return false;
+		/*if (!preference.matches("user.*"))
+			return false;*/
 
 		try (Connection con =
 				DriverManager.getConnection(config.getRdbAddress() + config.getRdbDatabase(),
@@ -383,6 +383,29 @@ public class SystemManager extends AbstractComponent {
 				}
 				break;
 
+			case "updateCPVs":
+				uc = getUserContext(request);
+				if (uc != null ) {
+
+					String cpv1 = (String) request.getParameter("cpv1");
+					String cpv2 = (String) request.getParameter("cpv2");
+					String cpv3 = (String) request.getParameter("cpv3");
+
+					JsonObject json = new JsonObject();
+
+					boolean c1 = updateUserPreference(uc, "cpv1", (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-')));
+					boolean c2 = updateUserPreference(uc, "cpv2", (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-')));
+					boolean c3 = updateUserPreference(uc, "cpv3", (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-')));
+					
+					json.addProperty("success", c1&&c2&&c3);
+
+					response.setContentType("application/json; charset=UTF-8");
+					response.getWriter().println(json.toString());
+				} else {
+					response.sendError(400);
+				}
+				break;
+
 			case "getUserPreferences":
 				uc = getUserContext(request);
 				if (uc != null) {
@@ -395,9 +418,7 @@ public class SystemManager extends AbstractComponent {
 					Iterator<Map.Entry<String, String>> users = uc.getPreferences().entrySet().iterator();
 					while (users.hasNext()) {
 						Map.Entry<String, String> pairs = (Map.Entry<String, String>) users.next();
-						if (pairs.getKey().matches("user.*")) {
-							json.addProperty(pairs.getKey(), pairs.getValue());
-						}
+						json.addProperty(pairs.getKey(), pairs.getValue());
 					}
 					response.setContentType("application/json; charset=UTF-8");
 					response.getWriter().println(json.toString());

@@ -134,7 +134,7 @@ public abstract class AbstractComponent extends HttpServlet {
 	 * @return {@link UserContext} associated with logged in user or null if no such user exists.
 	 */
 	protected UserContext getUserContext(HttpServletRequest request) {
-		return getUserContext(request, false);
+		return getUserContext(request, true);
 	}
 
 	/**
