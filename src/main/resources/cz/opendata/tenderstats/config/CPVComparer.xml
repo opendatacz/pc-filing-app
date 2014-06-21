@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <weight>4</weight>
+  <maxScoreForSameMainCPVs>true</maxScoreForSameMainCPVs>
+  <cpvLength>4</cpvLength>
+  <score1Match>0.7</score1Match>
+  <scoreAdditionalMatch>0.2</scoreAdditionalMatch>
+</config>

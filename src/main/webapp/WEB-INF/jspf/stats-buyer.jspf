@@ -1,0 +1,42 @@
+<%@ page pageEncoding="UTF-8" %>
+<div class="span2">				
+    <div class="box">
+        <div class="box-header">
+            <h2>My Stats</h2>
+            <div class="box-icon">
+                <a href="#" id="statsHide" class="btn-close">
+                    <i onclick="userStats('true');" class="icon-plus"></i>
+                    <i onclick="userStats('false');" class="icon-minus hide"></i>
+                </a> <a href="#" class="btn-close"><i class="icon-remove"></i></a>
+            </div>
+        </div>					
+        <div class="box-content">
+            <table class="table table-condensed hide" id="statsTable">						
+                <tr id="statsPrepared">
+                    <td>Calls in preparation</td>
+                    <td>0</td>
+                </tr>
+                <tr id="statsPublished">
+                    <td>Published calls</td>
+                    <td>0</td>
+                </tr>
+                <tr id="statsCancelled">
+                    <td>Cancelled calls</td>
+                    <td>0</td>
+                </tr>							
+                <tr id="statsAwarded">
+                    <td>Awarded contracts</td>
+                    <td>0</td>
+                </tr>
+                <tr id="statsCompleted">
+                    <td>Completed contracts</td>
+                    <td>0</td>
+                </tr>
+                <tr id="statsWithdrawn">
+                    <td>Withrawn contracts</td>
+                    <td>0</td>
+                </tr>							
+            </table>
+        </div>
+    </div>
+</div>

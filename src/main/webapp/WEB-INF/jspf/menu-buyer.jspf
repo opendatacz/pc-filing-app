@@ -1,0 +1,34 @@
+<%@ page pageEncoding="UTF-8" %>
+<div class="span2">
+    <div class="well sidebar-nav">
+        <ul class="nav nav-list">
+            <li><a href="buyer-dashboard.jsp"><i class="icon-home"></i>&nbsp;&nbsp;&nbsp;<fmt:message key="menu.dashboard" /></a></li>
+            <li class="divider"></li>
+            <li class="nav-header"><fmt:message key="menu.calls.title" /></li>
+            <li><a href="buyer-prepared.jsp"><fmt:message key="menu.calls.preparation" /></a></li>
+            <li><a href="buyer-published.jsp"><fmt:message key="menu.calls.published" /></a></li>
+            <li><a href="buyer-cancelled.jsp"><fmt:message key="menu.calls.cancelled" /></a></li>
+            <li class="divider"></li>
+            <li><a href="buyer-create-event.jsp" class="btn btn-small" style="margin-left: 10px; margin-right: 10px;"><fmt:message key="menu.calls.create" /></a></li>
+            <li class="divider"></li>
+            <li class="nav-header"><fmt:message key="menu.contracts.title" /></li>
+            <li><a href="buyer-awarded.jsp"><fmt:message key="menu.contracts.awarded" /></a></li>
+            <li><a href="buyer-completed.jsp"><fmt:message key="menu.contracts.completed" /></a></li>
+            <li><a href="buyer-withdrawn.jsp"><fmt:message key="menu.contracts.withdrawn" /></a></li>
+            <li class="divider"></li>
+            <li class="nav-header"><fmt:message key="menu.search.title" /></li>
+            <li class="disabled"><a href="#"><fmt:message key="menu.search.calls" /></a></li>
+            <li class="disabled"><a href="#"><fmt:message key="menu.search.contracts" /></a></li>
+            <li class="disabled"><a href="#"><fmt:message key="menu.search.suppliers" /></a></li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".span2 a").each(function() {
+            if (document.URL.indexOf(this.href) >= 0) {
+                $(this.parentNode).addClass("active");
+            }
+        });
+    });
+</script>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PC Filing App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      footer {
+        padding-top: 60px;
+      }
+	  .control-label {
+		width: 300px !important;
+		padding-right: 20px;
+	  }
+	  .controls input, .controls select {
+		width: 300px !important;
+	  }
+    </style>
+    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="bootstrap/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="bootstrap/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="bootstrap/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="bootstrap/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="bootstrap/ico/apple-touch-icon-57-precomposed.png">
+
+	<script src="bootstrap/js/jquery.js"></script>
+	<script src="js/functions.js"></script>    
+	<script src="js/sessionstorage.1.4.js"></script>
+
+  </head>
+
+  <body>
+
+     <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="./">PC Filing App <sup><i>BETA</i></sup></a>
+          <div class="nav-collapse collapse">
+            <ul class="nav pull-right">
+              <li><a href="#"><i class="icon-search icon-white"></i></a></li>
+              <li><a href="#"><i class="icon-question-sign icon-white"></i></a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+	
+	<!-- Message from query string -->
+	  <div id="message" class="alert fade in hide">
+         <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+
+      <h1>Matchmaker debug GUI</h1>
+
+     <form action="Matchmaker" class="form-horizontal" method="get">
+      <input name="action" type="hidden" value="debug">
+
+	    <div class="control-group">
+		  <div class="form-actions">
+			<input type="submit" name="submit-contracts" value="Find similar contracts" class="btn btn-large btn-primary">
+			<input type="submit" name="submit-suppliers" value="Find suitable suppliers" class="btn btn-large btn-primary">
+		  </div>
+		</div>	    
+	  
+	   <h4>Base contract to compare with:</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">URL in <u>public</u> space <font color="red">*</font></label>
+		  <div class="controls">
+			<input required name="contractURL" type="text" value="http://ld.opendata.cz/resource/ted.europa.eu/public-contract/cce77007-809f-4898-b509-058b5cbd5a20-92870-2012">
+		  </div>
+		</div>
+		<hr>
+		
+	   <h4>Global matchmaker settings:</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Promising contract limit <font color="red">*</font></label>
+		  <div class="controls">
+			<input required name="limit" type="text" value="100">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Publication date within <font color="red">*</font></label>
+		  <div class="controls">
+			<input required name="publicationDateRangeDays" type="text" value="365"> days (0 = disable)
+		  </div>
+		</div>
+		<hr>
+		
+	   <h4>Comparer weights:</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label">CPVComparer </font></label>
+		  <div class="controls">
+			<input name="CPVComparer.weight" type="text" value="2">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">GeoDistanceComparer </font></label>
+		  <div class="controls">
+			<input name="GeoDistanceComparer.weight" type="text" value="1">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">PublicationDateComparer </font></label>
+		  <div class="controls">
+			<input name="PublicationDateComparer.weight" type="text" value="1">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">TenderDeadlineComparer </font></label>
+		  <div class="controls">
+			<input name="TenderDeadlineComparer.weight" type="text" value="0">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">TextComparer </font></label>
+		  <div class="controls">
+			<input name="TextComparer.weight" type="text" value="1">
+		  </div>
+		</div>
+		<hr>
+		
+	   <h4>Filter results by comparer score:</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label">CPVComparer </font></label>
+		  <div class="controls">
+			min :
+			<input name="CPVComparer.min" type="text" style="width:100px !important;" value="">
+			&nbsp; max :
+			<input name="CPVComparer.max" type="text" style="width:100px !important;" value="1">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">GeoDistanceComparer </font></label>
+		  <div class="controls">
+			min :
+			<input name="GeoDistanceComparer.min" type="text" style="width:100px !important;" value="">
+			&nbsp; max :
+			<input name="GeoDistanceComparer.max" type="text" style="width:100px !important;" value="1">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">PublicationDateComparer </font></label>
+		  <div class="controls">
+			min :
+			<input name="PublicationDateComparer.min" type="text" style="width:100px !important;" value="">
+			&nbsp; max :
+			<input name="PublicationDateComparer.max" type="text" style="width:100px !important;" value="1">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">TenderDeadlineComparer </font></label>
+		  <div class="controls">
+			min :
+			<input name="TenderDeadlineComparer.min" type="text" style="width:100px !important;" value="">
+			&nbsp; max :
+			<input name="TenderDeadlineComparer.max" type="text" style="width:100px !important;" value="1">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">TextComparer </font></label>
+		  <div class="controls">
+			min :
+			<input name="TextComparer.min" type="text" style="width:100px !important;" value="">
+			&nbsp; max :
+			<input name="TextComparer.max" type="text" style="width:100px !important;" value="1">
+		  </div>
+		</div>
+		<hr>
+		
+	   <h4>CPVComparer:</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Give maximum score if main CPVs match</label>
+		  <div class="controls">
+			<input required name="CPVComparer.maxScoreForSameMainCPVs" type="text" value="true">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Min common CPV prefix length</label>
+		  <div class="controls">
+			<input required name="CPVComparer.cpvLength" type="text" value="4">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Score for first matching CPV</label>
+		  <div class="controls">
+			<input required name="CPVComparer.score1Match" type="text" value="0.7">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Score for each additional matching CPV</label>
+		  <div class="controls">
+			<input required name="CPVComparer.scoreAdditionalMatch" type="text" value="0.2">
+		  </div>
+		</div>
+		<hr>
+
+	   <h4>GeoDistanceComparer:</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Geoprovider to use</label>
+		  <div class="controls">
+			<select name="GeoDistanceComparer.geoProvider" required>
+				<option value="default" selected>Default</option>
+				<option value="local">Local</option>
+				<option value="nominatim">Nominatim</option>
+				<option value="google maps">Google Maps</option>
+			  </select>
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Use cached results if available</label>
+		  <div class="controls">
+			<select name="GeoDistanceComparer.useCache" required>
+			  <option value="true" selected>Yes</option>
+			  <option value="false">No</option>
+		    </select>
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Maximum distance (km)</label>
+		  <div class="controls">
+			<input required name="GeoDistanceComparer.maxDistance" type="text" value="2000">
+		  </div>
+		</div>
+		<hr>
+
+	   <h4>PublicationDateComparer:</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Max difference between dates (years)</label>
+		  <div class="controls">
+			<input required name="PublicationDateComparer.maxDifference" type="text" value="10">
+		  </div>
+		</div>
+		<hr>
+
+	   <h4>TenderDeadlineComparer:</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Max difference between dates (years)</label>
+		  <div class="controls">
+			<input required name="TenderDeadlineComparer.maxDifference" type="text" value="10">
+		  </div>
+		</div>
+		<hr>
+
+	   <h4>TextComparer:</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Word similarity threshold</label>
+		  <div class="controls">
+			<input required name="TextComparer.wordSimilarityThreshold" type="text" value="0.8">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Multiply raw score from string metric by</label>
+		  <div class="controls">
+			<input required name="TextComparer.rawScoreMultiplier" type="text" value="4">
+		  </div>
+		</div>
+		<hr>		
+		
+		<div class="control-group">
+		  <div class="form-actions">
+			<input type="submit" name="submit-contracts" value="Find similar contracts" class="btn btn-large btn-primary">
+			<input type="submit" name="submit-suppliers" value="Find suitable suppliers" class="btn btn-large btn-primary">
+		  </div>
+		</div>	  
+	  </form>
+
+
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="bootstrap/js/bootstrap-transition.js"></script>
+    <script src="bootstrap/js/bootstrap-alert.js"></script>
+    <script src="bootstrap/js/bootstrap-modal.js"></script>
+    <script src="bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="bootstrap/js/bootstrap-tab.js"></script>
+    <script src="bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="bootstrap/js/bootstrap-popover.js"></script>
+    <script src="bootstrap/js/bootstrap-button.js"></script>
+    <script src="bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="bootstrap/js/bootstrap-carousel.js"></script>
+    <script src="bootstrap/js/bootstrap-typeahead.js"></script>
+
+
+  </body>
+</html>
