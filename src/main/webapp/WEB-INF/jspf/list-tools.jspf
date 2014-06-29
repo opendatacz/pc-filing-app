@@ -1,0 +1,8 @@
+<%@ page pageEncoding="UTF-8" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<div class="pull-right" style="padding-top: 5px;">
+    <a href="#" rel="tooltip" data-placement="bottom" class="btn disabled" title="<fmt:message key="listtools.filter" />"><i class="icon-filter"></i></a>
+    <a href="#" rel="tooltip" data-placement="bottom" class="btn disabled" title="<fmt:message key="listtools.customize" />"><i class="icon-wrench"></i></a>
+    <a href="#" rel="tooltip" data-placement="bottom" class="btn disabled" title="<fmt:message key="listtools.switch" />"><i class="icon-eye-open"></i></a>
+    <a href="#" rel="tooltip" data-placement="bottom" class="btn" title="<fmt:message key="refresh" bundle="${cons}" />" onclick="refresh();"><i class="icon-refresh"></i></a>
+</div>

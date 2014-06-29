@@ -69,7 +69,7 @@ public class PCFappModelTender implements Serializable {
 
 		JsonObject supplier = new JsonObject();
 		supplier.addProperty("entity", tenderRes.getProperty(PCFappModel.pc_supplier).getObject().asResource().toString());
-		supplier.addProperty("name",
+                supplier.addProperty("name",
 				tenderRes.getProperty(PCFappModel.pc_supplier).getObject().asResource().getProperty(PCFappModel.dc_title)
 						.getObject().asLiteral().getString());
 		json.add("supplier", supplier);
@@ -400,7 +400,7 @@ public class PCFappModelTender implements Serializable {
 						"	} " +
 						"}");
 		/* @formatter:on */
-
+                System.out.println(request);
 		UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
 		upr.execute();		
 
@@ -525,7 +525,7 @@ public class PCFappModelTender implements Serializable {
 
 				"       } " + "		GRAPH ?buyerURI " + "		{" + "			?contractURI	a					pc:Contract"
 				+ ".			?contractURI	dc:title			?title " + ".			?contractURI	pc:contractingAuthority			?buyerEntity "
-				+ ".			?buyerEntity	dc:title			?buyerName " + ".			?contractURI 	pc:mainObject       ?cpv1URL "
+				+ /*".			?buyerEntity	dc:title			?buyerName " +*/ ".			?contractURI 	pc:mainObject       ?cpv1URL "
 				+ ".			OPTIONAL { ?contractURI	pcfapp:confidentialPrice ?conf }" + "           OPTIONAL" + "			{"
 				+ "				?contractURI pcfapp:modified ?modified " + "			} " + "			OPTIONAL " + "			{ "
 				+ "         		?contractURI pc:notice ?notice . " + "	    		?notice pc:publicationDate ?publicationDate "

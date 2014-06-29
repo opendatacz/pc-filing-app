@@ -160,6 +160,16 @@
                             <file>${basedir}/lib/secondstring-20120620.jar</file>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>default-install</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -203,6 +213,15 @@
                     <stopPort>8005</stopPort>
                     <stopKey>STOP</stopKey>
                     <contextPath>/</contextPath>
+                    <webAppConfig>
+                        <contextPath>/</contextPath>
+                        <sessionHandler implementation="org.eclipse.jetty.server.session.SessionHandler">
+                            <sessionManager implementation="org.eclipse.jetty.server.session.HashSessionManager">
+                                <storeDirectory>${project.build.directory}/sessions</storeDirectory>
+                                <idleSavePeriod>1</idleSavePeriod>
+                            </sessionManager>
+                        </sessionHandler>
+                    </webAppConfig>
                 </configuration>
                 <executions>
                     <execution>

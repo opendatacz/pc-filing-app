@@ -1,8 +1,8 @@
 <%@ page pageEncoding="UTF-8" %>
-<div class="span2">				
+<div class="span2" id="statsbuyer">				
     <div class="box">
         <div class="box-header">
-            <h2>My Stats</h2>
+            <h2><fmt:message key="stats.title" /></h2>
             <div class="box-icon">
                 <a href="#" id="statsHide" class="btn-close">
                     <i onclick="userStats('true');" class="icon-plus"></i>
@@ -13,27 +13,27 @@
         <div class="box-content">
             <table class="table table-condensed hide" id="statsTable">						
                 <tr id="statsPrepared">
-                    <td>Calls in preparation</td>
+                    <td><fmt:message key="stats.calls.preparation" /></td>
                     <td>0</td>
                 </tr>
                 <tr id="statsPublished">
-                    <td>Published calls</td>
+                    <td><fmt:message key="stats.calls.published" /></td>
                     <td>0</td>
                 </tr>
                 <tr id="statsCancelled">
-                    <td>Cancelled calls</td>
+                    <td><fmt:message key="stats.calls.cancelled" /></td>
                     <td>0</td>
                 </tr>							
                 <tr id="statsAwarded">
-                    <td>Awarded contracts</td>
+                    <td><fmt:message key="stats.contracts.awarded" /></td>
                     <td>0</td>
                 </tr>
                 <tr id="statsCompleted">
-                    <td>Completed contracts</td>
+                    <td><fmt:message key="stats.contracts.completed" /></td>
                     <td>0</td>
                 </tr>
                 <tr id="statsWithdrawn">
-                    <td>Withrawn contracts</td>
+                    <td><fmt:message key="stats.contracts.withdrawn" /></td>
                     <td>0</td>
                 </tr>							
             </table>

@@ -1066,9 +1066,9 @@ public class PCFilingApp extends AbstractComponent {
 		JsonParser p = new JsonParser();
 		synchronized (session) {
 		
-			String resourceString = (String) session.getAttribute(request.getParameter("tableName"));							
+			String resourceString = (String) session.getAttribute(request.getParameter("tableName"));
 			if ( request.getParameter("reload") != null || resourceString == null ) {					
-				
+
 				try {
 					set = (ResultSet) actionTable.invoke(this, request, uc);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {

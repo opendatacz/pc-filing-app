@@ -68,7 +68,7 @@ public abstract class AbstractComparer implements Comparer {
 
     public AbstractComparer(Configuration config) {
         this.config = new CompositeConfiguration();
-        String fileName = "config/" + getName() + ".xml";
+        String fileName = "../config/" + getName() + ".xml";
         try {
             this.config.addConfiguration(new XMLConfiguration(getClass().getResource(fileName)));
         } catch (ConfigurationException e) {
