@@ -154,11 +154,11 @@
             // ?m=lorem ipsum&t=info
             $(window).ready(function() {
                 var mtype = $_GET("t");
-                if (mtype !== null) {
+                if (typeof mtype !== "undefined" && mtype !== null) {
                     $('#message').addClass('alert-' + mtype);
                 }
                 var mtext = $_GET("m");
-                if (mtext !== null) {
+                if (typeof mtext !== "undefined" && mtext !== null) {
                     $('#message').append(mtext).fadeIn('slow');
                 }
             });
