@@ -1,20 +1,3 @@
-# Created by http://gitignore.io
-
-### Java ###
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-### OSX ###
-.DS_Store
-.AppleDouble
-.LSOverride
-Icon
-
-
 # Thumbnails
 ._*
 
@@ -23,7 +6,7 @@ Icon
 .Trashes
 WebContent/META-INF/context.xml
 build.xml
-nbproject/*
+/nbproject/
 /target/
 nb-configuration.xml
 nbactions.xml
