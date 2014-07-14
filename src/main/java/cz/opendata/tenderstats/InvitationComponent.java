@@ -39,7 +39,7 @@ public class InvitationComponent extends AbstractComponent {
 
 	private static final long serialVersionUID = 1L;
 	private Connection con = null;
-
+    
 	/**
 	 * Holds some info about an event to be displayed as a Invitations table row in frontend
 	 * 

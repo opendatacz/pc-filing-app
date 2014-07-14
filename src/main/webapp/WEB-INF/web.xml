@@ -3,7 +3,7 @@
   <display-name>TenderStats</display-name>
   <context-param>
     <param-name>rdbAddress</param-name>
-    <param-value>jdbc:mysql://192.168.116.130:3306/</param-value>
+    <param-value>jdbc:mysql://192.168.1.3:3306/</param-value>
   </context-param>
   <context-param>
     <param-name>rdbDatabase</param-name>
@@ -74,11 +74,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>Matchmaker</servlet-name>
-    <servlet-class>cz.opendata.tenderstats.matchmaker.Matchmaker</servlet-class>
-    <init-param>
-      <param-name>configDirectory</param-name>
-      <param-value>config/</param-value>
-    </init-param>
+    <servlet-class>cz.opendata.tenderstats.Matchmaker</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Matchmaker</servlet-name>
