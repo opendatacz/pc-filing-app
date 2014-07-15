@@ -38,15 +38,12 @@
                         </tbody>
                     </table>
 
-                    <div style="text-align: center;" id="progressbar">
-                        <br> <img src="images/progressbar.gif" />
-                    </div>
+                    <div id="progressbar"></div>
 
                     <div class="pagination pagination-centered">
                         <ul id="pages">
 
                         </ul>
-
                     </div>
 
                     <div id="showAllPages" class="hide pagination pull-right" style="margin: 0; margin-top: -16px;">

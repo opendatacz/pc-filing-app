@@ -2,136 +2,130 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
-    <head>
-        <%@include file="WEB-INF/jspf/header.jspf" %>
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.buyer" />
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.constants" var="cons" />
-        <link href="./bootstrap/css/won.css" rel="stylesheet" />
-    </head>
-    <body>
-        <%@include file="WEB-INF/jspf/header-private.jspf" %>
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <%@include file="WEB-INF/jspf/menu-buyer.jspf" %>
-                <div class="span8">
-                    <h3 style="margin-bottom: 20px;"><fmt:message key="similarevents.title" /> '<span style="display:inline;" id="contractTitle"></span>'.</h3>
+  <head>
+    <%@include file="WEB-INF/jspf/header.jspf" %>
+    <fmt:setBundle basename="cz.opendata.tenderstats.i18n.buyer" />
+    <fmt:setBundle basename="cz.opendata.tenderstats.i18n.constants" var="cons" />
+    <link href="bootstrap/css/won.css" rel="stylesheet" />
+  </head>
+  <body>
+    <%@include file="WEB-INF/jspf/header-private.jspf" %>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <%@include file="WEB-INF/jspf/menu-buyer.jspf" %>
+        <div class="span8">
+          <h3 class="matchmakerResultsTitle">
+            <fmt:message key="similarevents.title" /> '<span id="contractTitle"></span>'.
+          </h3>
 
-                    <!--
-                    <div class="btn-group btn-group">
-               <a href="mycontracts-step-05.html" class="btn btn-small" title="Click to compare your contract with this one.">compare</a>
-            </div>
-                    -->
+          <!--
+          <div class="btn-group btn-group">
+            <a href="mycontracts-step-05.html" class="btn btn-small" title="Click to compare your contract with this one.">compare</a>
+          </div>
+          -->
 
-                    <table class="table table-striped table-bordered" style="display:none;" id="contractTable">
-                        <thead>
-                            <tr>
-                                <th><fmt:message key="similarity" bundle="${cons}" /></th>
-                                <th><fmt:message key="contracttitle" bundle="${cons}" /></th>
-                                <th><fmt:message key="place" bundle="${cons}" /></th>
-                                <th><fmt:message key="action" bundle="${cons}" /></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+          <table class="table table-striped table-bordered" id="matchResultsTable">
+            <thead>
+              <tr>
+                <th><fmt:message key="similarity" bundle="${cons}" /></th>
+                <th><fmt:message key="contracttitle" bundle="${cons}" /></th>
+                <!--
+                <th><fmt:message key="place" bundle="${cons}" /></th>
+                <th><fmt:message key="action" bundle="${cons}" /></th>
+                -->
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
 
-                    <div style="text-align: center;" id="progressbar"><br><img src="images/progressbar.gif"/></div>
+          <div id="progressbar"></div>
 
-                    <div class="pagination pagination-centered">
-                        <ul id="pages">
+          <div class="pagination pagination-centered">
+            <ul id="pagination"></ul>
+          </div>
 
-                        </ul>
-                    </div>
-
-                    <div id="showAllPages" class="hide pagination pull-right" style="margin:0; margin-top:-16px;">
-                        <ul>
-                            <li><a onclick="$('.3dots').remove();
-                                    $('#pages li').removeClass('reallyhide');" href="#"><fmt:message key="showallpages" bundle="${cons}" /></a>
-                            </li>
-                        </ul>
-                    </div>
-
-                </div>
-                <%@include file="WEB-INF/jspf/stats-buyer.jspf" %>
-                <div id="addedboxes">				
-                    <div class="box">
-                        <div id="refine" style="display:none;">
-                            <div class="box-header">
-                                <h2><fmt:message key="similarevents.results" /></h2>
-                            </div>
-                            <div class="box-content">
-                                <form id="refineForm" style="margin:5px">
-                                    <input type="hidden" name="refine" value="true">
-                                    <label><fmt:message key="age" bundle="${cons}" />:</label>
-                                    <input name="dateFrom" class="input-small hasDatePicker" type="text" placeholder="<fmt:message key="similarevents.filter.datefrom" /> ..." /> - <input name="dateTo" class="input-small hasDatePicker" type="text" placeholder="<fmt:message key="similarevents.filter.dateto" /> ..." />
-                                    <label><fmt:message key="price" bundle="${cons}" />:</label>
-                                    <input disabled name="priceFrom" class="input-small" type="text" placeholder="<fmt:message key="similarevents.filter.minprice" /> ..." /> - <input disabled name="priceTo" class="input-small" type="text" placeholder="<fmt:message key="similarevents.filter.maxprice" /> ..." />
-                                    <select disabled name="priceCurrency" style="width:60px">
-                                        <option>EUR</option>
-                                        <option>USD</option>
-                                    </select>
-                                    <label><fmt:message key="distance" bundle="${cons}" />:</label>
-                                    <input name="maxDistance" class="input-small" type="text" placeholder="<fmt:message key="similarevents.filter.maxdistance" /> ..." />
-                                    <label><fmt:message key="countries" bundle="${cons}" />:</label>
-                                    <select name="countries" style="width:160px" multiple="multiple">
-                                        <option value="-- any --">-- any --</option>
-                                        <option value="Austria">Austria</option>
-                                        <option value="Belgium">Belgium</option>
-                                        <option value="Bulgaria">Bulgaria</option>
-                                        <option value="Cyprus">Cyprus</option>
-                                        <option value="Czech Republic">Czech Republic</option>
-                                        <option value="Denmark">Denmark</option>
-                                        <option value="Estonia">Estonia</option>
-                                        <option value="Finland">Finland</option>
-                                        <option value="France">France</option>
-                                        <option value="Germany">Germany</option>
-                                        <option value="Greece">Greece</option>
-                                        <option value="Hungary">Hungary</option>
-                                        <option value="Ireland">Ireland</option>
-                                        <option value="Island">Island</option>
-                                        <option value="Italy">Italy</option>
-                                        <option value="Latvia">Latvia</option>
-                                        <option value="Lithuania">Lithuania</option>
-                                        <option value="Luxembourg">Luxembourg</option>
-                                        <option value="Macedonia">Macedonia</option>
-                                        <option value="Malta">Malta</option>
-                                        <option value="Netherlands">Netherlands</option>
-                                        <option value="Norway">Norway</option>
-                                        <option value="Poland">Poland</option>
-                                        <option value="Portugal">Portugal</option>
-                                        <option value="Romania">Romania</option>
-                                        <option value="Slovakia">Slovakia</option>
-                                        <option value="Slovenia">Slovenia</option>
-                                        <option value="Spain">Spain</option>
-                                        <option value="Sweden">Sweden</option>
-                                        <option value="Switzerland">Switzerland</option>
-                                        <option value="United Kingdom">United Kingdom</option>
-                                        <option value="United States">United States</option>
-                                    </select>
-                                    <label><fmt:message key="similarity" bundle="${cons}" />:</label>
-                                    <input name="minScore" class="input-small" type="text" placeholder="<fmt:message key="similarevents.filter.minsimilarity" /> ..." />% - <input name="maxScore" class="input-small" type="text" placeholder="<fmt:message key="similarevents.filter.maxsimilarity" /> ..." />%
-                                    <button name="submit" onclick='refineResults();
-                                            return false;' class="btn btn-primary"><fmt:message key="refine" bundle="${cons}" />!</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>	
-            </div>
         </div>
+        <%@include file="WEB-INF/jspf/stats-buyer.jspf" %>
+        <div id="addedboxes">				
+          <div class="box">
+            <div id="refine" style="display:none;">
+              <div class="box-header">
+                <h2><fmt:message key="similarevents.results" /></h2>
+              </div>
+              <div class="box-content">
+                <form id="refineForm" style="margin:5px">
+                  <input type="hidden" name="refine" value="true">
+                  <label><fmt:message key="age" bundle="${cons}" />:</label>
+                  <input name="dateFrom" class="input-small hasDatePicker" type="text" placeholder="<fmt:message key="similarevents.filter.datefrom" /> ..." /> - <input name="dateTo" class="input-small hasDatePicker" type="text" placeholder="<fmt:message key="similarevents.filter.dateto" /> ..." />
+                  <label><fmt:message key="price" bundle="${cons}" />:</label>
+                  <input disabled name="priceFrom" class="input-small" type="text" placeholder="<fmt:message key="similarevents.filter.minprice" /> ..." /> - <input disabled name="priceTo" class="input-small" type="text" placeholder="<fmt:message key="similarevents.filter.maxprice" /> ..." />
+                  <select disabled name="priceCurrency" style="width:60px">
+                    <option>EUR</option>
+                    <option>USD</option>
+                  </select>
+                  <label><fmt:message key="distance" bundle="${cons}" />:</label>
+                  <input name="maxDistance" class="input-small" type="text" placeholder="<fmt:message key="similarevents.filter.maxdistance" /> ..." />
+                  <label><fmt:message key="countries" bundle="${cons}" />:</label>
+                  <select name="countries" style="width:160px" multiple="multiple">
+                    <option value="-- any --">-- any --</option>
+                    <option value="Austria">Austria</option>
+                    <option value="Belgium">Belgium</option>
+                    <option value="Bulgaria">Bulgaria</option>
+                    <option value="Cyprus">Cyprus</option>
+                    <option value="Czech Republic">Czech Republic</option>
+                    <option value="Denmark">Denmark</option>
+                    <option value="Estonia">Estonia</option>
+                    <option value="Finland">Finland</option>
+                    <option value="France">France</option>
+                    <option value="Germany">Germany</option>
+                    <option value="Greece">Greece</option>
+                    <option value="Hungary">Hungary</option>
+                    <option value="Ireland">Ireland</option>
+                    <option value="Island">Island</option>
+                    <option value="Italy">Italy</option>
+                    <option value="Latvia">Latvia</option>
+                    <option value="Lithuania">Lithuania</option>
+                    <option value="Luxembourg">Luxembourg</option>
+                    <option value="Macedonia">Macedonia</option>
+                    <option value="Malta">Malta</option>
+                    <option value="Netherlands">Netherlands</option>
+                    <option value="Norway">Norway</option>
+                    <option value="Poland">Poland</option>
+                    <option value="Portugal">Portugal</option>
+                    <option value="Romania">Romania</option>
+                    <option value="Slovakia">Slovakia</option>
+                    <option value="Slovenia">Slovenia</option>
+                    <option value="Spain">Spain</option>
+                    <option value="Sweden">Sweden</option>
+                    <option value="Switzerland">Switzerland</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="United States">United States</option>
+                  </select>
+                  <label><fmt:message key="similarity" bundle="${cons}" />:</label>
+                  <input name="minScore" class="input-small" type="text" placeholder="<fmt:message key="similarevents.filter.minsimilarity" /> ..." />% - <input name="maxScore" class="input-small" type="text" placeholder="<fmt:message key="similarevents.filter.maxsimilarity" /> ..." />%
+                  <button name="submit" onclick='refineResults();
+                    return false;' class="btn btn-primary"><fmt:message key="refine" bundle="${cons}" />!</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>	
+      </div>
+    </div>
 
-        <%@include file="WEB-INF/jspf/footer.jspf" %>
+    <%@include file="WEB-INF/jspf/footer.jspf" %>
 
-        <!--<script src="js/cpvs.js"></script>-->
-        <script src="js/functions.js"></script>
-        <script src="js/jquery-ui.js"></script>
-        <script src="js/sessionstorage.1.4.js"></script>
-        <script src="js/script.js"></script>
-        <script src="js/date.format.js"></script>	
-        <script src="js/toolsBuyer.js"></script>
-        <script src="js/table.js"></script>
+    <!--<script src="js/cpvs.js"></script>-->
+    <script src="js/functions.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/sessionstorage.1.4.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/date.format.js"></script>	
+    <script src="js/toolsBuyer.js"></script>
+    <script src="js/table.js"></script>
 
-        <script type="text/javascript">
+    <script type="text/javascript">
                                         var pagesTotal = 1;
                                         var currentPage = 1;
                                         var windowSize = 3;	// in each direction from the current page

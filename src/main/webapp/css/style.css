@@ -84,3 +84,24 @@ input::-webkit-inner-spin-button {
     color: gray;
     border-bottom: none;
 }
+
+#matchResultsTable {
+  display: none;
+}
+
+#matchResultsTable tbody tr {
+  vertical-align: middle;
+}
+
+#matchResultsTable tbody td {
+  text-align: center;
+}
+
+.matchmakerResultsTitle {
+  margin-bottom: 20px;
+}
+
+#progressbar {
+  background: url("../images/progressbar.gif") no-repeat center center;
+  height: 20px;
+}
