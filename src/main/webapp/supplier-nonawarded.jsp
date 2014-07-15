@@ -6,7 +6,7 @@
         <%@include file="WEB-INF/jspf/header.jspf" %>
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.supplier" />
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.constants" var="cons" />
-        <link href="./bootstrap/css/won.css" rel="stylesheet" />
+        <link href="bootstrap/css/won.css" rel="stylesheet" />
     </head>
     <body>
         <%@include file="WEB-INF/jspf/header-private.jspf" %>
@@ -41,7 +41,7 @@
                         </tbody>
                     </table>
 
-                    <div style="text-align: center;" id="progressbar"><br><img src="images/progressbar.gif"/></div>
+                    <div id="progressbar"></div>
 
                     <div class="pagination pagination-centered">
                         <ul id="pages">

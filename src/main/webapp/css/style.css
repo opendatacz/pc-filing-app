@@ -93,10 +93,6 @@ input::-webkit-inner-spin-button {
   vertical-align: middle;
 }
 
-#matchResultsTable tbody td {
-  text-align: center;
-}
-
 .matchmakerResultsTitle {
   margin-bottom: 20px;
 }

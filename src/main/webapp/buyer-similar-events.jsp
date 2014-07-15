@@ -119,13 +119,61 @@
     <!--<script src="js/cpvs.js"></script>-->
     <script src="js/functions.js"></script>
     <script src="js/jquery-ui.js"></script>
-    <script src="js/sessionstorage.1.4.js"></script>
     <script src="js/script.js"></script>
     <script src="js/date.format.js"></script>	
     <script src="js/toolsBuyer.js"></script>
     <script src="js/table.js"></script>
 
+    <script src="js/main.js"></script>
+    <script src="js/sessionstorage.1.4.js"></script>
+    <script src="js/jquery.mustache.js"></script>
+    <script src="js/jquery.twbsPagination.min.js"></script>
+    <script src="js/matchmaker.js"></script>
+    <script id="matchmaker-results-template" type="x-tmpl-mustache">
+      {{#matches}}
+        <tr>
+          <td>{{rank}}</td>
+          <td><a href="{{uri}}">{{label}}</a></td>
+        </tr>
+      {{/matches}}
+    </script>
     <script type="text/javascript">
+      (function ($) {
+        $(document).ready(function () {
+          // Boilerplate
+          $(".hasDatePicker").datepicker({dateFormat: 'yy-mm-dd'});
+          //$("#addedboxes .box").appendTo($("#statsbuyer"));
+          checkUser();
+          $("#contractTitle").text(sessionStorage.contractTitle); 
+
+          var config = {
+            contractUri: //sessionStorage.contractURL,
+              "http://linked.opendata.cz/resource/vestnikverejnychzakazek.cz/public-contract/484169-7403010084169",
+            dom: {
+              $matchResultsTable: $("#matchResultsTable"),
+              $pagination: $("#pagination"),
+              $progressbar: $("#progressbar"),
+              templateId: "#matchmaker-results-template"
+            },
+            labels: {
+              first: "<fmt:message key="first" bundle="${cons}" />", 
+              last: "<fmt:message key="last" bundle="${cons}" />",
+              notfound: "<fmt:message key="notfound" bundle="${cons}" />",
+              prev: "<fmt:message key="prev" bundle="${cons}" />"
+            },
+            source: "contract",
+            target: "contract"
+          };
+
+          if (config.contractUri) {
+            MATCHMAKER.getMatches(config);
+          }
+        });
+      })(jQuery);
+    </script>
+
+    <script type="text/javascript">
+      /*
                                         var pagesTotal = 1;
                                         var currentPage = 1;
                                         var windowSize = 3;	// in each direction from the current page
@@ -313,6 +361,7 @@
                                         }
 
                                         $("a").tooltip();
+          */
         </script>
     </body>
 </html>

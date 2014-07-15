@@ -21,7 +21,7 @@
                   <table class="table table-striped table-bordered" id="matchResultsTable">
                     <thead>
                       <tr>
-                        <th><fmt:message key="suitability" bundle="${cons}" /></th>
+                        <th><fmt:message key="rank" bundle="${cons}" /></th>
                         <th><fmt:message key="suppliername" bundle="${cons}" /></th>
                         <!--
                         <th><fmt:message key="place" bundle="${cons}" /></th>
@@ -71,91 +71,40 @@
         <script id="matchmaker-results-template" type="x-tmpl-mustache">
           {{#matches}}
             <tr>
-              <td>{{score}}</td>
-              <td><a href="{{URI}}">{{label}}</a></td>
+              <td>{{rank}}</td>
+              <td><a href="{{uri}}">{{label}}</a></td>
             </tr>
           {{/matches}}
         </script>
         <script type="text/javascript">
           (function ($) {
            $(document).ready(function () {
+              // Boilerplate
               checkUser();
+              $("#contractTitle").text(sessionStorage.contractTitle); 
 
-              var displayMatches = function (matches, matchResultsTable, template) {
-                var matchResultsBody = matchResultsTable.children("tbody"),
-                  $pagination = $("#pagination");
-
-                $("#progressbar").hide();
-                //$("#additionalMetrics").show()
-                matchResultsTable.fadeIn("slow");
-
-                var matchesCount = matches.length;
-                if (matchesCount !== 0) {
-                  $pagination.twbsPagination({
-                    href: "#page={{number}}",
-                    totalPages: Math.ceil(matchesCount / MATCHMAKER.matchesPerPage),
-                    first: "<fmt:message key="first" bundle="${cons}" />", 
-                    prev: "<fmt:message key="prev" bundle="${cons}" />",
-                    last: "<fmt:message key="last" bundle="${cons}" />",
-                    visiblePages: 3,
-                    onPageClick: function (event, page) {
-                      matchResultsBody.html(Mustache.render(template, {
-                        matches: jQuery.map(matches, function (match, i) {
-                          if (MATCHMAKER.inPage(i, page)) {
-                            match.score = match.score.toFixed(1);
-                            return match;
-                          }
-                        })
-                      }));
-                    }
-                  });
-                } else {
-                  var parent = matchResultsTable.parent();
-                  matchResultsTable.remove();
-                  $pagination.parent().remove();
-                  parent.append('<p>'
-                    + '<fmt:message key="notfound" bundle="${cons}" />'
-                    + '</p>');
-                }
+              var config = {
+                contractUri: //sessionStorage.contractURL,
+                  "http://linked.opendata.cz/resource/vestnikverejnychzakazek.cz/public-contract/484169-7403010084169",
+                dom: {
+                  $matchResultsTable: $("#matchResultsTable"),
+                  $pagination: $("#pagination"),
+                  $progressbar: $("#progressbar"),
+                  templateId: "#matchmaker-results-template"
+                },
+                labels: {
+                  first: "<fmt:message key="first" bundle="${cons}" />", 
+                  last: "<fmt:message key="last" bundle="${cons}" />",
+                  notfound: "<fmt:message key="notfound" bundle="${cons}" />",
+                  prev: "<fmt:message key="prev" bundle="${cons}" />"
+                },
+                source: "contract",
+                target: "business-entity"
               };
-
-              var contractUri = sessionStorage.contractURL,
-                // "http://linked.opendata.cz/resource/vestnikverejnychzakazek.cz/public-contract/484169-7403010084169",
-               endpoint = "Matchmaker",
-               $matchResultsTable = $("#matchResultsTable"),
-               template = $("#matchmaker-results-template").html();
               
-            Mustache.parse(template);
-            
-            $("#contractTitle").text(sessionStorage.contractTitle); 
-            
-            // var sampleData = [
-            //   {score: 1.234, label: "Bork"},
-            //   {score: 2.345, label: "Krok"},
-            //   {score: 1.234, label: "Bork"},
-            //   {score: 2.345, label: "Krok"},
-            //   {score: 1.234, label: "Bork"},
-            //   {score: 2.345, label: "Krok"},
-            //   {score: 1.234, label: "Bork"},
-            //   {score: 2.345, label: "Krok"},
-            //   {score: 1.234, label: "Bork"},
-            //   {score: 2.345, label: "Krok"},
-            //   {score: 1.234, label: "Bork"},
-            //   {score: 2.345, label: "Krok"}
-            // ];
-            // displayMatches(
-            //   sampleData,
-            //   $matchResultsTable,
-            //   template);
-            if (contractUri) {
-              $.getJSON(endpoint,
-                {source: "contract",
-                 target: "business-entity",
-                 uri: contractUri},
-                function (matches) {
-                  return displayMatches(matches, $matchResultsTable, template);
-                });
-            }
+              if (config.contractUri) {
+                MATCHMAKER.getMatches(config);
+              }
             });
           })(jQuery);
         </script>
