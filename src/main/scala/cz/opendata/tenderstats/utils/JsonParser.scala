@@ -1,4 +1,4 @@
-package cz.opendata.tenderstats
+package cz.opendata.tenderstats.utils
 
 import scala.util.parsing.json.JSONArray
 import scala.util.parsing.json.JSONObject

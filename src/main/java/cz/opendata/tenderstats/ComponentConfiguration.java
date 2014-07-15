@@ -13,11 +13,6 @@ public class ComponentConfiguration implements Serializable {
 	private static final long serialVersionUID = 4731162717682995972L;
 
 	/**
-	 * Simple class name of the component.
-	 */
-	private String componentName;
-
-	/**
 	 * Address for querying SPARQL endpoint for private dataspace
 	 */
 	private String sparqlPrivateQuery;
@@ -71,13 +66,6 @@ public class ComponentConfiguration implements Serializable {
 	 */
 	public boolean containsPreference(String name) {
 		return preferences.containsKey(name);
-	}
-
-	/**
-	 * @return Simple class name of the component.
-	 */
-	public String getComponentName() {
-		return componentName;
 	}
 
 	/**
@@ -149,16 +137,6 @@ public class ComponentConfiguration implements Serializable {
 	 */
 	public String getSparqlPublicUpdate() {
 		return sparqlPublicUpdate;
-	}
-
-	/**
-	 * Sets simple class name of the component.
-	 * 
-	 * @param componentName
-	 *            the component name to set
-	 */
-	public void setComponentName(String componentName) {
-		this.componentName = componentName;
 	}
 
 	/**

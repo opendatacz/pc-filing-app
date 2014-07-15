@@ -14,7 +14,7 @@ class Matchmaker extends AbstractComponent {
   override def doGetPost(request: HttpServletRequest, response: HttpServletResponse) = {
     ((request.getParameter("source"), request.getParameter("target")), request.getParameter("uri")) match {
       case (Matchmaker.EndpointUri(endpointUri), uri) if !uri.isEmpty => {
-        import JsonParser._
+        import cz.opendata.tenderstats.utils.JsonParser._
         response.setContentType("application/json; charset=UTF-8");
         response.getWriter.print(
           JSONArray(

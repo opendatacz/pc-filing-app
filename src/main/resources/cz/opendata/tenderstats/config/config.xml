@@ -14,4 +14,34 @@
             </load>
         </operations>
     </matchmaker>
+    <mysql>
+        <server></server>
+        <dbname></dbname>
+        <username></username>
+        <password></password>
+    </mysql>
+    <sparql>
+        <public-graph-name></public-graph-name>
+        <endpoints>
+            <private-query></private-query>
+            <private-update></private-update>
+            <public-query></public-query>
+            <public-update></public-update>
+        </endpoints>
+    </sparql>
+    <emails>
+        <info></info>
+        <invitation></invitation>
+    </emails>
+    <url>
+        <cpv>http://purl.org/weso/cpv/2008/</cpv>
+        <new-contract>http://ld.opendata.cz/resource/pcfilingapp/public-contract/</new-contract>
+        <nuts>http://ec.europa.eu/eurostat/ramon/rdfdata/nuts2008/</nuts>
+        <proctypes>http://purl.org/procurement/public-contracts-procedure-types#</proctypes>
+        <new-business-entity>http://ld.opendata.cz/resource/business-entity/</new-business-entity>
+        <new-named-graph>http://ld.opendata.cz/tenderstats/namedgraph/</new-named-graph>
+    </url>
+    <system>
+        <session-timeout>86400</session-timeout>
+    </system>
 </config>

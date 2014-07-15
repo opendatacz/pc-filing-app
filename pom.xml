@@ -69,9 +69,9 @@
             <version>7.0.0pre2</version>
         </dependency>
         <dependency>
-            <groupId>com.wcohen.ss</groupId>
-            <artifactId>secondstring</artifactId>
-            <version>1.0</version>
+            <groupId>org.fusesource.scalate</groupId>
+            <artifactId>scalate-core_2.10</artifactId>
+            <version>1.6.1</version>  
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -166,36 +166,6 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.1</version>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>com.wcohen.ss</groupId>
-                            <artifactId>secondstring</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/secondstring-20120620.jar</file>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>default-install</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>install</goal>
-                        </goals>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
