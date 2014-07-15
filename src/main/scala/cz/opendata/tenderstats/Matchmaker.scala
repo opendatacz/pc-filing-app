@@ -23,12 +23,13 @@ class Matchmaker extends AbstractComponent {
                 .client
                 .target(endpointUri)
                 .queryParam("uri", uri)
+                .queryParam("limit", "100")
                 .request("application/ld+json")
                 .get(classOf[String])).getOrElse(JSONArray(Nil)) \ "member" match {
                 case Some(JSONArray(x)) => x collect {
                   case x: JSONObject => List(x \ "@id", x \ "vrank:hasValue", x \|\ ("dcterms:title", "gr:legalName"))
                 } collect {
-                  case x @ List(Some(_: String), Some(_: Double), Some(_: String)) => JSONObject(List("URI", "score", "label").zip(x map (_.get)).toMap)
+                  case x @ List(Some(_: String), Some(_: Double), Some(_: String)) => JSONObject(List("uri", "score", "label").zip(x map (_.get)).toMap)
                 }
                 case _ => Nil
               }))
