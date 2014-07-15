@@ -1,0 +1,33 @@
+{{!
+@param Array<Map> results [{:result IRI :rank int :label String}]
+@param IRI        source-graph 
+}}
+
+{{> templates/prefixes.mustache}}
+
+SELECT ?resource ?rank ?legalName
+(SAMPLE(?_addressLocality) AS ?addressLocality)
+(COUNT(DISTINCT ?contract) AS ?numberOfContracts)
+(COUNT(DISTINCT ?contractingAuthority) AS ?contractingAuthorityCount)
+WHERE {
+  GRAPH <{{source-graph}}> {
+    VALUES (?resource ?rank ?legalName) {
+      {{#results}}
+        (<{{resource}}> {{rank}} "{{label}}")
+      {{/results}}
+    }
+    OPTIONAL {
+      ?resource schema:location?/schema:address/schema:addressLocality ?_addressLocality .
+    }
+    OPTIONAL {
+      ?contract pc:awardedTender/pc:supplier ?resource .
+      {{! TODO: financial volume of contracts the business entity won 
+          how about multiple currencies? (SUM(?estimatedPrice) AS ?contractVolume) }}
+      OPTIONAL {
+        ?contract pc:contractingAuthority ?contractingAuthority .
+      }
+    }
+  }
+}
+GROUP BY ?resource ?rank ?legalName 
+ORDER BY DESC(?rank)

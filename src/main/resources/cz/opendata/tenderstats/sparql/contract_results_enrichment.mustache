@@ -1,0 +1,36 @@
+{{!
+@param Array<Map> results [{:result IRI :rank int :label String}]
+@param IRI        source-graph 
+}}
+
+{{> templates/prefixes.mustache}}
+
+SELECT ?resource ?rank ?title
+(SAMPLE(?_description) AS ?description)
+(SAMPLE(?_currency) AS ?currency)
+(SAMPLE(?_publicationDate) AS ?publicationDate)
+?tenderDeadline
+WHERE {
+  GRAPH <{{source-graph}}> {
+    VALUES (?resource ?rank ?title) {
+      {{#results}}
+        (<{{resource}}> {{rank}} "{{label}}")
+      {{/results}}
+    }
+    OPTIONAL {
+      ?resource dcterms:description ?_description .
+    }
+    OPTIONAL {
+      ?resource pc:estimatedPrice/gr:hasCurrency ?_currency .
+    }
+    OPTIONAL {
+      ?resource pc:publicNotice?/pc:publicationDate ?_publicationDate .
+    }
+    OPTIONAL {
+      ?resource pc:tenderDeadline ?tenderDeadline .
+    }
+    {{! TODO: List of CPVs (GROUP_CONCAT?) }}
+  }
+}
+GROUP BY ?resource ?rank ?title ?tenderDeadline 
+ORDER BY DESC(?rank)
