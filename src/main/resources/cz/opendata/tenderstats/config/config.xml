@@ -34,12 +34,12 @@
         <invitation></invitation>
     </emails>
     <url>
-        <cpv>http://purl.org/weso/cpv/2008/</cpv>
-        <new-contract>http://ld.opendata.cz/resource/pcfilingapp/public-contract/</new-contract>
+        <cpv>http://linked.opendata.cz/resource/cpv-2008/concept/</cpv>
+        <new-contract>http://linked.opendata.cz/resource/public-contract/</new-contract>
         <nuts>http://ec.europa.eu/eurostat/ramon/rdfdata/nuts2008/</nuts>
         <proctypes>http://purl.org/procurement/public-contracts-procedure-types#</proctypes>
-        <new-business-entity>http://ld.opendata.cz/resource/business-entity/</new-business-entity>
-        <new-named-graph>http://ld.opendata.cz/tenderstats/namedgraph/</new-named-graph>
+        <new-business-entity>http://linked.opendata.cz/resource/business-entity/</new-business-entity>
+        <new-named-graph>http://linked.opendata.cz/resource/tenderstats/dataset/</new-named-graph>
     </url>
     <system>
         <session-timeout>86400</session-timeout>
