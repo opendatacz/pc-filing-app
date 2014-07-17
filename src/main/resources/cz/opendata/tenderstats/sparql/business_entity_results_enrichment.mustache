@@ -3,24 +3,24 @@
 @param IRI        source-graph 
 }}
 
-{{> templates/prefixes.mustache}}
+{{> prefixes }}
 
-SELECT ?resource ?rank ?legalName
+SELECT ?uri ?score ?label
 (SAMPLE(?_addressLocality) AS ?addressLocality)
 (COUNT(DISTINCT ?contract) AS ?numberOfContracts)
 (COUNT(DISTINCT ?contractingAuthority) AS ?contractingAuthorityCount)
 WHERE {
   GRAPH <{{source-graph}}> {
-    VALUES (?resource ?rank ?legalName) {
+    VALUES (?uri ?score ?label) {
       {{#results}}
-        (<{{resource}}> {{rank}} "{{label}}")
+        (<{{uri}}> {{score}} "{{label}}")
       {{/results}}
     }
     OPTIONAL {
-      ?resource schema:location?/schema:address/schema:addressLocality ?_addressLocality .
+      ?uri schema:location?/schema:address/schema:addressLocality ?_addressLocality .
     }
     OPTIONAL {
-      ?contract pc:awardedTender/pc:supplier ?resource .
+      ?contract pc:awardedTender/pc:supplier ?uri .
       {{! TODO: financial volume of contracts the business entity won 
           how about multiple currencies? (SUM(?estimatedPrice) AS ?contractVolume) }}
       OPTIONAL {
@@ -29,5 +29,5 @@ WHERE {
     }
   }
 }
-GROUP BY ?resource ?rank ?legalName 
-ORDER BY DESC(?rank)
+GROUP BY ?uri ?score ?label
+ORDER BY DESC(?score)

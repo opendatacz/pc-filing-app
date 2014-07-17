@@ -1,5 +1,7 @@
 package cz.opendata.tenderstats
 
+import cz.opendata.tenderstats.utils.AutoLift
+import cz.opendata.tenderstats.utils.Match
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -12,27 +14,38 @@ import scala.util.parsing.json.JSONObject
 class Matchmaker extends AbstractComponent {
 
   override def doGetPost(request: HttpServletRequest, response: HttpServletResponse) = {
-    ((request.getParameter("source"), request.getParameter("target")), request.getParameter("uri")) match {
-      case (Matchmaker.EndpointUri(endpointUri), uri) if !uri.isEmpty => {
+    import cz.opendata.tenderstats.utils.BasicExtractor._
+    import Matchmaker._
+    response.setContentType("application/json; charset=UTF-8")
+    val endpointUri = AutoLift(request.getParameter("source"), request.getParameter("target")) {
+      case (EntityType(s), EntityType(t)) => (s, t, AutoLift(s, t) {
+        case (Contract, Contract) => (matchContractToContractUrl)
+        case (Contract, BusinessEntity) => matchContractToBusinessEntityUrl
+        case (BusinessEntity, Contract) => matchBusinessEntityToContractUrl
+      })
+    }
+    (endpointUri, request.getParameter("uri"), request.getParameter("private")) match {
+      case (Some((s, t, Some(e))), NonEmptyString(u), Boolean(p)) => {
         import cz.opendata.tenderstats.utils.JsonParser._
-        response.setContentType("application/json; charset=UTF-8");
-        response.getWriter.print(
-          JSONArray(
-            JSON.parseRaw(
-              Matchmaker
-                .client
-                .target(endpointUri)
-                .queryParam("uri", uri)
-                .queryParam("limit", "100")
-                .request("application/ld+json")
-                .get(classOf[String])).getOrElse(JSONArray(Nil)) \ "member" match {
-                case Some(JSONArray(x)) => x collect {
+        import cz.opendata.tenderstats.utils.QuerySolutionOpts._
+        import scala.collection.JavaConversions._
+        JSON.parseRaw(sendGet(e, u)) foreach (x => Match(x \ "member") {
+          case Some(JSONArray(x)) => Match(
+            t match {
+              case Contract => this.getClass.getResource("/cz/opendata/tenderstats/sparql/contract_results_enrichment.mustache")
+              case BusinessEntity => this.getClass.getResource("/cz/opendata/tenderstats/sparql/business_entity_results_enrichment.mustache")
+            },
+            Map(
+              "source-graph" -> Config.cc.getPreference("publicGraphName"),
+              "results" -> (
+                x collect {
                   case x: JSONObject => List(x \ "@id", x \ "vrank:hasValue", x \|\ ("dcterms:title", "gr:legalName"))
                 } collect {
-                  case x @ List(Some(_: String), Some(_: Double), Some(_: String)) => JSONObject(List("uri", "score", "label").zip(x map (_.get)).toMap)
-                }
-                case _ => Nil
-              }))
+                  case x @ List(Some(_: String), Some(_: Double), Some(_: String)) => List("uri", "score", "label").zip(x map (_.get.toString)).toMap
+                }))) {
+              case Template(q) => response.getWriter.print(JSONArray(Sparql.publicQuery(q).execSelect.toList.map(x => JSONObject(x.toMap))))
+            }
+        })
       }
       case _ => response.sendError(400)
     }
@@ -60,20 +73,17 @@ object Matchmaker {
       (Config.matchmaker \\ "business-entity").text) map (endpoint + _)
   }
 
-  object IsContract {
-    def unapply(t: String) = t == "contract"
-  }
-  object IsBusinessEntity {
-    def unapply(t: String) = t == "business-entity"
-  }
+  case class Request(source: EntityType, target: EntityType, endpointUri: String, uri: String, isPrivate: Boolean)
 
-  object EndpointUri {
-    def unapply(t: (String, String)) = t match {
-      case (Matchmaker.IsContract(), Matchmaker.IsContract()) => Some(Matchmaker.matchContractToContractUrl)
-      case (Matchmaker.IsContract(), Matchmaker.IsBusinessEntity()) => Some(Matchmaker.matchContractToBusinessEntityUrl)
-      case (Matchmaker.IsBusinessEntity(), Matchmaker.IsContract()) => Some(Matchmaker.matchBusinessEntityToContractUrl)
-      case _ => None
+  sealed trait EntityType
+  object Contract extends EntityType
+  object BusinessEntity extends EntityType
+  object EntityType {
+    def unapply(s: String) = AutoLift(s) {
+      case "contract" => Contract
+      case "business-entity" => BusinessEntity
     }
   }
+  def sendGet(endpointUri: String, entityUri: String) = client.target(endpointUri).queryParam("uri", entityUri).queryParam("limit", "100").request("application/ld+json").get(classOf[String])
 
 }

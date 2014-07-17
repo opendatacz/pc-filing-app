@@ -3,34 +3,34 @@
 @param IRI        source-graph 
 }}
 
-{{> sparql/prefixes.mustache}}
+{{> prefixes }}
 
-SELECT ?resource ?rank ?title
+SELECT ?uri ?score ?label
 (SAMPLE(?_description) AS ?description)
 (SAMPLE(?_currency) AS ?currency)
 (SAMPLE(?_publicationDate) AS ?publicationDate)
 ?tenderDeadline
 WHERE {
   GRAPH <{{source-graph}}> {
-    VALUES (?resource ?rank ?title) {
+    VALUES (?uri ?score ?label) {
       {{#results}}
-        (<{{resource}}> {{rank}} "{{label}}")
+        (<{{uri}}> {{score}} "{{label}}")
       {{/results}}
     }
     OPTIONAL {
-      ?resource dcterms:description ?_description .
+      ?uri dcterms:description ?_description .
     }
     OPTIONAL {
-      ?resource pc:estimatedPrice/gr:hasCurrency ?_currency .
+      ?uri pc:estimatedPrice/gr:hasCurrency ?_currency .
     }
     OPTIONAL {
-      ?resource pc:publicNotice?/pc:publicationDate ?_publicationDate .
+      ?uri pc:publicNotice?/pc:publicationDate ?_publicationDate .
     }
     OPTIONAL {
-      ?resource pc:tenderDeadline ?tenderDeadline .
+      ?uri pc:tenderDeadline ?tenderDeadline .
     }
     {{! TODO: List of CPVs (GROUP_CONCAT?) }}
   }
 }
-GROUP BY ?resource ?rank ?title ?tenderDeadline 
-ORDER BY DESC(?rank)
+GROUP BY ?uri ?score ?label ?tenderDeadline 
+ORDER BY DESC(?score)

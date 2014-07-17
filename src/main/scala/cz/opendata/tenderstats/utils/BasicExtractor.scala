@@ -1,6 +1,7 @@
 package cz.opendata.tenderstats.utils
 
 import java.io.File
+import scala.util.Try
 
 object BasicExtractor {
 
@@ -26,6 +27,10 @@ object BasicExtractor {
       case null => None
       case x => Some(x)
     }
+  }
+  
+  object Boolean {
+    def unapply(s: String) = Try(Some(s.toBoolean)).getOrElse(None)
   }
 
 }

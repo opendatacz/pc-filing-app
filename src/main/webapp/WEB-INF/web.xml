@@ -33,22 +33,6 @@
     <url-pattern>/PCFilingApp/*</url-pattern>
   </servlet-mapping>
   <servlet>
-    <servlet-name>Matchmaker-legacy</servlet-name>
-    <servlet-class>cz.opendata.tenderstats.Matchmaker</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Matchmaker-legacy</servlet-name>
-    <url-pattern>/Matchmaker-legacy/*</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>Utils</servlet-name>
-    <servlet-class>cz.opendata.tenderstats.Utils</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Utils</servlet-name>
-    <url-pattern>/Utils/*</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <servlet-name>InvitationComponent</servlet-name>
     <servlet-class>cz.opendata.tenderstats.InvitationComponent</servlet-class>
   </servlet>
