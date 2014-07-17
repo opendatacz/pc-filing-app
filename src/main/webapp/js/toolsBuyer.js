@@ -57,7 +57,7 @@ function copyEvent(contractURL) {
 
 function linkEntity(entityName,entityURI) {
 	var link = $('<a>');
-	link.attr('href','entity-supplier.html');
+	link.attr('href','entity-supplier.jsp');
 	link.on('click',function(){ showEntity(entityURI);   });
 	link.append(entityName);
 	return link;
@@ -65,7 +65,7 @@ function linkEntity(entityName,entityURI) {
 
 function linkTender(tenderTitle,tenderURI) {
 	var link = $('<a>');
-	link.attr('href','buyer-view-tender.html');
+	link.attr('href','buyer-view-tender.jsp');
 	link.on('click',function(){ showTender(tenderTitle,tenderURI);   });
 	link.append("tender");
 	return link;
@@ -73,7 +73,7 @@ function linkTender(tenderTitle,tenderURI) {
 
 function linkEvent(eventTitle,eventURI) {
 	var link = $('<a>');
-	link.attr('href','buyer-view-event.html');
+	link.attr('href','buyer-view-event.jsp');
 	link.on('click',function(){ showEvent(eventURI);  });
 	link.append(eventTitle);
 	return link;
