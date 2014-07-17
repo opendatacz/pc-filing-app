@@ -6,7 +6,7 @@
         <%@include file="WEB-INF/jspf/header.jspf" %>
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.buyer" />
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.constants" var="cons" />
-        <link href="./bootstrap/css/won.css" rel="stylesheet" />
+        <link href="bootstrap/css/won.css" rel="stylesheet" />
     </head>
     <body>
         <%@include file="WEB-INF/jspf/header-private.jspf" %>
@@ -14,9 +14,7 @@
             <div class="row-fluid">
                 <%@include file="WEB-INF/jspf/menu-buyer.jspf" %>
                 <div class="span8">
-                    <div style="text-align: center;" id="progressbar">
-                        <br> <img src="images/progressbar.gif" />
-                    </div>
+                    <div id="progressbar"></div>
                     <div id="view" style="display: none">
                         <h3>
                             <fmt:message key="viewevent.title" /> '<span style="display: inline;" id="eventTitle"></span>'
