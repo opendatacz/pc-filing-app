@@ -9453,5 +9453,3 @@ var cpvs = {
 "cpv98514000":"98514000-9#Domestic services",
 "cpv98900000":"98900000-2#Services provided by extra-territorial organisations and bodies",
 "cpv98910000":"98910000-5#Services specific to international organisations and bodies"};
-
-console.log(cpvs);

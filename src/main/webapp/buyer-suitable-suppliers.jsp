@@ -23,10 +23,8 @@
                       <tr>
                         <th><fmt:message key="rank" bundle="${cons}" /></th>
                         <th><fmt:message key="suppliername" bundle="${cons}" /></th>
-                        <!--
                         <th><fmt:message key="place" bundle="${cons}" /></th>
                         <th><fmt:message key="action" bundle="${cons}" /></th>
-                        -->
                       </tr>
                     </thead>
                     <tbody>
@@ -35,14 +33,14 @@
 
                   <div id="progressbar"></div>
 
-                  <!--
+                  <%--
                   <div id="additionalMetrics" class="pull-right" style="display:none;">
                     <a onclick="additionalMetrics = true;
                       $('#additionalMetrics').hide();
                       $('#progressbar').show();
                       loadContracts();" href="#">
                       <fmt:message key="suitablesuppliers.compute" /></a></div>
-                  -->
+                  --%>
                   
                   <div class="pagination pagination-centered">
                     <ul id="pagination"></ul>
@@ -54,14 +52,14 @@
 
         <%@include file="WEB-INF/jspf/footer.jspf" %>
 
-        <!--
+        <%--
         <script src="js/cpvs.js"></script>
         <script src="js/functions.js"></script>
         <script src="js/script.js"></script>
         <script src="js/date.format.js"></script>	
         <script src="js/toolsBuyer.js"></script>
         <script src="js/table.js"></script>
-        -->
+        --%>
 
         <script src="js/main.js"></script>
         <script src="js/sessionstorage.1.4.js"></script>
@@ -73,6 +71,12 @@
             <tr>
               <td>{{rank}}</td>
               <td><a href="{{uri}}">{{label}}</a></td>
+              <td>{{addressLocality}}</td>
+              <td>
+                <a class="notificationButton btn btn-small" href="javascript:void(0);">
+                  <i class="icon-envelope"></i>
+                </a>
+              </td>
             </tr>
           {{/matches}}
         </script>
@@ -98,6 +102,7 @@
                   notfound: "<fmt:message key="notfound" bundle="${cons}" />",
                   prev: "<fmt:message key="prev" bundle="${cons}" />"
                 },
+                private: false,
                 source: "contract",
                 target: "business-entity"
               };

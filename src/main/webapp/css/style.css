@@ -101,3 +101,6 @@ input::-webkit-inner-spin-button {
   background: url("../images/progressbar.gif") no-repeat center center;
   height: 20px;
 }
+.fixedCol {
+  width: 350px;
+}

@@ -27,8 +27,9 @@
           <table class="table table-striped table-bordered" id="matchResultsTable">
             <thead>
               <tr>
-                <th><fmt:message key="similarity" bundle="${cons}" /></th>
+                <th><fmt:message key="rank" bundle="${cons}" /></th>
                 <th><fmt:message key="contracttitle" bundle="${cons}" /></th>
+                <th><fmt:message key="description" bundle="${cons}" /></th>
                 <!--
                 <th><fmt:message key="place" bundle="${cons}" /></th>
                 <th><fmt:message key="action" bundle="${cons}" /></th>
@@ -128,12 +129,14 @@
     <script src="js/sessionstorage.1.4.js"></script>
     <script src="js/jquery.mustache.js"></script>
     <script src="js/jquery.twbsPagination.min.js"></script>
+    <script src="js/jquery.jtruncate.pack.js"></script>
     <script src="js/matchmaker.js"></script>
     <script id="matchmaker-results-template" type="x-tmpl-mustache">
       {{#matches}}
         <tr>
           <td>{{rank}}</td>
           <td><a href="{{uri}}">{{label}}</a></td>
+          <td class="fixedCol truncate">{{description}}</td>
         </tr>
       {{/matches}}
     </script>
@@ -159,8 +162,13 @@
               first: "<fmt:message key="first" bundle="${cons}" />", 
               last: "<fmt:message key="last" bundle="${cons}" />",
               notfound: "<fmt:message key="notfound" bundle="${cons}" />",
-              prev: "<fmt:message key="prev" bundle="${cons}" />"
+              prev: "<fmt:message key="prev" bundle="${cons}" />",
+              truncate: {
+                lessText: "<fmt:message key="lesstext" bundle="${cons}" />",
+                moreText: "<fmt:message key="moretext" bundle="${cons}" />"
+              }
             },
+            private: false,
             source: "contract",
             target: "contract"
           };

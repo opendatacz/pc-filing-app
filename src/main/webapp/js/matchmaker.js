@@ -1,5 +1,24 @@
 var MATCHMAKER = {
   matchesPerPage: 10,
+  decodeEntities: (function() {
+    // Stolen from <http://stackoverflow.com/a/9609450/385505>
+    //
+    // this prevents any overhead from creating the object each time
+    var element = document.createElement('div');
+
+    function decodeHTMLEntities (str) {
+      if(str && typeof str === 'string') {
+        // strip script/html tags
+        str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
+        str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
+        element.innerHTML = str;
+        str = element.textContent;
+        element.textContent = '';
+      }
+      return str;
+    }
+    return decodeHTMLEntities;
+  })(),
   displayMatches: function (config, matches) {
     var matchResultsBody = config.dom.$matchResultsTable.children("tbody"),
       template = $(config.dom.templateId).html();
@@ -23,11 +42,13 @@ var MATCHMAKER = {
           matchResultsBody.html(Mustache.render(template, {
             matches: jQuery.map(matches, function (match, i) {
               if (MATCHMAKER.inPage(i, page)) {
-                match.rank = i + 1; 
+                match.rank = i + 1;
+                match.label = MATCHMAKER.decodeEntities(match.label);
                 return match;
               }
             })
           }));
+          config.dom.$matchResultsTable.trigger("change");
         }
       });
     } else {
@@ -40,11 +61,23 @@ var MATCHMAKER = {
     }
   },
   getMatches: function (config) {
+    // Attach event listeners to matchmaker's results
+    if (config.labels.truncate) {
+      config.dom.$matchResultsTable.on("change", function (e) {
+        $(".truncate").jTruncate(jQuery.extend({length: 140}, config.labels.truncate));
+      });
+    }
+    config.dom.$matchResultsTable.delegate(".notificationButton", "click", function (e) {
+      console.log("send");
+    });
+
     $.getJSON("Matchmaker",
-      {source: config.source,
+      {private: config.private,
+       source: config.source,
        target: config.target,
        uri: config.contractUri},
       function (matches) {
+        console.log(matches);
         return MATCHMAKER.displayMatches(config, matches);
       });
   },
