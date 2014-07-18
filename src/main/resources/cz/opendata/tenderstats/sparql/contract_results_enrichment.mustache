@@ -7,7 +7,6 @@
 
 SELECT ?uri ?score ?label
 (SAMPLE(?_description) AS ?description)
-(SAMPLE(?_currency) AS ?currency)
 (SAMPLE(?_publicationDate) AS ?publicationDate)
 ?tenderDeadline
 WHERE {
@@ -21,15 +20,11 @@ WHERE {
       ?uri dcterms:description ?_description .
     }
     OPTIONAL {
-      ?uri pc:estimatedPrice/gr:hasCurrency ?_currency .
-    }
-    OPTIONAL {
       ?uri pc:publicNotice?/pc:publicationDate ?_publicationDate .
     }
     OPTIONAL {
       ?uri pc:tenderDeadline ?tenderDeadline .
     }
-    {{! TODO: List of CPVs (GROUP_CONCAT?) }}
   }
 }
 GROUP BY ?uri ?score ?label ?tenderDeadline 

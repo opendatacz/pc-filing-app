@@ -7,8 +7,7 @@
 
 SELECT ?uri ?score ?label
 (SAMPLE(?_addressLocality) AS ?addressLocality)
-(COUNT(DISTINCT ?contract) AS ?numberOfContracts)
-(COUNT(DISTINCT ?contractingAuthority) AS ?contractingAuthorityCount)
+(SAMPLE(?_email) AS ?email)
 WHERE {
   GRAPH <{{source-graph}}> {
     VALUES (?uri ?score ?label) {
@@ -20,12 +19,7 @@ WHERE {
       ?uri schema:location?/schema:address/schema:addressLocality ?_addressLocality .
     }
     OPTIONAL {
-      ?contract pc:awardedTender/pc:supplier ?uri .
-      {{! TODO: financial volume of contracts the business entity won 
-          how about multiple currencies? (SUM(?estimatedPrice) AS ?contractVolume) }}
-      OPTIONAL {
-        ?contract pc:contractingAuthority ?contractingAuthority .
-      }
+      ?uri schema:contact/schema:email ?_email .
     }
   }
 }
