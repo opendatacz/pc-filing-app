@@ -4,16 +4,16 @@ var MATCHMAKER = {
     // Stolen from <http://stackoverflow.com/a/9609450/385505>
     //
     // this prevents any overhead from creating the object each time
-    var element = document.createElement('div');
+    var element = document.createElement("div");
 
     function decodeHTMLEntities (str) {
-      if(str && typeof str === 'string') {
+      if (str && typeof str === "string") {
         // strip script/html tags
-        str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
-        str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
+        str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, "");
+        str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, "");
         element.innerHTML = str;
         str = element.textContent;
-        element.textContent = '';
+        element.textContent = "";
       }
       return str;
     }
@@ -68,7 +68,21 @@ var MATCHMAKER = {
       });
     }
     config.dom.$matchResultsTable.delegate(".notificationButton", "click", function (e) {
-      console.log("send");
+      var $target = $(e.target),
+        email = $target.data("email"),
+        contractTitle = sessionStorage.contractTitle,
+        subjectLine = $target.data("subject"),
+        bodyTemplate = $target.data("template"),
+        link = Mustache.render("mailto:{{email}}?subject={{subject}}&body={{body}}",
+          {email: email,
+           subject: encodeURIComponent(Mustache.render(
+                         "{{subject}} \"{{contractTitle}}\" | PC Filing App",
+                         {subject: subjectLine,
+                          contractTitle: contractTitle})),
+           body: encodeURIComponent(bodyTemplate + " " + sessionStorage.contractURL)
+          });
+      
+      window.location.href = link;
     });
 
     $.getJSON("Matchmaker",

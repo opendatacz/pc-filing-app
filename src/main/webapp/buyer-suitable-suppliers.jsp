@@ -23,7 +23,7 @@
                       <tr>
                         <th><fmt:message key="rank" bundle="${cons}" /></th>
                         <th><fmt:message key="suppliername" bundle="${cons}" /></th>
-                        <th><fmt:message key="place" bundle="${cons}" /></th>
+                        <th><fmt:message key="location" bundle="${cons}" /></th>
                         <th><fmt:message key="action" bundle="${cons}" /></th>
                       </tr>
                     </thead>
@@ -73,9 +73,17 @@
               <td><a href="{{uri}}">{{label}}</a></td>
               <td>{{addressLocality}}</td>
               <td>
-                <a class="notificationButton btn btn-small" href="javascript:void(0);">
+                {{#email}}
+                <a class="notificationButton btn btn-small"
+                   title="<fmt:message key="suitablesuppliers.notification.invite" />"
+                   href="javascript:void(0);"
+                   data-email="{{.}}"
+                   data-subject="<fmt:message key="suitablesuppliers.notification.invite.subject" />"
+                   data-template="<fmt:message key="suitablesuppliers.notification.invite.template" />">
                   <i class="icon-envelope"></i>
+                  &nbsp;<fmt:message key="invite" bundle="${cons}" />
                 </a>
+                {{/email}}
               </td>
             </tr>
           {{/matches}}
@@ -114,8 +122,8 @@
           })(jQuery);
         </script>
 
+        <%--
         <script type="text/javascript">
-          /*
             var pagesTotal = 1;
             var currentPage = 1;
             var windowSize = 3;	// in each direction from the current page
@@ -291,7 +299,7 @@
             });
 
             $("a").tooltip();
-          */
         </script>
+        --%>
     </body>
 </html>
