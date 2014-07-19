@@ -9,6 +9,7 @@ SELECT ?uri ?score ?label
 (SAMPLE(?_description) AS ?description)
 (SAMPLE(?_publicationDate) AS ?publicationDate)
 ?tenderDeadline
+(CONCAT(STR(?currencyValue), " ", ?currency) AS ?estimatedPrice) 
 WHERE {
   GRAPH <{{source-graph}}> {
     VALUES (?uri ?score ?label) {
@@ -25,7 +26,13 @@ WHERE {
     OPTIONAL {
       ?uri pc:tenderDeadline ?tenderDeadline .
     }
+    OPTIONAL {
+      ?uri pc:estimatedPrice [
+          gr:hasCurrency ?currency ;
+          gr:hasCurrencyValue ?currencyValue
+        ] .
+    }
   }
 }
-GROUP BY ?uri ?score ?label ?tenderDeadline 
+GROUP BY ?uri ?score ?label ?tenderDeadline ?currency ?currencyValue 
 ORDER BY DESC(?score)

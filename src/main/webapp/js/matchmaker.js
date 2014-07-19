@@ -44,6 +44,12 @@ var MATCHMAKER = {
               if (MATCHMAKER.inPage(i, page)) {
                 match.rank = i + 1;
                 match.label = MATCHMAKER.decodeEntities(match.label);
+                if (match.publicationDate) {
+                  match.publicationDate = dateFormat(match.publicationDate, dateFormat.masks.longDate);
+                }
+                if (match.tenderDeadline) {
+                  match.tenderDeadline = dateFormat(match.tenderDeadline, dateFormat.masks.longDate);
+                }
                 return match;
               }
             })
@@ -89,9 +95,8 @@ var MATCHMAKER = {
       {private: config.private,
        source: config.source,
        target: config.target,
-       uri: config.contractUri},
+       uri: config.resourceUri},
       function (matches) {
-        console.log(matches);
         return MATCHMAKER.displayMatches(config, matches);
       });
   },

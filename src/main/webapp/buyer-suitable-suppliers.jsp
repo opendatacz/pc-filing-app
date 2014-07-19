@@ -96,8 +96,6 @@
               $("#contractTitle").text(sessionStorage.contractTitle); 
 
               var config = {
-                contractUri: //sessionStorage.contractURL,
-                  "http://linked.opendata.cz/resource/vestnikverejnychzakazek.cz/public-contract/484169-7403010084169",
                 dom: {
                   $matchResultsTable: $("#matchResultsTable"),
                   $pagination: $("#pagination"),
@@ -111,11 +109,13 @@
                   prev: "<fmt:message key="prev" bundle="${cons}" />"
                 },
                 private: false,
+                resourceUri: //sessionStorage.contractURL,
+                  "http://linked.opendata.cz/resource/vestnikverejnychzakazek.cz/public-contract/484169-7403010084169",
                 source: "contract",
                 target: "business-entity"
               };
               
-              if (config.contractUri) {
+              if (config.resourceUri) {
                 MATCHMAKER.getMatches(config);
               }
             });
