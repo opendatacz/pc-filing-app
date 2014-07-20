@@ -5,13 +5,13 @@ import org.fusesource.scalate.TemplateSource
 
 object Template {
 
-  val te = new TemplateEngine(None, "development")
+  val te = new TemplateEngine
 
-  def unapply(rm: (java.net.URL, Map[String, Any])) = {
+  def apply(r: java.net.URL, m: Map[String, Any] = Map.empty) = {
     import cz.opendata.tenderstats.utils.BasicExtractor._
-    rm match {
-      case (Resource(r), m) => Some(te.layout(TemplateSource.fromURL(r), m).trim)
-      case _ => None
+    r match {
+      case Resource(r) => te.layout(TemplateSource.fromURL(r), m).trim
+      case _ => ""
     }
   }
 

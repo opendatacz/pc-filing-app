@@ -30,7 +30,7 @@ object BasicExtractor {
   }
   
   object Boolean {
-    def unapply(s: String) = Try(Some(s.toBoolean)).getOrElse(None)
+    def unapply(s: String) = Try(s.toBoolean).toOption
   }
 
 }

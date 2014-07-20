@@ -1,8 +1,6 @@
 package cz.opendata.tenderstats
 
 import cz.opendata.tenderstats.utils.Match
-import org.fusesource.scalate.TemplateEngine
-import org.fusesource.scalate.TemplateSource
 import scala.xml.Elem
 import scala.xml.Node
 import scala.xml.Text
@@ -54,9 +52,7 @@ object Config {
     Match((xml \ ("system")).headOption) {
       case Some(Elem(_, _, _, _, ch @ _*)) => ch foreach (x => cc.setPreference(x.label.toClassFormat, x.text))
     }
-    Match((this.getClass.getResource("/cz/opendata/tenderstats/sparql/prefixes.mustache"), Map.empty[String, Any])) {
-      case Template(x) => cc.setPreference("prefixes", x)
-    }
+    cc.setPreference("prefixes", Template(this.getClass.getResource("/cz/opendata/tenderstats/sparql/prefixes.mustache")))
     cc
   }
 
