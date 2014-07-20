@@ -24,11 +24,12 @@ object PcfaStringOpts {
 class QuerySolutionOpts(q: com.hp.hpl.jena.query.QuerySolution) {
   import scala.collection.JavaConversions._
   def toMap = q.varNames.map(x => x -> (q.get(x) match {
-      case x if x.isLiteral => x.asLiteral.getString
-      case x => x.asNode.toString(false)
-      }
-    )
-  ).toMap
+    case x if x.isLiteral => x.asLiteral.getString match {
+      case AnyToDouble(x) => x
+      case x => x
+    }
+    case x => x.asNode.toString(false)
+  })).toMap
 }
 object QuerySolutionOpts {
   import scala.language.implicitConversions

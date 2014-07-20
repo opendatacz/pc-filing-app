@@ -1,6 +1,9 @@
 package cz.opendata.tenderstats
 
+import cz.opendata.tenderstats.utils.File
 import cz.opendata.tenderstats.utils.Match
+import cz.opendata.tenderstats.utils.NonEmptyString
+import cz.opendata.tenderstats.utils.Resource
 import scala.xml.Elem
 import scala.xml.Node
 import scala.xml.Text
@@ -9,7 +12,6 @@ import scala.xml.XML
 object Config {
 
   private val xml = {
-    import cz.opendata.tenderstats.utils.BasicExtractor._
     scala.xml.Utility.trim(
       (this.getClass.getResource("/cz/opendata/tenderstats/config/config.xml"), System.getenv("PCFA_CONFIG")) match {
         case (Resource(c1), NonEmptyString(File(c2))) => merge(XML.load(c1), XML.loadFile(c2))

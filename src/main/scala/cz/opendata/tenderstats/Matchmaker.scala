@@ -2,6 +2,8 @@ package cz.opendata.tenderstats
 
 import cz.opendata.tenderstats.utils.AutoLift
 import cz.opendata.tenderstats.utils.Lift
+import cz.opendata.tenderstats.utils.NonEmptyString
+import cz.opendata.tenderstats.utils.Boolean
 import java.io.ByteArrayOutputStream
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest
@@ -17,7 +19,6 @@ import scala.util.parsing.json.JSONType
 class Matchmaker extends AbstractComponent {
 
   override def doGetPost(request: HttpServletRequest, response: HttpServletResponse) = {
-    import cz.opendata.tenderstats.utils.BasicExtractor._
     import Matchmaker._
     //DELETE IN PROD VERSION
     val testUser = new UserContext()
