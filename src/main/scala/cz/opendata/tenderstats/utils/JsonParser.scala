@@ -6,6 +6,17 @@ import scala.util.parsing.json.JSONType
 
 class JsonParser(jt: JSONType) {
 
+  def \\(n: String): List[Any] = jt match {
+    case JSONObject(o) => o.collect {
+      case (`n`, o: JSONType) => o :: (new JsonParser(o) \\ n)
+      case (`n`, o) => List(o)
+      case (_, o: JSONType) => new JsonParser(o) \\ n
+    }.fold(Nil)(_ ::: _)
+    case JSONArray(a) => a.collect {
+      case o: JSONType => new JsonParser(o) \\ n
+    }.fold(Nil)(_ ::: _)
+  }
+
   def \(n: String): Option[Any] = jt match {
     case JSONObject(o) => o.get(n) match {
       case x @ Some(_) => x
@@ -27,9 +38,6 @@ class JsonParser(jt: JSONType) {
 }
 
 object JsonParser {
-
   import scala.language.implicitConversions
-
   implicit def JSONTypeToJsonParser(jt: JSONType) = new JsonParser(jt)
-
 }

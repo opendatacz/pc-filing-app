@@ -5,11 +5,13 @@ import cz.opendata.tenderstats.utils.Lift
 import cz.opendata.tenderstats.utils.NonEmptyString
 import cz.opendata.tenderstats.utils.Boolean
 import java.io.ByteArrayOutputStream
+import java.net.URLDecoder
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.client.ClientBuilder
 import javax.ws.rs.client.Entity
+import scala.util.Try
 import scala.util.parsing.json.JSON
 import scala.util.parsing.json.JSONArray
 import scala.util.parsing.json.JSONObject
@@ -38,9 +40,8 @@ class Matchmaker extends AbstractComponent {
     }
     (endpointUri, request.getParameter("uri"), testUser /*getUserContext(request)*/ ) match {
       case (Some((s, t, Some(e))), NonEmptyString(u), uc: UserContext) => {
-        if (isPrivate)
-          sendPut(s, u, uc.getNamedGraph)
-        response.getWriter.print(sendGet(e, u).extend(t).toJson)
+        val g = if (isPrivate) sendPut(s, u, uc.getNamedGraph) else None
+        response.getWriter.print(sendGet(e, u, g).extend(t).toJson)
       }
       case _ => response.sendError(400)
     }
@@ -68,8 +69,15 @@ object Matchmaker {
       (Config.matchmaker \\ "business-entity").text) map (endpoint + _)
   }
 
-  def sendGet(endpointUri: String, entityUri: String) = GetResponse(JSON.parseRaw(client.target(endpointUri).queryParam("uri", entityUri).queryParam("limit", "100").request("application/ld+json").get(classOf[String])))
-  def sendPut(source: EntityType, entityUri: String, graph: String): Unit = {
+  def sendGet(endpointUri: String, entityUri: String, graph: Option[String]) = GetResponse(JSON.parseRaw {
+    val r = client.target(endpointUri).queryParam("uri", entityUri).queryParam("limit", "100")
+    (graph match {
+      case Some(g) => r.queryParam(PutResponse.graphUriKey, g)
+      case None => r
+    }).request("application/ld+json").get(classOf[String])
+  })
+
+  def sendPut(source: EntityType, entityUri: String, graph: String) = {
     val endpointUri = source match {
       case Contract => loadContractUrl
       case BusinessEntity => loadBusinessEntityUrl
@@ -85,9 +93,23 @@ object Matchmaker {
               "resource" -> entityUri)))
         .execConstruct
         .write(baos, "TURTLE")
-      client.target(endpointUri).request.put(Entity.entity(baos.toByteArray, "text/turtle"))
+      val x = baos.toString("UTF-8").replaceAll("http://purl.org/weso/cpv/2008/", "http://linked.opendata.cz/resource/cpv-2008/concept/")
+      PutResponse(JSON.parseRaw(client.target(endpointUri).request.put(Entity.entity(x, "text/turtle"), classOf[String])))
     } finally {
       baos.close
+    }
+  }
+
+  object PutResponse {
+    val graphUriKey = "graph_uri"
+    def apply(j: Option[JSONType]) = {
+      import cz.opendata.tenderstats.utils.JsonParser._
+      val GraphUri = (".+?" + graphUriKey + "=(.+?)(?:&.*|$)").r
+      Lift(j) {
+        case Some(x) => Lift((x \\ ("@id") collect { case x: String => x } find (_.contains(graphUriKey)))) {
+          case Some(GraphUri(x)) => Try(URLDecoder.decode(x, "UTF-8")).toOption
+        }
+      }
     }
   }
 
@@ -104,10 +126,11 @@ object Matchmaker {
             },
             Map(
               "source-graph" -> Config.cc.getPreference("publicGraphName"),
-              "results" -> vals))).execSelect.toList map (_.toMap))
+              "results" -> vals.map(_.map { case (k, v) => k -> v.toString })))).execSelect.toList map (_.toMap))
     }
     def toJson = JSONArray(vals map JSONObject)
   }
+
   object GetResponse {
     def apply(j: Option[JSONType]) = {
       import cz.opendata.tenderstats.utils.JsonParser._
