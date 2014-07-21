@@ -1,5 +1,6 @@
 package cz.opendata.tenderstats
 
+import com.hp.hpl.jena.query.QueryExecution
 import cz.opendata.tenderstats.utils.AutoLift
 import cz.opendata.tenderstats.utils.Lift
 import cz.opendata.tenderstats.utils.NonEmptyString
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.client.ClientBuilder
 import javax.ws.rs.client.Entity
+import org.apache.log4j.LogManager
 import scala.util.Try
 import scala.util.parsing.json.JSON
 import scala.util.parsing.json.JSONArray
@@ -22,9 +24,10 @@ class Matchmaker extends AbstractComponent {
 
   override def doGetPost(request: HttpServletRequest, response: HttpServletResponse) = {
     import Matchmaker._
+    import Matchmaker.logger._
     //DELETE IN PROD VERSION
-    val testUser = new UserContext()
-    testUser.setNamedGraph("http://ld.opendata.cz/tenderstats/namedgraph/demo")
+    //    val testUser = new UserContext()
+    //    testUser.setNamedGraph("http://ld.opendata.cz/tenderstats/namedgraph/demo")
     //END
     response.setContentType("application/json; charset=UTF-8")
     val endpointUri = AutoLift(request.getParameter("source"), request.getParameter("target")) {
@@ -38,9 +41,10 @@ class Matchmaker extends AbstractComponent {
       case Boolean(p) => p
       case _ => false
     }
-    (endpointUri, request.getParameter("uri"), testUser /*getUserContext(request)*/ ) match {
+    (endpointUri, request.getParameter("uri"), getUserContext(request)) match {
       case (Some((s, t, Some(e))), NonEmptyString(u), uc: UserContext) => {
-        val g = if (isPrivate) sendPut(s, u, uc.getNamedGraph) else None
+        debug(s"Matchmaker calling - private: $isPrivate, source: $s, target: $t, endpoint: $e, entity: $u - by user: ${uc.getUserName}")
+        val g = if (isPrivate) sendPut(s, u, uc.getNamedGraph, Sparql.privateQuery) else sendPut(s, u, Config.cc.getPreference("publicGraphName"), Sparql.publicQuery)
         response.getWriter.print(sendGet(e, u, g).extend(t).toJson)
       }
       case _ => response.sendError(400)
@@ -52,6 +56,9 @@ class Matchmaker extends AbstractComponent {
 object Matchmaker {
 
   val client = ClientBuilder.newClient
+  val logger = LogManager.getLogger(classOf[Matchmaker])
+
+  import logger._
 
   val List(
     matchBusinessEntityToContractUrl,
@@ -70,31 +77,37 @@ object Matchmaker {
   }
 
   def sendGet(endpointUri: String, entityUri: String, graph: Option[String]) = GetResponse(JSON.parseRaw {
-    val r = client.target(endpointUri).queryParam("uri", entityUri).queryParam("limit", "100")
-    (graph match {
-      case Some(g) => r.queryParam(PutResponse.graphUriKey, g)
-      case None => r
+    logger.debug(s"Sending GET to: $endpointUri with entity $entityUri from graph $graph")
+    val re = client.target(endpointUri).queryParam("uri", entityUri).queryParam("limit", "100")
+    val rs = (graph match {
+      case Some(g) => re.queryParam(PutResponse.graphUriKey, g)
+      case None => re
     }).request("application/ld+json").get(classOf[String])
+    debug(s"GET response is:\n$rs")
+    rs
   })
 
-  def sendPut(source: EntityType, entityUri: String, graph: String) = {
+  def sendPut(source: EntityType, entityUri: String, graph: String, sparql: String => QueryExecution) = {
     val endpointUri = source match {
       case Contract => loadContractUrl
       case BusinessEntity => loadBusinessEntityUrl
     }
+    debug(s"Sending PUT to: $endpointUri with entity $entityUri from graph $graph")
     val baos = new ByteArrayOutputStream
     try {
-      Sparql
-        .privateQuery(
-          Template(
-            this.getClass.getResource("/cz/opendata/tenderstats/sparql/resource_description.mustache"),
-            Map(
-              "source-graph" -> graph,
-              "resource" -> entityUri)))
+      sparql(
+        Template(
+          this.getClass.getResource("/cz/opendata/tenderstats/sparql/resource_description.mustache"),
+          Map("resource" -> entityUri, "source-graph" -> graph)))
         .execConstruct
         .write(baos, "TURTLE")
       val x = baos.toString("UTF-8").replaceAll("http://purl.org/weso/cpv/2008/", "http://linked.opendata.cz/resource/cpv-2008/concept/")
-      PutResponse(JSON.parseRaw(client.target(endpointUri).request.put(Entity.entity(x, "text/turtle"), classOf[String])))
+      debug(s"PUT body content is:\n$x")
+      Try(PutResponse(JSON.parseRaw {
+        val rs = client.target(endpointUri).request.put(Entity.entity(x, "text/turtle"), classOf[String])
+        debug(s"PUT response is:\n$rs")
+        rs
+      })).getOrElse(None)
     } finally {
       baos.close
     }
@@ -141,8 +154,8 @@ object Matchmaker {
               case x: JSONObject => List(x \ "@id", x \ "vrank:hasValue", x \|\ ("dcterms:title", "gr:legalName"))
             } collect {
               case x @ List(Some(_: String), Some(_: Double), Some(_: String)) => List("uri", "score", "label").zip(x map (_.get)).toMap
-            }
           }
+            }
         } getOrElse Nil)
     }
   }

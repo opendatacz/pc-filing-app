@@ -1,31 +1,5 @@
 package cz.opendata.tenderstats.pcfapp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -46,10 +20,33 @@ import com.hp.hpl.jena.sparql.modify.UpdateProcessRemote;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
-
 import cz.opendata.tenderstats.ComponentConfiguration;
+import cz.opendata.tenderstats.Config;
 import cz.opendata.tenderstats.Mailer;
 import cz.opendata.tenderstats.UserContext;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PCFappModelContract implements Serializable {
 	
@@ -127,13 +124,13 @@ public class PCFappModelContract implements Serializable {
 		// cpv main
 		json.addProperty("mainCPV",
 				contractRes.getProperty(PCFappModel.pc_mainCPV).getObject().toString()
-						.replaceAll("http://purl.org/weso/cpv/2008/", ""));
+						.replaceAll(Config.cc().getPreference("cpvURL"), ""));
 		// cpv additional
 		StmtIterator iter = contractRes.listProperties(PCFappModel.pc_additionalCPV);
 		JsonArray array = new JsonArray();
 		while (iter.hasNext()) {
 			Statement s = iter.nextStatement();
-			array.add(new JsonPrimitive(s.getObject().toString().replaceAll("http://purl.org/weso/cpv/2008/", "")));
+			array.add(new JsonPrimitive(s.getObject().toString().replaceAll(Config.cc().getPreference("cpvURL"), "")));
 		}
 		json.add("additionalCPV", array);
 
@@ -258,13 +255,13 @@ public class PCFappModelContract implements Serializable {
 		// cpv main
 		json.addProperty("mainCPV",
 				contractRes.getProperty(PCFappModel.pc_mainCPV).getObject().toString()
-						.replaceAll("http://purl.org/weso/cpv/2008/", ""));
+						.replaceAll(Config.cc().getPreference("cpvURL"), ""));
 		// cpv additional
 		StmtIterator iter = contractRes.listProperties(PCFappModel.pc_additionalCPV);
 		JsonArray array = new JsonArray();
 		while (iter.hasNext()) {
 			Statement s = iter.nextStatement();
-			array.add(new JsonPrimitive(s.getObject().toString().replaceAll("http://purl.org/weso/cpv/2008/", "")));
+			array.add(new JsonPrimitive(s.getObject().toString().replaceAll(Config.cc().getPreference("cpvURL"), "")));
 		}
 		json.add("additionalCPV", array);
 		// procurement method

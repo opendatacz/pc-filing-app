@@ -1106,7 +1106,7 @@ public class PCFilingApp extends AbstractComponent {
 
 		String cpv = main.toString()
 				+ (other != null ? " " + other.toString() : "");
-		cpv = cpv.replaceAll("http://purl.org/weso/cpv/2008/", "");
+		cpv = cpv.replaceAll(getConfiguration().getPreference("cpvURL"), "");
 		cpv = cpv.replaceAll(" ", ", ");
 		return cpv;
 
