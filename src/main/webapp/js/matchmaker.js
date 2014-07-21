@@ -30,7 +30,7 @@ var MATCHMAKER = {
     config.dom.$matchResultsTable.fadeIn("slow");
 
     var matchesCount = matches.length;
-    if (matchesCount !== 0) {
+    if (matchesCount !== 0 && !MATCHMAKER.isObjectEmpty(matches[0])) {
       config.dom.$pagination.twbsPagination({
         href: "#page={{number}}",
         totalPages: Math.ceil(matchesCount / MATCHMAKER.matchesPerPage),
@@ -76,7 +76,7 @@ var MATCHMAKER = {
     config.dom.$matchResultsTable.delegate(".notificationButton", "click", function (e) {
       var $target = $(e.target),
         contract = sessionStorage.contractURL,
-        email = $target.data("email"),
+        email = prompt($target.data("email-prompt"), $target.data("email")),
         contractTitle = sessionStorage.contractTitle,
         subjectLine = $target.data("subject"),
         bodyTemplate = $target.data("template"),
@@ -88,19 +88,21 @@ var MATCHMAKER = {
                           contractTitle: contractTitle})),
            body: encodeURIComponent(bodyTemplate + " " + contract)
           });
-      $.getJSON("InvitationComponent",
-        {action: "send",
-         contract: sessionStorage.contractTitle,
-         contractURL: contract,
-         email: email,
-         name: sessionStorage.username},
-         function (data) {
-           window.location.href = link;
-         }); 
+      if (email) {
+        $.getJSON("InvitationComponent",
+          {action: "send",
+           contract: sessionStorage.contractTitle,
+           contractURL: contract,
+           email: email,
+           name: sessionStorage.username},
+           function (data) {
+             window.location.href = link;
+           });
+      }
     });
 
     $.getJSON("Matchmaker",
-      {private: config.private, // MATCHMAKER.getParameterByName("private") === "true" ? true : false,
+      {private: true, // MATCHMAKER.getParameterByName("private") === "true" ? true : false,
        source: config.source,
        target: config.target,
        uri: config.resourceUri},
@@ -118,5 +120,24 @@ var MATCHMAKER = {
     return (index >= (page * MATCHMAKER.matchesPerPage) - MATCHMAKER.matchesPerPage)
            &&
            (index < (page * MATCHMAKER.matchesPerPage));
+  },
+  isObjectEmpty: function (object) {
+    // Stolen from <http://stackoverflow.com/a/23785342/385505>
+    if ("object" !== typeof object) {
+        throw new Error("Object must be specified.");
+    }
+
+    if ("undefined" !== Object.keys) {
+        // Using ECMAScript 5 feature.
+        return (0 === Object.keys(object).length);
+    } else {
+        // Using legacy compatibility mode.
+        for (var key in object) {
+            if (object.hasOwnProperty(key)) {
+                return false;
+            }
+        }
+        return true;
+    }
   }
 };

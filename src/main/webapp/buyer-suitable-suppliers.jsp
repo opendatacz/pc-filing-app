@@ -78,6 +78,7 @@
                    title="<fmt:message key="suitablesuppliers.notification.invite" />"
                    href="javascript:void(0);"
                    data-email="{{.}}"
+                   data-email-prompt="<fmt:message key="suitablesuppliers.notification" />"
                    data-subject="<fmt:message key="suitablesuppliers.notification.invite.subject" />"
                    data-template="<fmt:message key="suitablesuppliers.notification.invite.template" />">
                   <i class="icon-envelope"></i>
@@ -108,9 +109,7 @@
                   notfound: "<fmt:message key="notfound" bundle="${cons}" />",
                   prev: "<fmt:message key="prev" bundle="${cons}" />"
                 },
-                private: true, //"${pageContext.request.getParameter("private")}" === "true" ? true : false,
                 resourceUri: sessionStorage.contractURL,
-                  //"http://linked.opendata.cz/resource/vestnikverejnychzakazek.cz/public-contract/484169-7403010084169",
                 source: "contract",
                 target: "business-entity"
               };
