@@ -1,0 +1,27 @@
+{{!
+@param Array<Map> results [{:result IRI :rank int :label String}]
+@param IRI        source-graph 
+}}
+
+{{> prefixes }}
+
+SELECT ?uri ?score ?label
+(SAMPLE(?_addressLocality) AS ?addressLocality)
+(SAMPLE(?_email) AS ?email)
+WHERE {
+  GRAPH <{{source-graph}}> {
+    VALUES (?uri ?score ?label) {
+      {{#results}}
+        (<{{uri}}> {{score}} "{{label}}")
+      {{/results}}
+    }
+    OPTIONAL {
+      ?uri schema:location?/schema:address/schema:addressLocality ?_addressLocality .
+    }
+    OPTIONAL {
+      ?uri schema:contact/schema:email ?_email .
+    }
+  }
+}
+GROUP BY ?uri ?score ?label
+ORDER BY DESC(?score)

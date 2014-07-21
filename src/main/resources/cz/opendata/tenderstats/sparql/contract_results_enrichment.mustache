@@ -1,0 +1,38 @@
+{{!
+@param Array<Map> results [{:result IRI :rank int :label String}]
+@param IRI        source-graph 
+}}
+
+{{> prefixes }}
+
+SELECT ?uri ?score ?label
+(SAMPLE(?_description) AS ?description)
+(SAMPLE(?_publicationDate) AS ?publicationDate)
+?tenderDeadline
+(CONCAT(STR(?currencyValue), " ", ?currency) AS ?estimatedPrice) 
+WHERE {
+  GRAPH <{{source-graph}}> {
+    VALUES (?uri ?score ?label) {
+      {{#results}}
+        (<{{uri}}> {{score}} "{{label}}")
+      {{/results}}
+    }
+    OPTIONAL {
+      ?uri dcterms:description ?_description .
+    }
+    OPTIONAL {
+      ?uri pc:publicNotice?/pc:publicationDate ?_publicationDate .
+    }
+    OPTIONAL {
+      ?uri pc:tenderDeadline ?tenderDeadline .
+    }
+    OPTIONAL {
+      ?uri pc:estimatedPrice [
+          gr:hasCurrency ?currency ;
+          gr:hasCurrencyValue ?currencyValue
+        ] .
+    }
+  }
+}
+GROUP BY ?uri ?score ?label ?tenderDeadline ?currency ?currencyValue 
+ORDER BY DESC(?score)

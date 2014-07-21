@@ -1,0 +1,106 @@
+body {
+    padding-top: 60px;
+    padding-bottom: 40px;
+}
+
+.reallyhide {
+    display: none !important;
+}
+
+/* Hide Chrome's arrows next to HTML5 number input field */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    display: none;
+}
+
+.formFile {
+    display:none !important;
+}
+
+.docList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0em !important;
+}
+
+.docList li {
+    margin: 1em !important;
+}
+
+.docList span {
+    cursor: pointer;
+}
+
+#view label {
+    /* 	font-weight: bold; */
+}
+
+.table_cpvs {
+    list-style: none !important;
+    padding: 0;
+    margin: 0;
+}
+.table_cpvs li {
+
+    padding: 0em;
+    margin: 0em 0em 0.5em 0em;
+
+}
+
+#docsList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.addDocLI {
+    margin: 1em 0;
+    padding: 0;
+}
+
+.addDocLI:FIRST-CHILD {
+    margin: 1.5em 0;	
+}
+
+.addDocLI label {
+    display: inline;
+    margin: 0 0.5em;
+}
+
+.addDocLI input {
+    display: inline;
+    margin: 0.5em 0;
+}
+
+.sidebar-nav {
+    padding: 9px 0;
+}
+
+.activities tr td {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.activities abbr {
+    color: gray;
+    border-bottom: none;
+}
+
+#matchResultsTable {
+  display: none;
+}
+
+#matchResultsTable tbody tr {
+  vertical-align: middle;
+}
+
+.matchmakerResultsTitle {
+  margin-bottom: 20px;
+}
+
+#progressbar {
+  background: url("../images/progressbar.gif") no-repeat center center;
+  height: 20px;
+}
+.fixedCol {
+  width: 350px;
+}

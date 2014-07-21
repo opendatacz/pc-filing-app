@@ -1,23 +1,35 @@
-# Created by http://gitignore.io
-
-### Java ###
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-### OSX ###
-.DS_Store
-.AppleDouble
-.LSOverride
-Icon
-
-
 # Thumbnails
 ._*
 
 # Files that might appear on external disk
 .Spotlight-V100
 .Trashes
+WebContent/META-INF/context.xml
+build.xml
+/nbproject/
+/target/
+nb-configuration.xml
+nbactions.xml
+/cache/
+
+project
+
+### vim ###
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+
+# sbt specific
+.cache/
+.history/
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+private-config.xml
