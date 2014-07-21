@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # pc-filing-app
 
 Application for filing public contracts
@@ -16,7 +15,6 @@ export PCFA_CONFIG=/path/to/config-private.xml
 
 Application for filing public contracts
 
->>>>>>> origin/master
 ## Acknowledgement
 
 The development of this tool was supported by the [LOD2 project](http://lod2.eu/), which is a large-scale integrating project co-funded by the European Commission within the FP7 Information and Communication Technologies Work Programme (Grant Agreement No. 257943).
