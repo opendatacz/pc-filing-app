@@ -159,7 +159,7 @@
 
                                                         // Similar
                                                         newSimilar = $('<a>');
-                                                        newSimilar.attr('href', 'buyer-similar-events.jsp');
+                                                        newSimilar.attr('href', 'buyer-similar-events.jsp?private=true');
                                                         newSimilar.click(function() {
                                                             saveEventInfo(i);
                                                         });
@@ -167,7 +167,7 @@
 
                                                         // Suppliers
                                                         newSuppliers = $('<a>');
-                                                        newSuppliers.attr('href', 'buyer-suitable-suppliers.jsp');
+                                                        newSuppliers.attr('href', 'buyer-suitable-suppliers.jsp?private=true');
                                                         newSuppliers.click(function() {
                                                             saveEventInfo(i);
                                                         });

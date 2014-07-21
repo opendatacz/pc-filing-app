@@ -116,7 +116,8 @@
                     moreText: "<fmt:message key="moretext" bundle="${cons}" />"
                   }
                 },
-                private: false,
+                private: true, // MATCHMAKER.getParameterByName("private") === "true" ? true : false, 
+                               //"${pageContext.request.getParameter("private")}" === "true" ? true : false,
                 resourceUri: //sessionStorage.???,
                   "http://linked.opendata.cz/resource/business-entity/e6e9258d-2602-45e6-829d-62a89a0e812d",
                 source: "business-entity",

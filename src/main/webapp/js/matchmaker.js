@@ -75,6 +75,7 @@ var MATCHMAKER = {
     }
     config.dom.$matchResultsTable.delegate(".notificationButton", "click", function (e) {
       var $target = $(e.target),
+        contract = sessionStorage.contractURL,
         email = $target.data("email"),
         contractTitle = sessionStorage.contractTitle,
         subjectLine = $target.data("subject"),
@@ -85,20 +86,33 @@ var MATCHMAKER = {
                          "{{subject}} \"{{contractTitle}}\" | PC Filing App",
                          {subject: subjectLine,
                           contractTitle: contractTitle})),
-           body: encodeURIComponent(bodyTemplate + " " + sessionStorage.contractURL)
+           body: encodeURIComponent(bodyTemplate + " " + contract)
           });
-      
-      window.location.href = link;
+      $.getJSON("InvitationComponent",
+        {action: "send",
+         contract: sessionStorage.contractTitle,
+         contractURL: contract,
+         email: email,
+         name: sessionStorage.username},
+         function (data) {
+           window.location.href = link;
+         }); 
     });
 
     $.getJSON("Matchmaker",
-      {private: config.private,
+      {private: config.private, // MATCHMAKER.getParameterByName("private") === "true" ? true : false,
        source: config.source,
        target: config.target,
        uri: config.resourceUri},
       function (matches) {
         return MATCHMAKER.displayMatches(config, matches);
       });
+  },
+  getParameterByName: function (name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
   },
   inPage: function (index, page) {
     return (index >= (page * MATCHMAKER.matchesPerPage) - MATCHMAKER.matchesPerPage)

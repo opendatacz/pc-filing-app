@@ -108,9 +108,9 @@
                   notfound: "<fmt:message key="notfound" bundle="${cons}" />",
                   prev: "<fmt:message key="prev" bundle="${cons}" />"
                 },
-                private: false,
-                resourceUri: //sessionStorage.contractURL,
-                  "http://linked.opendata.cz/resource/vestnikverejnychzakazek.cz/public-contract/484169-7403010084169",
+                private: true, //"${pageContext.request.getParameter("private")}" === "true" ? true : false,
+                resourceUri: sessionStorage.contractURL,
+                  //"http://linked.opendata.cz/resource/vestnikverejnychzakazek.cz/public-contract/484169-7403010084169",
                 source: "contract",
                 target: "business-entity"
               };
