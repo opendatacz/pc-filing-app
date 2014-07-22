@@ -1,0 +1,11 @@
+<%@page import="cz.opendata.tenderstats.UserContext"%>
+<%@page import="cz.opendata.tenderstats.SystemManager"%>
+<%@ page pageEncoding="UTF-8" %>
+<%
+    SystemManager sm = application.createServlet(SystemManager.class);
+    sm.init();
+    UserContext uc = sm.getUserContext(request);
+    if (uc == null || uc.getRole() != 2) {
+        response.sendRedirect(request.getContextPath());
+    }
+%>

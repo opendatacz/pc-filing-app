@@ -4,6 +4,7 @@
 <html>
     <head>
         <%@include file="WEB-INF/jspf/header.jspf" %>
+        <%@include file="WEB-INF/jspf/header-buyer.jspf" %>
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Buyer" />
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
         <link href="bootstrap/css/won.css" rel="stylesheet" />
@@ -51,7 +52,7 @@
         </div>
 
         <%@include file="WEB-INF/jspf/footer.jspf" %>
-
+        
         <%--
         <script src="js/cpvs.js"></script>
         <script src="js/functions.js"></script>
@@ -61,6 +62,7 @@
         <script src="js/table.js"></script>
         --%>
 
+        <script src="js/toolsBuyer.js"></script>
         <script src="js/main.js"></script>
         <script src="js/sessionstorage.1.4.js"></script>
         <script src="js/jquery.mustache.js"></script>

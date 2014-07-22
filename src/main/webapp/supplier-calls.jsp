@@ -4,6 +4,7 @@
 <html>
     <head>
         <%@include file="WEB-INF/jspf/header.jspf" %>
+        <%@include file="WEB-INF/jspf/header-supplier.jspf" %>
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Supplier" />
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
         <link href="bootstrap/css/won.css" rel="stylesheet" />
@@ -53,6 +54,7 @@
 
         <%@include file="WEB-INF/jspf/footer.jspf" %> 
         <script src="js/sessionstorage.1.4.js"></script>
+        <script src="js/script.js"></script>
         <script src="js/date.format.js"></script>
         <script src="js/jquery.twbsPagination.min.js"></script>
         <script src="js/jquery.mustache.js"></script>
