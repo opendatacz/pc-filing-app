@@ -4,8 +4,8 @@
 <html>
     <head>
         <%@include file="WEB-INF/jspf/header.jspf" %>
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.index" />
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.constants" var="cons" />
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Index" />
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
     </head>
     <body>
         <%@include file="WEB-INF/jspf/header-public.jspf" %>
