@@ -650,7 +650,7 @@ public class PCFappModelContract implements Serializable {
 				if ( docTypesList.contains( part.getName() ) ) {
 				
 					fileToken = UUID.randomUUID().toString();
-					fileName = model.utils.processFileUpload(httpRequest, part, uc.getUserName(), fileToken);
+					fileName = model.utils.processFileUpload(httpRequest, part, uc.getUserName(), uc.getRole(), fileToken);
 					if (fileName != null && !fileName.isEmpty()) {
 						String documentURI = documentObjectURI + fileToken;
 						documents += " ; pcfapp:document	<" + documentURI + "> ";
@@ -974,7 +974,7 @@ public class PCFappModelContract implements Serializable {
 				if ( docTypesList.contains( part.getName() ) ) {
 				
 					fileToken = UUID.randomUUID().toString();
-					fileName = model.utils.processFileUpload(httpRequest, part, uc.getUserName(), fileToken);
+					fileName = model.utils.processFileUpload(httpRequest, part, uc.getUserName(), uc.getRole(), fileToken);
 					if (fileName != null && !fileName.isEmpty()) {
 						String documentURI = documentObjectURI + fileToken;
 						documents += " ; pcfapp:document	<" + documentURI + "> ";

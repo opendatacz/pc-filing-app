@@ -5,7 +5,7 @@ import com.hp.hpl.jena.sparql.modify.UpdateProcessRemote;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
-import cz.opendata.tenderstats.utils.ServletUtils;
+import cz.opendata.tenderstats.utils.UriEncoder;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -41,7 +41,7 @@ public class SystemManager extends AbstractComponent {
      * if no such user exist.
      * @throws ServletException If connection to database server failed.
      */
-    protected UserContext checkLogin(String username, String password) throws ServletException {
+    protected UserContext checkLogin(String username, int role, String password) throws ServletException {
 
         try (Connection con
                 = DriverManager.getConnection(config.getRdbAddress() + config.getRdbDatabase(),
@@ -49,8 +49,9 @@ public class SystemManager extends AbstractComponent {
                         config.getRdbPassword())) {
             PreparedStatement pst
                     = con.prepareStatement("SELECT username, passwordhash, salt, role "
-                            + "FROM users WHERE username=? AND active='1'");
+                            + "FROM users WHERE username=? AND role=? AND active='1'");
             pst.setString(1, username);
+            pst.setInt(2, role);
             ResultSet rs = pst.executeQuery();
             if (!rs.first()) {
                 return null;
@@ -66,8 +67,9 @@ public class SystemManager extends AbstractComponent {
             uc.setUserName(rs.getString("username"));
             uc.setRole(rs.getInt("role"));
 
-            pst = con.prepareStatement("SELECT preference, value FROM user_preferences WHERE username=?");
+            pst = con.prepareStatement("SELECT preference, value FROM user_preferences WHERE username=? AND role=?");
             pst.setString(1, username);
+            pst.setInt(2, role);
             rs = pst.executeQuery();
             while (rs.next()) {
                 uc.setPreference(rs.getString("preference"), rs.getString("value"));
@@ -99,14 +101,19 @@ public class SystemManager extends AbstractComponent {
      * @throws ServletException If connection to database server failed.
      */
     protected boolean register(String username, String password, String businessName, String businessIC, String businessPlace,
-            String role, String active, String cpv1, String cpv2, String cpv3) throws ServletException {
-
+            int role, String active, String cpv1, String cpv2, String cpv3) throws ServletException {
+        
+        if (!username.matches("\\S+@\\S+\\.\\S+")) {
+            return false;
+        }
         try (Connection con
                 = DriverManager.getConnection(config.getRdbAddress() + config.getRdbDatabase(),
                         config.getRdbUsername(),
                         config.getRdbPassword())) {
-            PreparedStatement pst = con.prepareStatement("SELECT username FROM users WHERE username=?");
+
+            PreparedStatement pst = con.prepareStatement("SELECT username FROM users WHERE username=? AND role=?");
             pst.setString(1, username);
+            pst.setInt(2, role);
             ResultSet rs = pst.executeQuery();
             if (rs.first()) {
                 return false;
@@ -118,46 +125,47 @@ public class SystemManager extends AbstractComponent {
                 pst.setString(1, username);
                 pst.setString(2, DigestUtils.sha512Hex(password + salt));
                 pst.setString(3, salt);
-                pst.setString(4, role);
+                pst.setInt(4, role);
                 pst.setString(5, active);
                 pst.executeUpdate();
 
-                pst = con.prepareStatement("INSERT INTO user_preferences (username, preference, value) " + "VALUES (?, ?, ?)");
-                String namedGraph = config.getPreference("newNamedGraphURL") + username;
+                pst = con.prepareStatement("INSERT INTO user_preferences (username, role, preference, value) " + "VALUES (?, ?, ?, ?)");
+                String namedGraph = config.getPreference("newNamedGraphURL") + (role == 1 ? "contracting-authority" : "bidder") + "/" + username;
                 pst.setString(1, username);
-                pst.setString(2, "namedGraph");
-                pst.setString(3, namedGraph);
+                pst.setInt(2, role);
+                pst.setString(3, "namedGraph");
+                pst.setString(4, namedGraph);
                 pst.executeUpdate();
 
                 if (businessIC != null && !businessIC.trim().isEmpty()) {
-                    pst.setString(2, "businessIC");
-                    pst.setString(3, businessIC);
+                    pst.setString(3, "businessIC");
+                    pst.setString(4, businessIC);
                     pst.executeUpdate();
                 }
 
-                pst.setString(2, "businessName");
-                pst.setString(3, businessName);
+                pst.setString(3, "businessName");
+                pst.setString(4, businessName);
                 pst.executeUpdate();
 
-                if (role.equals("2")) {
+                if (role == 2) {
 
-                    pst.setString(2, "businessPlace");
-                    pst.setString(3, businessPlace);
+                    pst.setString(3, "businessPlace");
+                    pst.setString(4, businessPlace);
                     pst.executeUpdate();
 
                     if (cpv1 != null && !cpv1.isEmpty()) {
-                        pst.setString(2, "cpv1");
-                        pst.setString(3, (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-')));
+                        pst.setString(3, "cpv1");
+                        pst.setString(4, (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-')));
                         pst.executeUpdate();
                     }
                     if (cpv2 != null && !cpv2.isEmpty()) {
-                        pst.setString(2, "cpv2");
-                        pst.setString(3, (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-')));
+                        pst.setString(3, "cpv2");
+                        pst.setString(4, (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-')));
                         pst.executeUpdate();
                     }
                     if (cpv3 != null && !cpv3.isEmpty()) {
-                        pst.setString(2, "cpv3");
-                        pst.setString(3, (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-')));
+                        pst.setString(3, "cpv3");
+                        pst.setString(4, (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-')));
                         pst.executeUpdate();
                     }
                 }
@@ -168,8 +176,8 @@ public class SystemManager extends AbstractComponent {
                 } else {
                     beURL = config.getPreference("newBusinessEntityURL") + UUID.randomUUID();
                 }
-                pst.setString(2, "businessEntity");
-                pst.setString(3, beURL);
+                pst.setString(3, "businessEntity");
+                pst.setString(4, beURL);
                 pst.executeUpdate();
 
                 /* @formatter:off */
@@ -225,15 +233,17 @@ public class SystemManager extends AbstractComponent {
                         config.getRdbPassword())) {
             PreparedStatement st;
             if (!uc.containsPreference(preference)) {
-                st = con.prepareStatement("INSERT INTO user_preferences VALUES ( ? , ? , ? )");
+                st = con.prepareStatement("INSERT INTO user_preferences VALUES ( ? , ? , ? , ? )");
                 st.setString(1, uc.getUserName());
-                st.setString(2, preference);
-                st.setString(3, value);
+                st.setInt(2, uc.getRole());
+                st.setString(3, preference);
+                st.setString(4, value);
             } else {
-                st = con.prepareStatement("UPDATE user_preferences SET value = ? WHERE username = ? AND preference = ? ");
+                st = con.prepareStatement("UPDATE user_preferences SET value = ? WHERE username = ? AND role = ? AND preference = ? ");
                 st.setString(1, value);
                 st.setString(2, uc.getUserName());
-                st.setString(3, preference);
+                st.setInt(3, uc.getRole());
+                st.setString(4, preference);
             }
 
             int res = st.executeUpdate();
@@ -281,10 +291,18 @@ public class SystemManager extends AbstractComponent {
         switch (action) {
 
             case "login":
-                if (!allDefined(request.getParameter("username"), request.getParameter("password"))) {
+                if (!allDefined(request.getParameter("username"), request.getParameter("role"), request.getParameter("password"))) {
                     response.sendError(400);
                     return;
                 }
+                Integer role;
+                try {
+                    role = Integer.valueOf(request.getParameter("role"));
+                } catch (NumberFormatException ex) {
+                    response.sendError(400);
+                    return;
+                }
+
                 session = request.getSession(false);
                 if (session != null) {
                     session.invalidate();
@@ -292,11 +310,11 @@ public class SystemManager extends AbstractComponent {
                 session = request.getSession(true);
                 synchronized (session) {
                     session.setMaxInactiveInterval(Integer.parseInt(config.getPreference("sessionTimeout")));
-                    uc = checkLogin(request.getParameter("username"), request.getParameter("password"));
+                    uc = checkLogin(request.getParameter("username"), role, request.getParameter("password"));
                     if (uc == null) {
                         if (allDefined(request.getParameter("forward-if-fail"))) {
                             try {
-                                response.sendRedirect(ServletUtils.encodeURI(request.getParameter("forward-if-fail"), "m"));
+                                response.sendRedirect(UriEncoder.apply(request.getParameter("forward-if-fail")).part("m").encode());
                             } catch (IllegalStateException unused) {
                             }
                         } else {
@@ -329,7 +347,7 @@ public class SystemManager extends AbstractComponent {
                         request.getParameter("businessName"),
                         request.getParameter("businessIC"),
                         request.getParameter("businessPlace"),
-                        request.getParameter("role"),
+                        Integer.valueOf(request.getParameter("role")),
                         "1", // active
                         request.getParameter("cpv1"),
                         request.getParameter("cpv2"),
@@ -338,7 +356,7 @@ public class SystemManager extends AbstractComponent {
                 } else {
                     if (allDefined(request.getParameter("forward-if-fail"))) {
                         try {
-                            response.sendRedirect(ServletUtils.encodeURI(request.getParameter("forward-if-fail"), "m"));
+                            response.sendRedirect(UriEncoder.apply(request.getParameter("forward-if-fail")).part("m").encode());
                         } catch (IllegalStateException unused) {
                         }
                     } else {
@@ -442,7 +460,7 @@ public class SystemManager extends AbstractComponent {
         }
         if (allDefined(request.getParameter("forward")) && !response.isCommitted()) {
             try {
-                response.sendRedirect(ServletUtils.encodeURI(request.getParameter("forward"), "m"));
+                response.sendRedirect(UriEncoder.apply(request.getParameter("forward")).part("m").encode());
             } catch (IllegalStateException unused) {
             }
         }

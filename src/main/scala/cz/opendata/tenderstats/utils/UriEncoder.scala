@@ -2,9 +2,9 @@ package cz.opendata.tenderstats.utils
 
 import java.net.URLEncoder
 
-object ServletUtilsImpl {
-
-  def encodeURI(uri: String, parts: Array[String]) = {
+class UriEncoder(uri: String, parts: List[String]) {
+  def part(x: String) = new UriEncoder(uri, x :: parts)
+  def encode = {
     if (parts.isEmpty)
       URLEncoder.encode(uri, "UTF-8")
     else
@@ -15,5 +15,8 @@ object ServletUtilsImpl {
         case _ => uri
       }
   }
+}
 
+object UriEncoder {
+  def apply(uri: String) = new UriEncoder(uri, Nil)
 }

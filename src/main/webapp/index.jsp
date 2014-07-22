@@ -72,6 +72,7 @@
 
                     <form class="form-horizontal" id="login-buyer-form" action="SystemManager" method="post">
                         <input name="action" type="hidden" value="login">
+                        <input name="role" type="hidden" value="1">
                         <input name="forward" id="forward" type="hidden" value="buyer-dashboard.jsp">
                         <input name="forward-if-fail" type="hidden" value="./?t=error&m=<fmt:message key="body.form.email.error" />">
                         <div class="control-group">
@@ -108,6 +109,7 @@
 
                     <form class="form-horizontal" id="login-supplier-form" action="SystemManager" method="post">
                         <input name="action" type="hidden" value="login">
+                        <input name="role" type="hidden" value="2">
                         <input name="forward" id="forward" type="hidden" value="supplier-calls.jsp">
                         <input name="forward-if-fail" type="hidden" value="./?t=error&m=<fmt:message key="body.form.email.error" />">
                         <div class="control-group">

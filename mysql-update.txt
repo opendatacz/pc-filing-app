@@ -1,0 +1,31 @@
+ALTER TABLE  `pcfapp`.`users` DROP PRIMARY KEY ,
+ADD PRIMARY KEY (  `username` ,  `role` ) ;
+
+ALTER TABLE  `user_preferences` DROP FOREIGN KEY  `user_preferences_ibfk_1` ;
+
+ALTER TABLE  `user_preferences` ADD  `role` TINYINT( 4 ) NOT NULL AFTER  `username`;
+
+UPDATE user_preferences p SET role=(SELECT role FROM users u WHERE u.username=p.username);
+
+ALTER TABLE  `pcfapp`.`user_preferences` DROP PRIMARY KEY ,
+ADD PRIMARY KEY (  `username` ,  `role` ,  `preference` );
+
+ALTER TABLE  `user_preferences` CHANGE  `role`  `role` TINYINT( 4 ) UNSIGNED NOT NULL;
+
+ALTER TABLE  `user_preferences` ADD FOREIGN KEY (  `username`, `role` ) REFERENCES  `pcfapp`.`users` (`username`, `role`) ON DELETE CASCADE ON UPDATE CASCADE ;
+
+ALTER TABLE  `documents` DROP FOREIGN KEY  `fk_documents_1` ;
+
+ALTER TABLE  `documents` ADD  `role` TINYINT( 4 ) UNSIGNED NOT NULL AFTER  `owner` ;
+
+ALTER TABLE  `pcfapp`.`documents` DROP PRIMARY KEY ,
+ADD PRIMARY KEY (  `id` );
+
+ALTER TABLE documents DROP INDEX fk_documents_1_idx;
+
+UPDATE documents p SET role=(SELECT role FROM users u WHERE u.username=p.owner);
+
+ALTER TABLE  `documents` ADD FOREIGN KEY (  `owner`, `role` ) REFERENCES  `pcfapp`.`users` (`username`, `role`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE  `pcfapp`.`users` DROP INDEX  `active_users` ,
+ADD INDEX  `active_users` (  `username` ,  `active` );

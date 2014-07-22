@@ -39,7 +39,7 @@
         <nuts>http://ec.europa.eu/eurostat/ramon/rdfdata/nuts2008/</nuts>
         <proctypes>http://purl.org/procurement/public-contracts-procedure-types#</proctypes>
         <new-business-entity>http://linked.opendata.cz/resource/business-entity/</new-business-entity>
-        <new-named-graph>http://linked.opendata.cz/resource/tenderstats/dataset/</new-named-graph>
+        <new-named-graph>http://linked.opendata.cz/resource/pc-filing-app/dataset/</new-named-graph>
     </url>
     <system>
         <session-timeout>86400</session-timeout>

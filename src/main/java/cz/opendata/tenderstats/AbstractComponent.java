@@ -129,8 +129,9 @@ public abstract class AbstractComponent extends HttpServlet {
                                 config.getRdbUsername(),
                                 config.getRdbPassword())) {
                     PreparedStatement pst
-                            = con.prepareStatement("SELECT preference, value FROM user_preferences WHERE username=?");
+                            = con.prepareStatement("SELECT preference, value FROM user_preferences WHERE username=? AND role=?");
                     pst.setString(1, uc.getUserName());
+                    pst.setInt(2, uc.getRole());
                     ResultSet rs = pst.executeQuery();
                     while (rs.next()) {
                         uc.setPreference(rs.getString("preference"), rs.getString("value"));
