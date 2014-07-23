@@ -9,4 +9,8 @@ object Sparql {
   def publicUpdate(q: String) = QueryExecutionFactory.sparqlService(Config.cc.getSparqlPublicUpdate, q)
   def publicQuery(q: String) = QueryExecutionFactory.sparqlService(Config.cc.getSparqlPublicQuery, q)
 
+  def template(name: String, m: Map[String, Any] = Map.empty) = {
+    Template(this.getClass.getResource(s"/cz/opendata/tenderstats/sparql/${name}"), m + ("prefixes" -> Config.prefixes))
+  }
+
 }

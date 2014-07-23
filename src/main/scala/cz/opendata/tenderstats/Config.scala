@@ -11,7 +11,7 @@ import scala.xml.XML
 
 object Config {
 
-  val (global, matchmaker) = {
+  val (global, matchmaker, prefixes) = {
     import cz.opendata.tenderstats.utils.PcfaStringOpts._
     val xml = {
       scala.xml.Utility.trim(
@@ -55,7 +55,7 @@ object Config {
     val pf = (prefixes \\ ("prefix") map (x => x.attribute("id") -> x.text) collect { case (Some(Seq(x)), NonEmptyString(y)) if !x.text.isEmpty => Map("id" -> x.text, "uri" -> y) })
     cc.setPreference("prefixes", Template(this.getClass.getResource("/cz/opendata/tenderstats/sparql/prefixes.mustache"), Map("prefixes" -> pf)))
     pf foreach (x => cc.setPrefix(x("id"), x("uri")))
-    (cc, xml \ "matchmaker")
+    (cc, xml \ "matchmaker", pf)
   }
 
   val cc = global
