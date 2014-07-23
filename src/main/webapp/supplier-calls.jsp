@@ -8,9 +8,6 @@
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Supplier" />
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
         <link href="bootstrap/css/won.css" rel="stylesheet" />
-        <script type="text/javascript">
-            businessEntity = "<%=uc.getPreference("businessEntity")%>";
-        </script>
     </head>
     <body>
         <%@include file="WEB-INF/jspf/header-private.jspf" %>
@@ -121,10 +118,8 @@
                                                 moreText: "<fmt:message key="moretext" bundle="${cons}" />"
                                             }
                                         },
-                                        private: true, // MATCHMAKER.getParameterByName("private") === "true" ? true : false, 
-                                        //"${pageContext.request.getParameter("private")}" === "true" ? true : false,
-                                        resourceUri: //sessionStorage.???,
-                                                "http://linked.opendata.cz/resource/business-entity/e6e9258d-2602-45e6-829d-62a89a0e812d",
+                                        resourceUri:  "<%=uc.getPreference("businessEntity")%>",
+                                                //"http://linked.opendata.cz/resource/business-entity/e6e9258d-2602-45e6-829d-62a89a0e812d",
                                         source: "business-entity",
                                         target: "contract"
                                     };
