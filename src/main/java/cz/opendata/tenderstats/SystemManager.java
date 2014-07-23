@@ -12,6 +12,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
@@ -102,125 +104,159 @@ public class SystemManager extends AbstractComponent {
      */
     protected boolean register(String username, String password, String businessName, String businessIC, String businessPlace,
             int role, String active, String cpv1, String cpv2, String cpv3) throws ServletException {
-        
+
         if (!username.matches("\\S+@\\S+\\.\\S+")) {
             return false;
         }
-        try (Connection con
-                = DriverManager.getConnection(config.getRdbAddress() + config.getRdbDatabase(),
-                        config.getRdbUsername(),
-                        config.getRdbPassword())) {
 
-            PreparedStatement pst = con.prepareStatement("SELECT username FROM users WHERE username=? AND role=?");
-            pst.setString(1, username);
-            pst.setInt(2, role);
-            ResultSet rs = pst.executeQuery();
-            if (rs.first()) {
-                return false;
-            } else {
-                String salt = RandomStringUtils.randomAlphanumeric(128);
-                pst
-                        = con.prepareStatement("INSERT INTO users (username, passwordhash, salt, role, active) "
-                                + "VALUES (?, ?, ?, ?, ?)");
-                pst.setString(1, username);
-                pst.setString(2, DigestUtils.sha512Hex(password + salt));
-                pst.setString(3, salt);
-                pst.setInt(4, role);
-                pst.setString(5, active);
-                pst.executeUpdate();
+        HashMap<String, Object> sparqlTemplateMap = new HashMap<>();
+        String namedGraph = config.getPrefix("graph") + (role == 1 ? "contracting-authority" : "bidder") + "/" + username;
+        sparqlTemplateMap.put("graph-uri", namedGraph);
 
-                pst = con.prepareStatement("INSERT INTO user_preferences (username, role, preference, value) " + "VALUES (?, ?, ?, ?)");
-                String namedGraph = config.getPrefix("graph") + (role == 1 ? "contracting-authority" : "bidder") + "/" + username;
-                pst.setString(1, username);
-                pst.setInt(2, role);
-                pst.setString(3, "namedGraph");
-                pst.setString(4, namedGraph);
-                pst.executeUpdate();
-
-                if (businessIC != null && !businessIC.trim().isEmpty()) {
-                    pst.setString(3, "businessIC");
-                    pst.setString(4, businessIC);
-                    pst.executeUpdate();
-                }
-
-                pst.setString(3, "businessName");
-                pst.setString(4, businessName);
-                pst.executeUpdate();
-
-                if (role == 2) {
-
-                    pst.setString(3, "businessPlace");
-                    pst.setString(4, businessPlace);
-                    pst.executeUpdate();
-
-                    if (cpv1 != null && !cpv1.isEmpty()) {
-                        pst.setString(3, "cpv1");
-                        pst.setString(4, (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-')));
-                        pst.executeUpdate();
-                    }
-                    if (cpv2 != null && !cpv2.isEmpty()) {
-                        pst.setString(3, "cpv2");
-                        pst.setString(4, (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-')));
-                        pst.executeUpdate();
-                    }
-                    if (cpv3 != null && !cpv3.isEmpty()) {
-                        pst.setString(3, "cpv3");
-                        pst.setString(4, (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-')));
-                        pst.executeUpdate();
-                    }
-                }
-
-                String beURL;
-                if (businessIC != null && !businessIC.trim().isEmpty()) {
-                    beURL = config.getPrefix("be") + businessIC + "-" + UUID.randomUUID();
-                } else {
-                    beURL = config.getPrefix("be") + UUID.randomUUID();
-                }
-                pst.setString(3, "businessEntity");
-                pst.setString(4, beURL);
-                pst.executeUpdate();
-
-                /* @formatter:off */
-                UpdateRequest request = UpdateFactory.create(
-                        config.getPreference("prefixes")
-                        + "INSERT DATA "
-                        + "{ "
-                        + "	GRAPH <" + namedGraph + "> { "
-                        + "		<" + beURL + ">			gr:legalName				\"" + businessName + "\"@en ;"
-                        + "								a 						gr:BusinessEntity ."
-                        + "	} "
-                        + "}");
-                /* @formatter:on */
-
-                System.out.println("###################################################");
-                System.out.println(request);
-
-                UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
-                upr.execute();
-
-                /* @formatter:off */
-                request = UpdateFactory.create(
-                        config.getPreference("prefixes")
-                        + "INSERT DATA "
-                        + "{ "
-                        + "	GRAPH <" + config.getPreference("publicGraphName") + "> { "
-                        + "		<" + beURL + ">			gr:legalName				\"" + businessName + "\"@en ;"
-                        + "								a 						gr:BusinessEntity ."
-                        + "	} "
-                        + "}");
-                /* @formatter:on */
-
-                System.out.println("###################################################");
-                System.out.println(request);
-
-                upr = new UpdateProcessRemote(request, config.getSparqlPublicUpdate(), Context.emptyContext);
-                upr.execute();
-
-                return true;
-            }
-        } catch (SQLException e) {
-            throw new ServletException("Error registering new user", e);
+        if (Sparql.privateQuery(Mustache.getInstance().getBySparqlPath("graph_exists.mustache", sparqlTemplateMap)).execAsk()) {
+            return false;
         }
+
+        sparqlTemplateMap.clear();
+        sparqlTemplateMap.put("active", "true");
+        String beURL;
+        if (businessIC != null && !businessIC.trim().isEmpty()) {
+            beURL = config.getPrefix("be") + businessIC + "-" + UUID.randomUUID();
+        } else {
+            beURL = config.getPrefix("be") + UUID.randomUUID();
+        }
+        sparqlTemplateMap.put("business-entity", beURL);
+        sparqlTemplateMap.put("email", username);
+        sparqlTemplateMap.put("legal-name", businessName);
+        String salt = RandomStringUtils.randomAlphanumeric(128);
+        sparqlTemplateMap.put("salt", salt);
+        sparqlTemplateMap.put("password-hash", DigestUtils.sha512Hex(password + salt));
+        sparqlTemplateMap.put("private-graph", namedGraph);
+        sparqlTemplateMap.put("role", (role == 1 ? "pcfapp:contracting-authority" : "pcfapp:bidder"));
+        if (role == 2) {
+            cpv1 = getConfiguration().getPrefix("cpv") + (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-'));
+            cpv2 = getConfiguration().getPrefix("cpv") + (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-'));
+            cpv3 = getConfiguration().getPrefix("cpv") + (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-'));
+            HashMap<String, Object> cpv = new HashMap<>();
+            cpv.put("cpvs", Arrays.asList(new String[]{cpv1, cpv2, cpv3}));
+            sparqlTemplateMap.put("cpv", cpv);
+            if (businessIC != null && !businessIC.trim().isEmpty()) {
+                sparqlTemplateMap.put("ico", businessIC.trim());
+            }
+            if (businessPlace != null && !businessPlace.trim().isEmpty()) {
+                sparqlTemplateMap.put("location", businessPlace.trim());
+            }
+        }
+        Sparql.privateUpdate(Mustache.getInstance().getBySparqlPath("create_business_entity.mustache", sparqlTemplateMap)).execute();
+
+        return false;
+
+//            PreparedStatement pst = con.prepareStatement("SELECT username FROM users WHERE username=? AND role=?");
+//            pst.setString(1, username);
+//            pst.setInt(2, role);
+//            ResultSet rs = pst.executeQuery();
+//            if (rs.first()) {
+//                return false;
+//            } else {
+//                String salt = RandomStringUtils.randomAlphanumeric(128);
+//                pst
+//                        = con.prepareStatement("INSERT INTO users (username, passwordhash, salt, role, active) "
+//                                + "VALUES (?, ?, ?, ?, ?)");
+//                pst.setString(1, username);
+//                pst.setString(2, DigestUtils.sha512Hex(password + salt));
+//                pst.setString(3, salt);
+//                pst.setInt(4, role);
+//                pst.setString(5, active);
+//                pst.executeUpdate();
+//
+//                pst = con.prepareStatement("INSERT INTO user_preferences (username, role, preference, value) " + "VALUES (?, ?, ?, ?)");
+//                
+//                pst.setString(1, username);
+//                pst.setInt(2, role);
+//                pst.setString(3, "namedGraph");
+//                pst.setString(4, namedGraph);
+//                pst.executeUpdate();
+//
+//                if (businessIC != null && !businessIC.trim().isEmpty()) {
+//                    pst.setString(3, "businessIC");
+//                    pst.setString(4, businessIC);
+//                    pst.executeUpdate();
+//                }
+//
+//                pst.setString(3, "businessName");
+//                pst.setString(4, businessName);
+//                pst.executeUpdate();
+//
+//                if (role == 2) {
+//
+//                    pst.setString(3, "businessPlace");
+//                    pst.setString(4, businessPlace);
+//                    pst.executeUpdate();
+//
+//                    if (cpv1 != null && !cpv1.isEmpty()) {
+//                        pst.setString(3, "cpv1");
+//                        pst.setString(4, (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-')));
+//                        pst.executeUpdate();
+//                    }
+//                    if (cpv2 != null && !cpv2.isEmpty()) {
+//                        pst.setString(3, "cpv2");
+//                        pst.setString(4, (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-')));
+//                        pst.executeUpdate();
+//                    }
+//                    if (cpv3 != null && !cpv3.isEmpty()) {
+//                        pst.setString(3, "cpv3");
+//                        pst.setString(4, (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-')));
+//                        pst.executeUpdate();
+//                    }
+//                }
+//
+//                String beURL;
+//                if (businessIC != null && !businessIC.trim().isEmpty()) {
+//                    beURL = config.getPrefix("be") + businessIC + "-" + UUID.randomUUID();
+//                } else {
+//                    beURL = config.getPrefix("be") + UUID.randomUUID();
+//                }
+//                pst.setString(3, "businessEntity");
+//                pst.setString(4, beURL);
+//                pst.executeUpdate();
+//
+//                /* @formatter:off */
+//                UpdateRequest request = UpdateFactory.create(
+//                        config.getPreference("prefixes")
+//                        + "INSERT DATA "
+//                        + "{ "
+//                        + "	GRAPH <" + namedGraph + "> { "
+//                        + "		<" + beURL + ">			gr:legalName				\"" + businessName + "\"@en ;"
+//                        + "								a 						gr:BusinessEntity ."
+//                        + "	} "
+//                        + "}");
+//                /* @formatter:on */
+//
+//                System.out.println("###################################################");
+//                System.out.println(request);
+//
+//                UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
+//                upr.execute();
+//
+//                /* @formatter:off */
+//                request = UpdateFactory.create(
+//                        config.getPreference("prefixes")
+//                        + "INSERT DATA "
+//                        + "{ "
+//                        + "	GRAPH <" + config.getPreference("publicGraphName") + "> { "
+//                        + "		<" + beURL + ">			gr:legalName				\"" + businessName + "\"@en ;"
+//                        + "								a 						gr:BusinessEntity ."
+//                        + "	} "
+//                        + "}");
+//                /* @formatter:on */
+//
+//                System.out.println("###################################################");
+//                System.out.println(request);
+//
+//                upr = new UpdateProcessRemote(request, config.getSparqlPublicUpdate(), Context.emptyContext);
+//                upr.execute();
+//
+//                return true;
     }
 
     public boolean updateUserPreference(UserContext uc, String preference, String value) {
@@ -354,14 +390,15 @@ public class SystemManager extends AbstractComponent {
                         request.getParameter("cpv3"))) {
                     response.getWriter().println("User created.");
                 } else {
-                    if (allDefined(request.getParameter("forward-if-fail"))) {
-                        try {
-                            response.sendRedirect(UriEncoder.apply(request.getParameter("forward-if-fail")).part("m").encode());
-                        } catch (IllegalStateException unused) {
-                        }
-                    } else {
-                        response.sendError(409, "Username already exists.");
-                    }
+                    return;
+//                    if (allDefined(request.getParameter("forward-if-fail"))) {
+//                        try {
+//                            response.sendRedirect(UriEncoder.apply(request.getParameter("forward-if-fail")).part("m").encode());
+//                        } catch (IllegalStateException unused) {
+//                        }
+//                    } else {
+//                        response.sendError(409, "Username already exists.");
+//                    }
                 }
                 break;
 

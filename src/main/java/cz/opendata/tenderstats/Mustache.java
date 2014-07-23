@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -31,6 +34,14 @@ public class Mustache {
     }
 
     public String getBySparqlPath(String name, Map<String, Object> scopes) {
+        List<Map<String, Object>> linkedList = new LinkedList<>();
+        for (Map.Entry<String, String> prefix : Config.cc().getPrefixes().entrySet()) {
+            TreeMap<String, Object> treeMap = new TreeMap<>();
+            treeMap.put("id", prefix.getKey());
+            treeMap.put("uri", prefix.getValue());
+            linkedList.add(treeMap);
+        }
+        scopes.put("prefixes", linkedList);
         return getByRelativePath("/cz/opendata/tenderstats/sparql/" + name, scopes);
     }
 

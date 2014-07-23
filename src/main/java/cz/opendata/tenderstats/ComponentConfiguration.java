@@ -2,6 +2,7 @@ package cz.opendata.tenderstats;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Holds component configuration needed for network communication with databases
@@ -65,6 +66,10 @@ public class ComponentConfiguration implements Serializable {
 
     public String getPrefix(String id) {
         return prefixes.get(id);
+    }
+
+    public Map<String, String> getPrefixes() {
+        return prefixes;
     }
 
     /**

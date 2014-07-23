@@ -11,7 +11,7 @@ import scala.xml.XML
 
 object Config {
 
-  val (global, matchmaker, prefixes) = {
+  val (cc, matchmaker, prefixes) = {
     import cz.opendata.tenderstats.utils.PcfaStringOpts._
     val xml = {
       scala.xml.Utility.trim(
@@ -57,8 +57,6 @@ object Config {
     pf foreach (x => cc.setPrefix(x("id"), x("uri")))
     (cc, xml \ "matchmaker", pf)
   }
-
-  val cc = global
 
   private def merge(xml1: Node, xml2: Node): Node = {
     (xml1, xml2) match {
