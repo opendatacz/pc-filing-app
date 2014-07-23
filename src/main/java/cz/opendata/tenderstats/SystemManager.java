@@ -1,5 +1,6 @@
 package cz.opendata.tenderstats;
 
+import com.github.mustachejava.DefaultMustacheFactory;
 import com.google.gson.JsonObject;
 import com.hp.hpl.jena.sparql.modify.UpdateProcessRemote;
 import com.hp.hpl.jena.sparql.util.Context;
@@ -12,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;

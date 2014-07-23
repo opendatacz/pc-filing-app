@@ -56,7 +56,7 @@ class Matchmaker extends AbstractComponent {
 object Matchmaker {
 
   val client = ClientBuilder.newClient
-  val logger = LogManager.getLogger(classOf[Matchmaker])
+  val logger = LogManager.getLogger("Matchmaker")
 
   import logger._
 

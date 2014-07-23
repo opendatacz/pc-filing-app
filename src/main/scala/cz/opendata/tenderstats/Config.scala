@@ -11,19 +11,20 @@ import scala.xml.XML
 
 object Config {
 
-  private val xml = {
-    scala.xml.Utility.trim(
-      (this.getClass.getResource("/cz/opendata/tenderstats/config/config.xml"), System.getenv("PCFA_CONFIG")) match {
-        case (Resource(c1), NonEmptyString(File(c2))) => merge(XML.load(c1), XML.loadFile(c2))
-        case (Resource(c1), _) => XML.load(c1)
-        case _ => throw new ConfigException("Config was not loaded.")
-      })
-  }
-
-  val matchmaker = xml \ "matchmaker"
-
-  val cc = {
+  val (global, matchmaker) = {
     import cz.opendata.tenderstats.utils.PcfaStringOpts._
+    val xml = {
+      scala.xml.Utility.trim(
+        (this.getClass.getResource("/cz/opendata/tenderstats/config/config.xml"), System.getenv("PCFA_CONFIG")) match {
+          case (Resource(c1), NonEmptyString(File(c2))) => merge(XML.load(c1), XML.loadFile(c2))
+          case (Resource(c1), _) => XML.load(c1)
+          case _ => throw new ConfigException("Config was not loaded.")
+        })
+    }
+    val prefixes = this.getClass.getResource("/cz/opendata/tenderstats/config/prefixes.xml") match {
+      case (Resource(r)) => XML.load(r)
+      case _ => throw new ConfigException("Prefixes was not loaded.")
+    }
     val cc = new ComponentConfiguration
     Match((xml \ ("mysql")).headOption) {
       case Some(<mysql><server>{ Text(s) }</server><dbname>{ Text(db) }</dbname><username>{ Text(u) }</username><password>{ Text(p) }</password></mysql>) => {
@@ -48,15 +49,16 @@ object Config {
         cc.setPreference("invitationEmail", e2)
       }
     }
-    Match((xml \ ("url")).headOption) {
-      case Some(Elem(_, _, _, _, ch @ _*)) => ch foreach (x => cc.setPreference(x.label.toClassFormat + "URL", x.text))
-    }
     Match((xml \ ("system")).headOption) {
       case Some(Elem(_, _, _, _, ch @ _*)) => ch foreach (x => cc.setPreference(x.label.toClassFormat, x.text))
     }
-    cc.setPreference("prefixes", Template(this.getClass.getResource("/cz/opendata/tenderstats/sparql/prefixes.mustache")))
-    cc
+    val pf = (prefixes \\ ("prefix") map (x => x.attribute("id") -> x.text) collect { case (Some(Seq(x)), NonEmptyString(y)) if !x.text.isEmpty => Map("id" -> x.text, "uri" -> y) })
+    cc.setPreference("prefixes", Template(this.getClass.getResource("/cz/opendata/tenderstats/sparql/prefixes.mustache"), Map("prefixes" -> pf)))
+    pf foreach (x => cc.setPrefix(x("id"), x("uri")))
+    (cc, xml \ "matchmaker")
   }
+
+  val cc = global
 
   private def merge(xml1: Node, xml2: Node): Node = {
     (xml1, xml2) match {
