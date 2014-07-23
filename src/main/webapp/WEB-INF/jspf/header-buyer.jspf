@@ -7,5 +7,6 @@
     UserContext uc = sm.getUserContext(request);
     if (uc == null || uc.getRole() != 1) {
         response.sendRedirect(request.getContextPath());
+        return;
     }
 %>

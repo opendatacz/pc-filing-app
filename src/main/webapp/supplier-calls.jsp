@@ -8,6 +8,9 @@
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Supplier" />
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
         <link href="bootstrap/css/won.css" rel="stylesheet" />
+        <script type="text/javascript">
+            businessEntity = "<%=uc.getPreference("businessEntity")%>";
+        </script>
     </head>
     <body>
         <%@include file="WEB-INF/jspf/header-private.jspf" %>
@@ -32,11 +35,11 @@
                                 <th><fmt:message key="rank" bundle="${cons}" /></th>  
                                 <th><fmt:message key="title" bundle="${cons}" /></th>
                                 <th><fmt:message key="description" bundle="${cons}" /></th>
-                                <%-- <th><fmt:message key="estimatedprice" bundle="${cons}" /></th> --%>
-                                <%-- <th><fmt:message key="specifications" bundle="${cons}" /></th> --%>
+                                    <%-- <th><fmt:message key="estimatedprice" bundle="${cons}" /></th> --%>
+                                    <%-- <th><fmt:message key="specifications" bundle="${cons}" /></th> --%>
                                 <th><fmt:message key="publicationdate" bundle="${cons}" /></th>
                                 <th><fmt:message key="tenderdeadline" bundle="${cons}" /></th>
-                                <%-- <th><fmt:message key="action" bundle="${cons}" /></th> --%>
+                                    <%-- <th><fmt:message key="action" bundle="${cons}" /></th> --%>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -61,76 +64,76 @@
         <script src="js/jquery.jtruncate.pack.js"></script>
         <script src="js/matchmaker.js"></script>
         <script id="matchmaker-results-template" type="x-tmpl-mustache">
-          {{#matches}}
+            {{#matches}}
             <tr>
-              <td>{{rank}}</td>
-              <td><a href="{{uri}}">{{label}}</a></td>
-              <td class="truncate fixedCol">{{description}}</td>
-              <%-- <td>{{estimatedPrice}}</td> --%>
-              <td>{{publicationDate}}</td>
-              <td>{{tenderDeadline}}</td>
+            <td>{{rank}}</td>
+            <td><a href="{{uri}}">{{label}}</a></td>
+            <td class="truncate fixedCol">{{description}}</td>
+            <%-- <td>{{estimatedPrice}}</td> --%>
+            <td>{{publicationDate}}</td>
+            <td>{{tenderDeadline}}</td>
             </tr>
-          {{/matches}}
+            {{/matches}}
         </script>
         <script type="text/javascript">
-          (function ($) {
-           $(document).ready(function () {
-              dateFormat.i18n.monthNames = [
-                "<fmt:message key="januaryshort" bundle="${cons}" />",
-                "<fmt:message key="februaryshort" bundle="${cons}" />",
-                "<fmt:message key="marchshort" bundle="${cons}" />",
-                "<fmt:message key="aprilshort" bundle="${cons}" />",
-                "<fmt:message key="mayshort" bundle="${cons}" />",
-                "<fmt:message key="juneshort" bundle="${cons}" />",
-                "<fmt:message key="julyshort" bundle="${cons}" />",
-                "<fmt:message key="augustshort" bundle="${cons}" />",
-                "<fmt:message key="septembershort" bundle="${cons}" />",
-                "<fmt:message key="octobershort" bundle="${cons}" />",
-                "<fmt:message key="novembershort" bundle="${cons}" />",
-                "<fmt:message key="decembershort" bundle="${cons}" />",
-                "<fmt:message key="january" bundle="${cons}" />",
-                "<fmt:message key="february" bundle="${cons}" />",
-                "<fmt:message key="march" bundle="${cons}" />",
-                "<fmt:message key="april" bundle="${cons}" />",
-                "<fmt:message key="may" bundle="${cons}" />",
-                "<fmt:message key="june" bundle="${cons}" />",
-                "<fmt:message key="july" bundle="${cons}" />",
-                "<fmt:message key="august" bundle="${cons}" />",
-                "<fmt:message key="september" bundle="${cons}" />",
-                "<fmt:message key="october" bundle="${cons}" />",
-                "<fmt:message key="november" bundle="${cons}" />",
-                "<fmt:message key="december" bundle="${cons}" />"
-                ];
-              var config = {
-                dom: {
-                  $matchResultsTable: $("#matchResultsTable"),
-                  $pagination: $("#pagination"),
-                  $progressbar: $("#progressbar"),
-                  templateId: "#matchmaker-results-template"
-                },
-                labels: {
-                  first: "<fmt:message key="first" bundle="${cons}" />", 
-                  last: "<fmt:message key="last" bundle="${cons}" />",
-                  notfound: "<fmt:message key="notfound" bundle="${cons}" />",
-                  prev: "<fmt:message key="prev" bundle="${cons}" />",
-                  truncate: {
-                    lessText: "<fmt:message key="lesstext" bundle="${cons}" />",
-                    moreText: "<fmt:message key="moretext" bundle="${cons}" />"
-                  }
-                },
-                private: true, // MATCHMAKER.getParameterByName("private") === "true" ? true : false, 
-                               //"${pageContext.request.getParameter("private")}" === "true" ? true : false,
-                resourceUri: //sessionStorage.???,
-                  "http://linked.opendata.cz/resource/business-entity/e6e9258d-2602-45e6-829d-62a89a0e812d",
-                source: "business-entity",
-                target: "contract"
-              };
-              
-              if (config.resourceUri) {
-                MATCHMAKER.getMatches(config);
-              }
-            });
-          })(jQuery);
+                            (function($) {
+                                $(document).ready(function() {
+                                    dateFormat.i18n.monthNames = [
+                                        "<fmt:message key="januaryshort" bundle="${cons}" />",
+                                        "<fmt:message key="februaryshort" bundle="${cons}" />",
+                                        "<fmt:message key="marchshort" bundle="${cons}" />",
+                                        "<fmt:message key="aprilshort" bundle="${cons}" />",
+                                        "<fmt:message key="mayshort" bundle="${cons}" />",
+                                        "<fmt:message key="juneshort" bundle="${cons}" />",
+                                        "<fmt:message key="julyshort" bundle="${cons}" />",
+                                        "<fmt:message key="augustshort" bundle="${cons}" />",
+                                        "<fmt:message key="septembershort" bundle="${cons}" />",
+                                        "<fmt:message key="octobershort" bundle="${cons}" />",
+                                        "<fmt:message key="novembershort" bundle="${cons}" />",
+                                        "<fmt:message key="decembershort" bundle="${cons}" />",
+                                        "<fmt:message key="january" bundle="${cons}" />",
+                                        "<fmt:message key="february" bundle="${cons}" />",
+                                        "<fmt:message key="march" bundle="${cons}" />",
+                                        "<fmt:message key="april" bundle="${cons}" />",
+                                        "<fmt:message key="may" bundle="${cons}" />",
+                                        "<fmt:message key="june" bundle="${cons}" />",
+                                        "<fmt:message key="july" bundle="${cons}" />",
+                                        "<fmt:message key="august" bundle="${cons}" />",
+                                        "<fmt:message key="september" bundle="${cons}" />",
+                                        "<fmt:message key="october" bundle="${cons}" />",
+                                        "<fmt:message key="november" bundle="${cons}" />",
+                                        "<fmt:message key="december" bundle="${cons}" />"
+                                    ];
+                                    var config = {
+                                        dom: {
+                                            $matchResultsTable: $("#matchResultsTable"),
+                                            $pagination: $("#pagination"),
+                                            $progressbar: $("#progressbar"),
+                                            templateId: "#matchmaker-results-template"
+                                        },
+                                        labels: {
+                                            first: "<fmt:message key="first" bundle="${cons}" />",
+                                            last: "<fmt:message key="last" bundle="${cons}" />",
+                                            notfound: "<fmt:message key="notfound" bundle="${cons}" />",
+                                            prev: "<fmt:message key="prev" bundle="${cons}" />",
+                                            truncate: {
+                                                lessText: "<fmt:message key="lesstext" bundle="${cons}" />",
+                                                moreText: "<fmt:message key="moretext" bundle="${cons}" />"
+                                            }
+                                        },
+                                        private: true, // MATCHMAKER.getParameterByName("private") === "true" ? true : false, 
+                                        //"${pageContext.request.getParameter("private")}" === "true" ? true : false,
+                                        resourceUri: //sessionStorage.???,
+                                                "http://linked.opendata.cz/resource/business-entity/e6e9258d-2602-45e6-829d-62a89a0e812d",
+                                        source: "business-entity",
+                                        target: "contract"
+                                    };
+
+                                    if (config.resourceUri) {
+                                        MATCHMAKER.getMatches(config);
+                                    }
+                                });
+                            })(jQuery);
         </script>
 
         <%--
