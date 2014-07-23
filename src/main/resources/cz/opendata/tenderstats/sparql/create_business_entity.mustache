@@ -33,7 +33,7 @@ INSERT {
   {{#location}}
     <{{business-entity}}> schema:address [
       schema:addressLocality "{{.}}"
-    ] ;
+    ] .
   {{/location}}
 
   {{#ico}}
@@ -44,9 +44,9 @@ INSERT {
 
   {{! Bogus contract for matchmaker }}
   {{#cpv}}
-  _:b0 pc:awardedTender [
-      pc:supplier <{{business-entity}}>
-    ] .
+    _:b0 pc:awardedTender [
+        pc:supplier <{{business-entity}}>
+      ] .
   {{/cpv}}
 
   {{#cpv}}
