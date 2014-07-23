@@ -1,0 +1,34 @@
+{{!
+@param IRI business-entity
+@param IRI private-graph
+}}
+
+{{> prefixes}}
+
+WITH <{{private-graph}}>
+DELETE {
+  <{{business-entity}}> gr:legalName ?legalName .
+  
+  <{{business-entity}}> rov:registration ?registration .
+  ?registration skos:notation ?ico .
+
+  <{{business-entity}}> schema:address ?address .
+  ?address schema:addressLocality ?addressLocality .
+
+  ?tender pc:supplier <{{business-entity}}> .
+  ?contract pc:awardedTender ?tender ;
+    pc:additionalObject ?cpv .
+}
+WHERE {
+  <{{business-entity}}> gr:legalName ?legalName .
+  
+  <{{business-entity}}> rov:registration ?registration .
+  ?registration skos:notation ?ico .
+
+  <{{business-entity}}> schema:address ?address .
+  ?address schema:addressLocality ?addressLocality .
+
+  ?tender pc:supplier <{{business-entity}}> .
+  ?contract pc:awardedTender ?tender ;
+    pc:additionalObject ?cpv .
+}
