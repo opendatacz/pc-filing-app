@@ -383,7 +383,7 @@ public class InvitationComponent extends AbstractComponent {
 
 				String cpv =
 						row.get("cpv1URL").toString() + (row.get("cpvAdd") != null ? " " + row.get("cpvAdd").toString() : "");
-				cpv = cpv.replaceAll(getConfiguration().getPreference("cpvURL"), "");
+				cpv = cpv.replaceAll(getConfiguration().getPrefix("cpv"), "");
 				cpv = cpv.replaceAll(" ", ", ");
 
 				table.add(new InvitationTableRow(row.get("invitationURI").toString(),

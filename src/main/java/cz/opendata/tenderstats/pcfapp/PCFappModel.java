@@ -1,24 +1,5 @@
 package cz.opendata.tenderstats.pcfapp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.hp.hpl.jena.query.Query;
@@ -34,9 +15,25 @@ import com.hp.hpl.jena.sparql.modify.UpdateProcessRemote;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
-
 import cz.opendata.tenderstats.ComponentConfiguration;
+import cz.opendata.tenderstats.Config;
 import cz.opendata.tenderstats.UserContext;
+import java.io.IOException;
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PCFappModel implements Serializable {
 
@@ -56,16 +53,16 @@ public class PCFappModel implements Serializable {
 
     private boolean debug = true;
 
-    public static final String pc = "http://purl.org/procurement/public-contracts#";
-    public static final String pccrit = "http://purl.org/procurement/public-contracts-criteria#";
-    public static final String pcf = "http://purl.org/procurement/pcfilingapp#";
-    public static final String pce = "http://purl.org/procurement/public-contracts-eu#";
-    public static final String gr = "http://purl.org/goodrelations/v1#";
-    public static final String dc = "http://purl.org/dc/terms/";
-    public static final String rdfs = "http://www.w3.org/2000/01/rdf-schema#";
-    public static final String vc = "http://www.w3.org/2006/vcard/ns#";
-    public static final String rdfsns = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-    public static final String s = "http://schema.org/";
+    public static final String pc = Config.cc().getPrefix("pc");
+    public static final String pccrit = Config.cc().getPrefix("criteria");
+    public static final String pcf = Config.cc().getPrefix("pcfapp");
+    public static final String pce = Config.cc().getPrefix("pceu");
+    public static final String gr = Config.cc().getPrefix("gr");
+    public static final String dc = Config.cc().getPrefix("dcterms");
+    public static final String rdfs = Config.cc().getPrefix("rdfs");
+    public static final String vc = Config.cc().getPrefix("vcard");
+    public static final String rdfsns = Config.cc().getPrefix("rdf");
+    public static final String s = Config.cc().getPrefix("schema");
 
     public static final Property dc_title = ResourceFactory.createProperty(dc, "title");
     public static final Property dc_description = ResourceFactory.createProperty(dc, "description");
@@ -146,7 +143,7 @@ public class PCFappModel implements Serializable {
      * @param namedGraph
      */
     public Model getDocument(String documentToken, String namedGraph) {
-        String documentURI = config.getPreference("newContractURL") + "document/" + documentToken;
+        String documentURI = config.getPrefix("contract") + "document/" + documentToken;
         /* @formatter:off */
         Query query = QueryFactory.create(
                 config.getPreference("prefixes")
@@ -453,7 +450,7 @@ public class PCFappModel implements Serializable {
                 + "DELETE DATA"
                 + "{"
                 + "	GRAPH <" + uc.getNamedGraph() + "> { "
-                + "	<" + contractURL + ">	pcfapp:document		<" + config.getPreference("newContractURL") + "document/" + token + "> "
+                + "	<" + contractURL + ">	pcfapp:document		<" + config.getPrefix("contract") + "document/" + token + "> "
                 + "	} "
                 + "}");
         /* @formatter:on */
@@ -525,7 +522,7 @@ public class PCFappModel implements Serializable {
 
         String fileToken;
         String fileName;
-        String documentObjectURI = config.getPreference("newContractURL") + "document/";
+        String documentObjectURI = config.getPrefix("contract") + "document/";
 
         String[] docTypes = {"QualityCertificate", "CompanyProfile", "FinancialStatements"};
         List<String> docTypesList = Arrays.asList(docTypes);

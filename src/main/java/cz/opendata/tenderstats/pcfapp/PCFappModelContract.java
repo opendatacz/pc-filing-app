@@ -124,13 +124,13 @@ public class PCFappModelContract implements Serializable {
 		// cpv main
 		json.addProperty("mainCPV",
 				contractRes.getProperty(PCFappModel.pc_mainCPV).getObject().toString()
-						.replaceAll(Config.cc().getPreference("cpvURL"), ""));
+						.replaceAll(Config.cc().getPrefix("cpv"), ""));
 		// cpv additional
 		StmtIterator iter = contractRes.listProperties(PCFappModel.pc_additionalCPV);
 		JsonArray array = new JsonArray();
 		while (iter.hasNext()) {
 			Statement s = iter.nextStatement();
-			array.add(new JsonPrimitive(s.getObject().toString().replaceAll(Config.cc().getPreference("cpvURL"), "")));
+			array.add(new JsonPrimitive(s.getObject().toString().replaceAll(Config.cc().getPrefix("cpv"), "")));
 		}
 		json.add("additionalCPV", array);
 
@@ -255,13 +255,13 @@ public class PCFappModelContract implements Serializable {
 		// cpv main
 		json.addProperty("mainCPV",
 				contractRes.getProperty(PCFappModel.pc_mainCPV).getObject().toString()
-						.replaceAll(Config.cc().getPreference("cpvURL"), ""));
+						.replaceAll(Config.cc().getPrefix("cpv"), ""));
 		// cpv additional
 		StmtIterator iter = contractRes.listProperties(PCFappModel.pc_additionalCPV);
 		JsonArray array = new JsonArray();
 		while (iter.hasNext()) {
 			Statement s = iter.nextStatement();
-			array.add(new JsonPrimitive(s.getObject().toString().replaceAll(Config.cc().getPreference("cpvURL"), "")));
+			array.add(new JsonPrimitive(s.getObject().toString().replaceAll(Config.cc().getPrefix("cpv"), "")));
 		}
 		json.add("additionalCPV", array);
 		// procurement method
@@ -581,7 +581,7 @@ public class PCFappModelContract implements Serializable {
 			eventType = "";
 		if (contractURL == null) {
 			String contractID = UUID.randomUUID().toString();
-			contractURL = config.getPreference("newContractURL") + contractID;
+			contractURL = config.getPrefix("contract") + contractID;
 		}
 
 		String priceURL = contractURL + "/price-specification/1";
@@ -590,14 +590,14 @@ public class PCFappModelContract implements Serializable {
 			deadline += "T00:00:00";
 		}
 
-		String procedureURL = config.getPreference("proctypesURL") + procType;
+		String procedureURL = config.getPrefix("proctypes") + procType;
 
-		String cpv1URL = config.getPreference("cpvURL") + (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-'));
-		String cpv2URL = config.getPreference("cpvURL") + (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-'));
-		String cpv3URL = config.getPreference("cpvURL") + (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-'));
+		String cpv1URL = config.getPrefix("cpv") + (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-'));
+		String cpv2URL = config.getPrefix("cpv") + (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-'));
+		String cpv3URL = config.getPrefix("cpv") + (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-'));
 
 		String locationURL = contractURL + "/place/1";
-		String nutsURL = config.getPreference("nutsURL") + nuts.substring(0, (nuts + "#").indexOf('#'));
+		String nutsURL = config.getPrefix("nuts") + nuts.substring(0, (nuts + "#").indexOf('#'));
 
 		String awardCombiURL = contractURL + "/combination-of-contract-award-criteria/1";
 		String awardCriterion1URL = awardCombiURL + "/contract-award-criterion/1";
@@ -632,7 +632,7 @@ public class PCFappModelContract implements Serializable {
 		String documents = "";
 		String fileToken;
 		String fileName;
-		String documentObjectURI = config.getPreference("newContractURL") + "document/";
+		String documentObjectURI = config.getPrefix("contract") + "document/";
 		
 		String[] docTypes =
 				{ "GeneralTerms", "CallDocument", "Amendment", "Responses", "TechnicalSpecifications", "PriceDelivery",
@@ -948,7 +948,7 @@ public class PCFappModelContract implements Serializable {
 		String documents = "";
 		String fileToken;
 		String fileName;
-		String documentObjectURI = config.getPreference("newContractURL") + "document/";
+		String documentObjectURI = config.getPrefix("contract") + "document/";
 
 		if (certs != null && !certs.isEmpty())
 			documents += " ; pcfapp:document <" + documentObjectURI + certs + "> ";
@@ -1718,8 +1718,8 @@ public class PCFappModelContract implements Serializable {
 
 	public String createSearchContract(UserContext uc, String cpvString) {
 				
-		String contractURI = config.getPreference("newContractURL") + UUID.randomUUID().toString();		
-		String cpvURI = config.getPreference("cpvURL") + (cpvString + "-").substring(0, (cpvString + "-").indexOf('-'));
+		String contractURI = config.getPrefix("contract") + UUID.randomUUID().toString();		
+		String cpvURI = config.getPrefix("cpv") + (cpvString + "-").substring(0, (cpvString + "-").indexOf('-'));
 		String time = PCFappUtils.currentXMLTime();
 		/* @formatter:off */
 		

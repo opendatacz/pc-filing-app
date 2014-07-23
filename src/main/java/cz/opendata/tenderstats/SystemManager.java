@@ -1,6 +1,5 @@
 package cz.opendata.tenderstats;
 
-import com.github.mustachejava.DefaultMustacheFactory;
 import com.google.gson.JsonObject;
 import com.hp.hpl.jena.sparql.modify.UpdateProcessRemote;
 import com.hp.hpl.jena.sparql.util.Context;
@@ -13,7 +12,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
@@ -132,7 +130,7 @@ public class SystemManager extends AbstractComponent {
                 pst.executeUpdate();
 
                 pst = con.prepareStatement("INSERT INTO user_preferences (username, role, preference, value) " + "VALUES (?, ?, ?, ?)");
-                String namedGraph = config.getPreference("newNamedGraphURL") + (role == 1 ? "contracting-authority" : "bidder") + "/" + username;
+                String namedGraph = config.getPrefix("graph") + (role == 1 ? "contracting-authority" : "bidder") + "/" + username;
                 pst.setString(1, username);
                 pst.setInt(2, role);
                 pst.setString(3, "namedGraph");
@@ -174,9 +172,9 @@ public class SystemManager extends AbstractComponent {
 
                 String beURL;
                 if (businessIC != null && !businessIC.trim().isEmpty()) {
-                    beURL = config.getPreference("newBusinessEntityURL") + businessIC + "-" + UUID.randomUUID();
+                    beURL = config.getPrefix("be") + businessIC + "-" + UUID.randomUUID();
                 } else {
-                    beURL = config.getPreference("newBusinessEntityURL") + UUID.randomUUID();
+                    beURL = config.getPrefix("be") + UUID.randomUUID();
                 }
                 pst.setString(3, "businessEntity");
                 pst.setString(4, beURL);

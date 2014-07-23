@@ -1106,7 +1106,7 @@ public class PCFilingApp extends AbstractComponent {
 
 		String cpv = main.toString()
 				+ (other != null ? " " + other.toString() : "");
-		cpv = cpv.replaceAll(getConfiguration().getPreference("cpvURL"), "");
+		cpv = cpv.replaceAll(getConfiguration().getPrefix("cpv"), "");
 		cpv = cpv.replaceAll(" ", ", ");
 		return cpv;
 

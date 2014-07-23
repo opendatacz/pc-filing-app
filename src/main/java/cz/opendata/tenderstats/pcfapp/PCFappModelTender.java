@@ -339,7 +339,7 @@ public class PCFappModelTender implements Serializable {
 		String documents = "";
 		String fileToken;
 		String fileName;
-		String documentObjectURI = config.getPreference("newContractURL") + "document/";
+		String documentObjectURI = config.getPrefix("contract") + "document/";
 
 		if (certs != null && !certs.isEmpty())
 			documents += " ; pcfapp:document <" + documentObjectURI + certs + "> ";
@@ -415,7 +415,7 @@ public class PCFappModelTender implements Serializable {
 
 		String fileToken;
 		String fileName;
-		String documentObjectURI = config.getPreference("newContractURL") + "document/";
+		String documentObjectURI = config.getPrefix("contract") + "document/";
 
 		if (certs != null && !certs.isEmpty())
 			documents += " ; pcfapp:document <" + documentObjectURI + certs + "> ";
