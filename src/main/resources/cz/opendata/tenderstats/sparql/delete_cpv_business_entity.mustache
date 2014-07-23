@@ -1,0 +1,19 @@
+{{!
+@param IRI business-entity
+@param IRI private-graph
+}}
+
+{{> prefixes}}
+
+WITH <{{private-graph}}>
+DELETE {
+  ?tender pc:supplier <{{business-entity}}> ;
+  ?contract pc:awardedTender ?tender .
+  ?contract pc:additionalObject ?cpv .
+}
+WHERE {
+  ?tender pc:supplier <{{business-entity}}> ;
+  ?contract pc:awardedTender ?tender .
+  FILTER (isBlank(?contract))
+  ?contract pc:additionalObject ?cpv .
+}

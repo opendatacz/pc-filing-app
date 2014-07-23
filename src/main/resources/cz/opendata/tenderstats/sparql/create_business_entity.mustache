@@ -1,0 +1,40 @@
+{{!
+@param IRI        business-entity
+@param Array<IRI> cpvs
+@param String     email
+@param String     ico (optional)
+@param String     legal-name
+@param String     location
+@param IRI        private-graph
+}}
+
+{{> prefixes}}
+
+INSERT DATA {
+  GRAPH <{{private-graph}}> {
+    <{{business-entity}}> a gr:BusinessEntity ;
+      gr:legalName "{{legal-name}}" ;
+      schema:address [
+        schema:addressLocality "{{location}}"
+      ] ;
+      schema:contactPoint [
+        schema:email "{{email}}"
+      ] .
+
+    {{#ico}}
+      <{{business-entity}}> rov:registration [
+          skos:notation "{{.}}"
+        ] .
+    {{/ico}}
+
+    {{! Bogus contract for matchmaker }}
+    _:b0 pc:awardedTender [
+        pc:supplier <{{business-entity}}>
+      ] .
+
+    {{#cpvs}}
+    _:b0 pc:additionalObject <{{.}}> .
+    {{/cpvs}}
+  }
+}
+
