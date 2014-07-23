@@ -40,17 +40,17 @@
             <!-- Example row of columns -->
             <div class="row">
                 <div class="span4">
-                    <h2><fmt:message key="body.buyers" /></h2>
-                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                    <p><a href="#login-buyer" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.buyers.login" /></a>
-                        <a class="btn" href="register-buyer.jsp"><fmt:message key="body.buyers.register" /></a>
+                    <h2><fmt:message key="body.contractingauthorities" /></h2>
+                    <p><fmt:message key="body.contractingauthorities.description" /></p>
+                    <p><a href="#login-buyer" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.contractingauthorities.login" /></a>
+                        <a class="btn" href="register-buyer.jsp"><fmt:message key="body.contractingauthorities.register" /></a>
                     </p>
                 </div>
                 <div class="span4">
-                    <h2><fmt:message key="body.sellers" /></h2>
-                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                    <p><a href="#login-supplier" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.sellers.login" /></a>
-                        <a class="btn" href="register-supplier.jsp"><fmt:message key="body.sellers.register" /></a>
+                    <h2><fmt:message key="body.bidders" /></h2>
+                    <p><fmt:message key="body.bidders.description" /></p>
+                    <p><a href="#login-supplier" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.bidders.login" /></a>
+                        <a class="btn" href="register-supplier.jsp"><fmt:message key="body.bidders.register" /></a>
                 </div>
                 <div class="span4">
                     <h2><fmt:message key="body.public" /></h2>
@@ -66,7 +66,7 @@
             <div id="login-buyer" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="buyer-label" aria-hidden="true">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></button>
-                    <h3 id="buyer-label"><fmt:message key="body.buyers.login" /></h3>
+                    <h3 id="buyer-label"><fmt:message key="body.contractingauthorities.login" /></h3>
                 </div>
                 <div class="modal-body">
 
@@ -93,7 +93,7 @@
 
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal" aria-hidden="true"><fmt:message key="cancel" bundle="${cons}" /></button>
-                    <input form="login-buyer-form" class="btn btn-primary" type="submit" name="submit" value="<fmt:message key="body.buyers.login" />" default>
+                    <input form="login-buyer-form" class="btn btn-primary" type="submit" name="submit" value="<fmt:message key="body.contractingauthorities.login" />" default>
                     <!-- HTML < 5 : <button onclick="$('#login-buyer-form').submit();" class="btn btn-primary">Login</button>-->
                 </div>
             </div>
@@ -103,7 +103,7 @@
             <div id="login-supplier" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="supplier-label" aria-hidden="true">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></button>
-                    <h3 id="supplier-label"><fmt:message key="body.sellers.login" /></h3>
+                    <h3 id="supplier-label"><fmt:message key="body.bidders.login" /></h3>
                 </div>
                 <div class="modal-body">
 
@@ -130,7 +130,7 @@
 
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal" aria-hidden="true"><fmt:message key="cancel" bundle="${cons}" /></button>
-                    <input form="login-supplier-form" class="btn btn-primary" type="submit" name="submit" value="<fmt:message key="body.sellers.login" />" default>
+                    <input form="login-supplier-form" class="btn btn-primary" type="submit" name="submit" value="<fmt:message key="body.bidders.login" />" default>
                     <!-- HTML < 5 : <button onclick="$('#login-supplier-form').submit();" class="btn btn-primary">Login</button>-->
                 </div>
             </div>	  
