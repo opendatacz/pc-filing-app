@@ -1,17 +1,10 @@
 package cz.opendata.tenderstats;
 
 import com.google.gson.JsonObject;
-import com.hp.hpl.jena.sparql.modify.UpdateProcessRemote;
-import com.hp.hpl.jena.sparql.util.Context;
-import com.hp.hpl.jena.update.UpdateFactory;
-import com.hp.hpl.jena.update.UpdateRequest;
+import com.hp.hpl.jena.query.QuerySolution;
+import cz.opendata.tenderstats.sparql.FetchCondition;
 import cz.opendata.tenderstats.utils.UriEncoder;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,49 +31,28 @@ public class SystemManager extends AbstractComponent {
      * returns his UserContext.
      *
      * @param username
+     * @param role
      * @param password
      * @return UserContext of user with specified username and password or null
      * if no such user exist.
      * @throws ServletException If connection to database server failed.
      */
-    protected UserContext checkLogin(String username, int role, String password) throws ServletException {
-
-        try (Connection con
-                = DriverManager.getConnection(config.getRdbAddress() + config.getRdbDatabase(),
-                        config.getRdbUsername(),
-                        config.getRdbPassword())) {
-            PreparedStatement pst
-                    = con.prepareStatement("SELECT username, passwordhash, salt, role "
-                            + "FROM users WHERE username=? AND role=? AND active='1'");
-            pst.setString(1, username);
-            pst.setInt(2, role);
-            ResultSet rs = pst.executeQuery();
-            if (!rs.first()) {
-                return null;
+    protected UserContext checkLogin(String username, int role, final String password) throws ServletException {
+        UserContext.Role userRole = UserContext.Role.CONTRACTING_AUTHORITY;
+        for (UserContext.Role r : UserContext.Role.values()) {
+            if (r.getId() == role) {
+                userRole = r;
             }
-
-            String passwordhash = rs.getString("passwordhash");
-            String salt = rs.getString("salt");
-            if (!DigestUtils.sha512Hex(password + salt).equals(passwordhash)) {
-                return null;
-            }
-
-            UserContext uc = new UserContext();
-            uc.setUserName(rs.getString("username"));
-            uc.setRole(rs.getInt("role"));
-
-            pst = con.prepareStatement("SELECT preference, value FROM user_preferences WHERE username=? AND role=?");
-            pst.setString(1, username);
-            pst.setInt(2, role);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                uc.setPreference(rs.getString("preference"), rs.getString("value"));
-            }
-            uc.setNamedGraph(uc.getPreference("namedGraph"));
-            return uc;
-        } catch (SQLException e) {
-            throw new ServletException("Error validating username and password", e);
         }
+        return UserContext.fetchUserByEmailAndRole(username, userRole, new FetchCondition() {
+
+            @Override
+            public boolean isValid(QuerySolution qs) {
+                String passwordhash = qs.getLiteral("passwordhash").getString();
+                String salt = qs.getLiteral("salt").getString();
+                return DigestUtils.sha512Hex(password + salt).equals(passwordhash);
+            }
+        });
     }
 
     /**
@@ -110,7 +82,13 @@ public class SystemManager extends AbstractComponent {
         }
 
         HashMap<String, Object> sparqlTemplateMap = new HashMap<>();
-        String namedGraph = config.getPrefix("graph") + (role == 1 ? "contracting-authority" : "bidder") + "/" + username;
+        String roleName = UserContext.Role.CONTRACTING_AUTHORITY.getName();
+        for (UserContext.Role ur : UserContext.Role.values()) {
+            if (ur.getId() == role) {
+                roleName = ur.getName();
+            }
+        }
+        String namedGraph = config.getPrefix("graph") + roleName + "/" + username;
         sparqlTemplateMap.put("graph-uri", namedGraph);
 
         if (Sparql.privateQuery(Mustache.getInstance().getBySparqlPath("graph_exists.mustache", sparqlTemplateMap)).execAsk()) {
@@ -133,6 +111,9 @@ public class SystemManager extends AbstractComponent {
         sparqlTemplateMap.put("password-hash", DigestUtils.sha512Hex(password + salt));
         sparqlTemplateMap.put("private-graph", namedGraph);
         sparqlTemplateMap.put("role", (role == 1 ? "pcfapp:contracting-authority" : "pcfapp:bidder"));
+        if (businessIC != null && !businessIC.trim().isEmpty()) {
+            sparqlTemplateMap.put("ico", businessIC.trim());
+        }
         if (role == 2) {
             cpv1 = getConfiguration().getPrefix("cpv") + (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-'));
             cpv2 = getConfiguration().getPrefix("cpv") + (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-'));
@@ -140,164 +121,18 @@ public class SystemManager extends AbstractComponent {
             HashMap<String, Object> cpv = new HashMap<>();
             cpv.put("cpvs", Arrays.asList(new String[]{cpv1, cpv2, cpv3}));
             sparqlTemplateMap.put("cpv", cpv);
-            if (businessIC != null && !businessIC.trim().isEmpty()) {
-                sparqlTemplateMap.put("ico", businessIC.trim());
-            }
             if (businessPlace != null && !businessPlace.trim().isEmpty()) {
                 sparqlTemplateMap.put("location", businessPlace.trim());
             }
         }
+
         Sparql.privateUpdate(Mustache.getInstance().getBySparqlPath("create_business_entity.mustache", sparqlTemplateMap)).execute();
 
-        return false;
-
-//            PreparedStatement pst = con.prepareStatement("SELECT username FROM users WHERE username=? AND role=?");
-//            pst.setString(1, username);
-//            pst.setInt(2, role);
-//            ResultSet rs = pst.executeQuery();
-//            if (rs.first()) {
-//                return false;
-//            } else {
-//                String salt = RandomStringUtils.randomAlphanumeric(128);
-//                pst
-//                        = con.prepareStatement("INSERT INTO users (username, passwordhash, salt, role, active) "
-//                                + "VALUES (?, ?, ?, ?, ?)");
-//                pst.setString(1, username);
-//                pst.setString(2, DigestUtils.sha512Hex(password + salt));
-//                pst.setString(3, salt);
-//                pst.setInt(4, role);
-//                pst.setString(5, active);
-//                pst.executeUpdate();
-//
-//                pst = con.prepareStatement("INSERT INTO user_preferences (username, role, preference, value) " + "VALUES (?, ?, ?, ?)");
-//                
-//                pst.setString(1, username);
-//                pst.setInt(2, role);
-//                pst.setString(3, "namedGraph");
-//                pst.setString(4, namedGraph);
-//                pst.executeUpdate();
-//
-//                if (businessIC != null && !businessIC.trim().isEmpty()) {
-//                    pst.setString(3, "businessIC");
-//                    pst.setString(4, businessIC);
-//                    pst.executeUpdate();
-//                }
-//
-//                pst.setString(3, "businessName");
-//                pst.setString(4, businessName);
-//                pst.executeUpdate();
-//
-//                if (role == 2) {
-//
-//                    pst.setString(3, "businessPlace");
-//                    pst.setString(4, businessPlace);
-//                    pst.executeUpdate();
-//
-//                    if (cpv1 != null && !cpv1.isEmpty()) {
-//                        pst.setString(3, "cpv1");
-//                        pst.setString(4, (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-')));
-//                        pst.executeUpdate();
-//                    }
-//                    if (cpv2 != null && !cpv2.isEmpty()) {
-//                        pst.setString(3, "cpv2");
-//                        pst.setString(4, (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-')));
-//                        pst.executeUpdate();
-//                    }
-//                    if (cpv3 != null && !cpv3.isEmpty()) {
-//                        pst.setString(3, "cpv3");
-//                        pst.setString(4, (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-')));
-//                        pst.executeUpdate();
-//                    }
-//                }
-//
-//                String beURL;
-//                if (businessIC != null && !businessIC.trim().isEmpty()) {
-//                    beURL = config.getPrefix("be") + businessIC + "-" + UUID.randomUUID();
-//                } else {
-//                    beURL = config.getPrefix("be") + UUID.randomUUID();
-//                }
-//                pst.setString(3, "businessEntity");
-//                pst.setString(4, beURL);
-//                pst.executeUpdate();
-//
-//                /* @formatter:off */
-//                UpdateRequest request = UpdateFactory.create(
-//                        config.getPreference("prefixes")
-//                        + "INSERT DATA "
-//                        + "{ "
-//                        + "	GRAPH <" + namedGraph + "> { "
-//                        + "		<" + beURL + ">			gr:legalName				\"" + businessName + "\"@en ;"
-//                        + "								a 						gr:BusinessEntity ."
-//                        + "	} "
-//                        + "}");
-//                /* @formatter:on */
-//
-//                System.out.println("###################################################");
-//                System.out.println(request);
-//
-//                UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
-//                upr.execute();
-//
-//                /* @formatter:off */
-//                request = UpdateFactory.create(
-//                        config.getPreference("prefixes")
-//                        + "INSERT DATA "
-//                        + "{ "
-//                        + "	GRAPH <" + config.getPreference("publicGraphName") + "> { "
-//                        + "		<" + beURL + ">			gr:legalName				\"" + businessName + "\"@en ;"
-//                        + "								a 						gr:BusinessEntity ."
-//                        + "	} "
-//                        + "}");
-//                /* @formatter:on */
-//
-//                System.out.println("###################################################");
-//                System.out.println(request);
-//
-//                upr = new UpdateProcessRemote(request, config.getSparqlPublicUpdate(), Context.emptyContext);
-//                upr.execute();
-//
-//                return true;
+        return true;
     }
 
     public boolean updateUserPreference(UserContext uc, String preference, String value) {
-
-        /*if (!preference.matches("user.*"))
-         return false;*/
-        try (Connection con
-                = DriverManager.getConnection(config.getRdbAddress() + config.getRdbDatabase(),
-                        config.getRdbUsername(),
-                        config.getRdbPassword())) {
-            PreparedStatement st;
-            if (!uc.containsPreference(preference)) {
-                st = con.prepareStatement("INSERT INTO user_preferences VALUES ( ? , ? , ? , ? )");
-                st.setString(1, uc.getUserName());
-                st.setInt(2, uc.getRole());
-                st.setString(3, preference);
-                st.setString(4, value);
-            } else {
-                st = con.prepareStatement("UPDATE user_preferences SET value = ? WHERE username = ? AND role = ? AND preference = ? ");
-                st.setString(1, value);
-                st.setString(2, uc.getUserName());
-                st.setInt(3, uc.getRole());
-                st.setString(4, preference);
-            }
-
-            int res = st.executeUpdate();
-
-            System.out.println(res);
-
-            if (res > 0) {
-                uc.setPreference(preference, value);
-                return true;
-            } else {
-                return false;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-
+        return true;
     }
 
     /**
@@ -390,15 +225,14 @@ public class SystemManager extends AbstractComponent {
                         request.getParameter("cpv3"))) {
                     response.getWriter().println("User created.");
                 } else {
-                    return;
-//                    if (allDefined(request.getParameter("forward-if-fail"))) {
-//                        try {
-//                            response.sendRedirect(UriEncoder.apply(request.getParameter("forward-if-fail")).part("m").encode());
-//                        } catch (IllegalStateException unused) {
-//                        }
-//                    } else {
-//                        response.sendError(409, "Username already exists.");
-//                    }
+                    if (allDefined(request.getParameter("forward-if-fail"))) {
+                        try {
+                            response.sendRedirect(UriEncoder.apply(request.getParameter("forward-if-fail")).part("m").encode());
+                        } catch (IllegalStateException unused) {
+                        }
+                    } else {
+                        response.sendError(409, "Username already exists.");
+                    }
                 }
                 break;
 

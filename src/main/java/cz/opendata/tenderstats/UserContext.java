@@ -1,7 +1,13 @@
 package cz.opendata.tenderstats;
 
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
+import cz.opendata.tenderstats.sparql.FetchCondition;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Holds user context information, such as username and user preferences.<br>
@@ -23,7 +29,7 @@ public class UserContext implements Serializable {
     /**
      * User's role
      */
-    private int role;
+    private Role role;
 
     /**
      * Name of user's graph in private dataspace
@@ -34,6 +40,64 @@ public class UserContext implements Serializable {
      * User's preferences
      */
     private HashMap<String, String> preferences = new HashMap<>();
+
+    public enum Role {
+
+        CONTRACTING_AUTHORITY("contracting-authority", 1),
+        BIDDER("bidder", 2);
+        private final String name;
+        private final int id;
+
+        Role(String name, int id) {
+            this.name = name;
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+    }
+
+    public static UserContext fetchUserByEmailAndRole(String email, Role role, FetchCondition condition) {
+        String namedGraph = Config.cc().getPrefix("graph") + role.getName() + "/" + email;
+        Map<String, Object> scopes = new HashMap<>();
+        scopes.put("private-graph", namedGraph);
+        ResultSet sparqlResult = Sparql.privateQuery(Mustache.getInstance().getBySparqlPath("select_business_entity.mustache", scopes)).execSelect();
+        if (!sparqlResult.hasNext()) {
+            return null;
+        }
+        QuerySolution businessEntity = sparqlResult.next();
+        if (!businessEntity.varNames().hasNext() || condition != null && !condition.isValid(businessEntity)) {
+            return null;
+        }
+        UserContext uc = new UserContext();
+        uc.setUserName(email);
+        uc.setRole(role);
+        uc.setNamedGraph(namedGraph);
+        uc.setPreference("businessName", businessEntity.getLiteral("businessName").getString());
+        uc.setPreference("businessEntity", businessEntity.getResource("businessEntity").getURI());
+        Literal businessIC = businessEntity.getLiteral("businessIC");
+        if (businessIC != null) {
+            uc.setPreference("businessIC", businessIC.getString());
+        }
+        Literal businessPlace = businessEntity.getLiteral("businessPlace");
+        if (businessPlace != null) {
+            uc.setPreference("businessPlace", businessPlace.getString());
+        }
+        Literal cpvs = businessEntity.getLiteral("cpvs");
+        if (cpvs != null) {
+            String[] cpvsArray = cpvs.getString().split(",");
+            for (int i = 0; i < cpvsArray.length; i++) {
+                uc.setPreference("cpv" + (i + 1), cpvsArray[i].replaceFirst(".+/", ""));
+            }
+        }
+        return uc;
+    }
 
     /**
      * @return User's username
@@ -66,14 +130,14 @@ public class UserContext implements Serializable {
     /**
      * @return User's role
      */
-    public int getRole() {
+    public Role getRole() {
         return role;
     }
 
     /**
      * @param role User's role to set
      */
-    public void setRole(int role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

@@ -5,7 +5,7 @@
     SystemManager sm = application.createServlet(SystemManager.class);
     sm.init();
     UserContext uc = sm.getUserContext(request);
-    if (uc == null || uc.getRole() != 1) {
+    if (uc == null || !uc.getRole().equals(UserContext.Role.CONTRACTING_AUTHORITY)) {
         response.sendRedirect(request.getContextPath());
         return;
     }

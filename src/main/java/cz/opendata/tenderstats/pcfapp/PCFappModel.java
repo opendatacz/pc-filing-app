@@ -541,7 +541,7 @@ public class PCFappModel implements Serializable {
 
                 if (docTypesList.contains(part.getName())) {
                     fileToken = UUID.randomUUID().toString();
-                    fileName = utils.processFileUpload(httpRequest, part, uc.getUserName(), uc.getRole(), fileToken);
+                    fileName = utils.processFileUpload(httpRequest, part, uc.getUserName(), uc.getRole().getId(), fileToken);
                     if (fileName != null && !fileName.isEmpty()) {
                         addDocument(uc.getNamedGraph(), documentObjectURI + fileToken, fileToken, fileName, true, part.getName());
                     }

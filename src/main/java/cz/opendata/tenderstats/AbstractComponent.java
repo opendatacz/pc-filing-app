@@ -1,11 +1,6 @@
 package cz.opendata.tenderstats;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -51,13 +46,14 @@ public abstract class AbstractComponent extends HttpServlet {
      * Servlet initializer.<br>
      * In derived classes, call to {@code super.init()} initializes static
      * variable {@link #config} with component configuration.
+     *
+     * @throws javax.servlet.ServletException
      */
     @Override
     public void init() throws ServletException {
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
         int i = 0;
         while (i++ < 5) {
@@ -87,6 +83,7 @@ public abstract class AbstractComponent extends HttpServlet {
     /**
      * This methods checks if a user is logged in.
      *
+     * @param request
      * @return True if a user is logged in.
      */
     public boolean isUserLoggedIn(HttpServletRequest request) {
@@ -102,7 +99,7 @@ public abstract class AbstractComponent extends HttpServlet {
      * such user exists.
      */
     public UserContext getUserContext(HttpServletRequest request) {
-        return getUserContext(request, true);
+        return getUserContext(request, false);
     }
 
     /**
@@ -120,26 +117,10 @@ public abstract class AbstractComponent extends HttpServlet {
         UserContext uc = null;
         HttpSession session = request.getSession(false);
         if (session != null) {
-
             uc = (UserContext) session.getAttribute("UserContext");
-
             if (reloadFromRdb && uc != null) {
-                try (Connection con
-                        = DriverManager.getConnection(config.getRdbAddress() + config.getRdbDatabase(),
-                                config.getRdbUsername(),
-                                config.getRdbPassword())) {
-                    PreparedStatement pst
-                            = con.prepareStatement("SELECT preference, value FROM user_preferences WHERE username=? AND role=?");
-                    pst.setString(1, uc.getUserName());
-                    pst.setInt(2, uc.getRole());
-                    ResultSet rs = pst.executeQuery();
-                    while (rs.next()) {
-                        uc.setPreference(rs.getString("preference"), rs.getString("value"));
-                    }
-                    uc.setNamedGraph(uc.getPreference("namedGraph"));
-                    session.setAttribute("UserContext", uc);
-                } catch (SQLException unused) {
-                }
+                uc = UserContext.fetchUserByEmailAndRole(uc.getUserName(), uc.getRole(), null);
+                session.setAttribute("UserContext", uc);
             }
         }
         return uc;
@@ -161,21 +142,27 @@ public abstract class AbstractComponent extends HttpServlet {
     }
 
     /**
+     * @param request
+     * @param response
      * @throws IOException
      * @throws ServletException
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      * response)
      */
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         doGetPost(request, response);
     }
 
     /**
+     * @param request
+     * @param response
      * @throws IOException
      * @throws ServletException
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
      * response)
      */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         doGetPost(request, response);
     }

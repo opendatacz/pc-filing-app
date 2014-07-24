@@ -102,8 +102,7 @@
                                                 newRow.append($('<td>').append(newTitle));
 
                                                 // Buyer
-                                                newRow.append($('<
-                                                        td > ').append(linkBuyer( data.buyerName, 
+                                                newRow.append($('<td>').append(linkBuyer(data.buyerName,
                                                         data.buyerEntity)));
 
                                                 // Price								
