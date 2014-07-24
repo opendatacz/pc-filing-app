@@ -42,13 +42,9 @@ INSERT {
       ] .
   {{/ico}}
 
-  {{! Bogus contract for matchmaker }}
   {{#cpv}}
-    _:b0 pc:awardedTender [
-        pc:supplier <{{business-entity}}>
-      ] .
     {{#cpvs}}
-    _:b0 pc:additionalObject <{{.}}> .
+    <{{business-entity}}> gr:category <{{.}}> .
     {{/cpvs}}
   {{/cpv}}
 }
