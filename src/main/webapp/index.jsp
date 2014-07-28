@@ -54,7 +54,7 @@
                 </div>
                 <div class="span4">
                     <h2><fmt:message key="body.public" /></h2>
-                    <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+                    <p><fmt:message key="body.public.description" /></p>
                     <p><a class="btn" href="#"><fmt:message key="body.public.details" /> &raquo;</a></p>
                 </div>
             </div>
@@ -74,7 +74,7 @@
                         <input name="action" type="hidden" value="login">
                         <input name="role" type="hidden" value="1">
                         <input name="forward" id="forward" type="hidden" value="buyer-dashboard.jsp">
-                        <input name="forward-if-fail" type="hidden" value="./?t=error&m=<fmt:message key="body.form.email.error" />">
+                        <input name="forward-if-fail" type="hidden" value="?t=error&m=<fmt:message key="body.form.email.error" />">
                         <div class="control-group">
                             <label class="control-label"><fmt:message key="email" bundle="${cons}" /></label>
                             <div class="controls">
@@ -135,25 +135,11 @@
                 </div>
             </div>	  
 
-            <!--<footer>
-              <div class="container">
-                <p class="pull-right"><a href="#">Back to top</a></p>
-                <p>Designed and built with <a href="http://twitter.github.com/bootstrap/index.html" target="_blank">Twitter Bootstrap</a> by <a href="http://www.opendata.cz" target="_blank">OpenData.cz</a> and <a href="http://www.tenderstats.com" target="_blank">PC Filing App</a>.</p>
-                <p>Code licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
-                <ul class="footer-links">
-                  <li><a href="http://blog.tenderstats.com">Read the blog</a></li>
-                  <li><a href="about.html">About PC Filing App</a></li>
-                </ul>
-              </div>
-            </footer>-->
-
         </div> <!-- /container -->
 
         <%@include file="WEB-INF/jspf/footer.jspf" %>
 
-        <script>
-
-            // ?m=lorem ipsum&t=info
+        <script type="text/javascript">
             $(window).ready(function() {
                 var mtype = $_GET("t");
                 if (typeof mtype !== "undefined" && mtype !== null) {
