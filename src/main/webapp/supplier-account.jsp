@@ -6,6 +6,7 @@
         <%@include file="WEB-INF/jspf/header.jspf" %>
         <%@include file="WEB-INF/jspf/header-supplier.jspf" %>
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Supplier" />
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Register" var="reg" />
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
         <link href="bootstrap/css/won.css" rel="stylesheet" />
     </head>
@@ -24,9 +25,27 @@
                         <h4><fmt:message key="account.interest" />: </h4>
                         <br>
                         <form action="SystemManager" method="post" class="form-horizontal" >
-                            <input name="action" type="hidden" value="updateCPVs">
-                            <input name="forward" id="fwd" type="hidden" value="supplier-calls.jsp">
-                            <input name="forward-if-fail" type="hidden" value="supplier-calls.jsp?t=error&m=<fmt:message key="account.error" />">
+                            <input name="action" type="hidden" value="updateAccount">
+                            <input name="forward" id="fwd" type="hidden" value="supplier-account.jsp">
+                            <input name="forward-if-fail" type="hidden" value="supplier-account.jsp?t=error&m=<fmt:message key="account.error" />">
+                            <div class="control-group">
+                                <label class="control-label"><fmt:message key="name" bundle="${cons}" /> <font color="red">*</font></label>
+                                <div class="controls">
+                                    <input required id="businessName" type="text" name="businessName">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label"><fmt:message key="supplier.body.place" bundle="${reg}" /> <font color="red">*</font></label>
+                                <div class="controls">
+                                    <input required name="businessPlace" id="businessPlace" type="text" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">IC (<fmt:message key="optional" bundle="${cons}" />)</label>
+                                <div class="controls">
+                                    <input name="businessIC" id="businessIC" type="text">
+                                </div>
+                            </div>
                             <div class="control-group">
                                 <label class="control-label" for="inputDescription"><fmt:message key="cpvcodes" bundle="${cons}" /> <font color="red">*</font></label>
                                 <div class="controls">
@@ -102,6 +121,7 @@
         <script src="js/functions.js"></script>
         <script src="js/toolsSupplier.js"></script>
         <script src="js/main.js"></script>
+        <script type="text/javascript" src="js/locations.js"></script> 
         <script type="text/javascript" src="js/cpv-codes.js"></script>
         <script type="text/javascript">
 
@@ -118,6 +138,7 @@
                 $("#cpv1").typeahead({source: collection});
                 $("#cpv2").typeahead({source: collection});
                 $("#cpv3").typeahead({source: collection});
+                $("#businessPlace").typeahead({source: locations});
 
                 $.getJSON("SystemManager?action=getUserPreferences", function(data) {
                     if (data != null) {
@@ -136,6 +157,15 @@
                             if (index > -1)
                                 $("#cpv3").val(collection[index]);
                         }
+                        if (data.businessName) {
+                                $("#businessName").val(data.businessName);
+                        }
+                        if (data.businessPlace) {
+                                $("#businessPlace").val(data.businessPlace);
+                        }
+                        if (data.businessIC) {
+                                $("#businessIC").val(data.businessIC);
+                        }  
                     }
                 });
 

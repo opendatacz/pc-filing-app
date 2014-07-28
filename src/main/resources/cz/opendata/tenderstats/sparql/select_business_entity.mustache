@@ -12,7 +12,7 @@ WHERE {
     pcfapp:active true ;
     pcfapp:password ?passwordhash ;
     pcfapp:salt ?salt .
-    OPTIONAL { ?businessEntity rov:registrations [ skos:notation ?businessIC ] } .
+    OPTIONAL { ?businessEntity rov:registration [ skos:notation ?businessIC ] } .
     OPTIONAL { ?businessEntity schema:address [ schema:addressLocality ?businessPlace ] } .
     OPTIONAL { ?businessEntity gr:category ?cpv } .
   }

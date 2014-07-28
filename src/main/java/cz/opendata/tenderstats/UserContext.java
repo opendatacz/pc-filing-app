@@ -6,7 +6,6 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import cz.opendata.tenderstats.sparql.FetchCondition;
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**

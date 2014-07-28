@@ -2,12 +2,14 @@ package cz.opendata.tenderstats;
 
 import com.google.gson.JsonObject;
 import com.hp.hpl.jena.query.QuerySolution;
+import cz.opendata.tenderstats.UserContext.Role;
 import cz.opendata.tenderstats.sparql.FetchCondition;
 import cz.opendata.tenderstats.utils.UriEncoder;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.ServletException;
@@ -116,10 +118,18 @@ public class SystemManager extends AbstractComponent {
         }
         if (role == 2) {
             cpv1 = getConfiguration().getPrefix("cpv") + (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-'));
-            cpv2 = getConfiguration().getPrefix("cpv") + (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-'));
-            cpv3 = getConfiguration().getPrefix("cpv") + (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-'));
+            cpv2 = cpv2.isEmpty() ? null : getConfiguration().getPrefix("cpv") + (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-'));
+            cpv3 = cpv3.isEmpty() ? null : getConfiguration().getPrefix("cpv") + (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-'));
             HashMap<String, Object> cpv = new HashMap<>();
-            cpv.put("cpvs", Arrays.asList(new String[]{cpv1, cpv2, cpv3}));
+            List<String> cpvs = new LinkedList<>();
+            cpvs.add(cpv1);
+            if (cpv2 != null) {
+                cpvs.add(cpv2);
+            }
+            if (cpv3 != null) {
+                cpvs.add(cpv3);
+            }
+            cpv.put("cpvs", cpvs);
             sparqlTemplateMap.put("cpv", cpv);
             if (businessPlace != null && !businessPlace.trim().isEmpty()) {
                 sparqlTemplateMap.put("location", businessPlace.trim());
@@ -270,21 +280,49 @@ public class SystemManager extends AbstractComponent {
                 }
                 break;
 
-            case "updateCPVs":
+            case "updateAccount":
                 uc = getUserContext(request);
-                if (uc != null) {
+                if (uc != null && allDefined(request.getParameter("cpv1"), request.getParameter("businessName"), request.getParameter("businessPlace"))) {
 
                     String cpv1 = (String) request.getParameter("cpv1");
                     String cpv2 = (String) request.getParameter("cpv2");
                     String cpv3 = (String) request.getParameter("cpv3");
+                    String businessName = (String) request.getParameter("businessName");
+                    String businessPlace = (String) request.getParameter("businessPlace");
+                    String businessIC = (String) request.getParameter("businessIC");
 
+                    HashMap<String, Object> sparqlTemplateMap = new HashMap<>();
+                    sparqlTemplateMap.put("private-graph", uc.getNamedGraph());
+                    sparqlTemplateMap.put("business-entity", uc.getPreference("businessEntity"));
+                    sparqlTemplateMap.put("legal-name", businessName);
+                    if (businessIC != null && !businessIC.trim().isEmpty()) {
+                        sparqlTemplateMap.put("ico", businessIC.trim());
+                    }
+                    if (uc.getRole().equals(Role.BIDDER)) {
+                        cpv1 = getConfiguration().getPrefix("cpv") + (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-'));
+                        cpv2 = cpv2.isEmpty() ? null : getConfiguration().getPrefix("cpv") + (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-'));
+                        cpv3 = cpv3.isEmpty() ? null : getConfiguration().getPrefix("cpv") + (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-'));
+                        HashMap<String, Object> cpv = new HashMap<>();
+                        List<String> cpvs = new LinkedList<>();
+                        cpvs.add(cpv1);
+                        if (cpv2 != null) {
+                            cpvs.add(cpv2);
+                        }
+                        if (cpv3 != null) {
+                            cpvs.add(cpv3);
+                        }
+                        cpv.put("cpvs", cpvs);
+                        sparqlTemplateMap.put("cpv", cpv);
+                        if (businessPlace != null && !businessPlace.trim().isEmpty()) {
+                            sparqlTemplateMap.put("location", businessPlace.trim());
+                        }
+                    }
+                    Sparql.privateUpdate(Mustache.getInstance().getBySparqlPath("update_business_entity.mustache", sparqlTemplateMap)).execute();
+
+                    getUserContext(request, true);
+                    
                     JsonObject json = new JsonObject();
-
-                    boolean c1 = updateUserPreference(uc, "cpv1", (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-')));
-                    boolean c2 = updateUserPreference(uc, "cpv2", (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-')));
-                    boolean c3 = updateUserPreference(uc, "cpv3", (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-')));
-
-                    json.addProperty("success", c1 && c2 && c3);
+                    json.addProperty("success", true);
 
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
