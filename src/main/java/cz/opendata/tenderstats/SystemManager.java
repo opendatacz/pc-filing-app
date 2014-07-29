@@ -37,9 +37,8 @@ public class SystemManager extends AbstractComponent {
      * @param password
      * @return UserContext of user with specified username and password or null
      * if no such user exist.
-     * @throws ServletException If connection to database server failed.
      */
-    protected UserContext checkLogin(String username, int role, final String password) throws ServletException {
+    protected UserContext checkLogin(String username, int role, final String password) {
         UserContext.Role userRole = UserContext.Role.CONTRACTING_AUTHORITY;
         for (UserContext.Role r : UserContext.Role.values()) {
             if (r.getId() == role) {
@@ -74,10 +73,9 @@ public class SystemManager extends AbstractComponent {
      * @param cpv3
      * @return True if user has been sucessfully registered, false if user is
      * already existed.
-     * @throws ServletException If connection to database server failed.
      */
     protected boolean register(String username, String password, String businessName, String businessIC, String businessPlace,
-            int role, String active, String cpv1, String cpv2, String cpv3) throws ServletException {
+            int role, String active, String cpv1, String cpv2, String cpv3) {
 
         if (!username.matches("\\S+@\\S+\\.\\S+")) {
             return false;

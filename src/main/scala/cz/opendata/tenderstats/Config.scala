@@ -26,14 +26,6 @@ object Config {
       case _ => throw new ConfigException("Prefixes was not loaded.")
     }
     val cc = new ComponentConfiguration
-    Match((xml \ ("mysql")).headOption) {
-      case Some(<mysql><server>{ Text(s) }</server><dbname>{ Text(db) }</dbname><username>{ Text(u) }</username><password>{ Text(p) }</password></mysql>) => {
-        cc.setRdbAddress(s"jdbc:mysql://$s/")
-        cc.setRdbDatabase(db)
-        cc.setRdbUsername(u)
-        cc.setRdbPassword(p)
-      }
-    }
     Match((xml \ ("sparql")).headOption) {
       case Some(<sparql><public-graph-name>{ Text(pgn) }</public-graph-name><endpoints><private-query>{ Text(prq) }</private-query><private-update>{ Text(pru) }</private-update><public-query>{ Text(puq) }</public-query><public-update>{ Text(puu) }</public-update></endpoints></sparql>) => {
         cc.setSparqlPrivateQuery(prq)

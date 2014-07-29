@@ -17,21 +17,22 @@ import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 import cz.opendata.tenderstats.ComponentConfiguration;
 import cz.opendata.tenderstats.Config;
+import cz.opendata.tenderstats.Mustache;
+import cz.opendata.tenderstats.Sparql;
 import cz.opendata.tenderstats.UserContext;
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
+import org.apache.log4j.LogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,10 +49,9 @@ public class PCFappModel implements Serializable {
     }
 
     private static final Logger logger = LoggerFactory.getLogger(PCFappModel.class);
-
     private static final long serialVersionUID = -3963894760247662458L;
 
-    private boolean debug = true;
+    private final boolean debug = true;
 
     public static final String pc = Config.cc().getPrefix("pc");
     public static final String pccrit = Config.cc().getPrefix("criteria");
@@ -63,6 +63,7 @@ public class PCFappModel implements Serializable {
     public static final String vc = Config.cc().getPrefix("vcard");
     public static final String rdfsns = Config.cc().getPrefix("rdf");
     public static final String s = Config.cc().getPrefix("schema");
+    public static final String rdf = Config.cc().getPrefix("rdf");
 
     public static final Property dc_title = ResourceFactory.createProperty(dc, "title");
     public static final Property dc_description = ResourceFactory.createProperty(dc, "description");
@@ -105,10 +106,10 @@ public class PCFappModel implements Serializable {
     public static final Property pcf_fileGenTerms = ResourceFactory.createProperty(pcf, "documentGenTerms");
     public static final Property pcf_fileCallDoc = ResourceFactory.createProperty(pcf, "documentCallDoc");
     public static final Property pcf_document = ResourceFactory.createProperty(pcf, "document");
-    public static final Property pcf_documentToken = ResourceFactory.createProperty(pcf, "token");
-    public static final Property pcf_documentType = ResourceFactory.createProperty(pcf, "docType");
-    public static final Property pcf_documentFileName = ResourceFactory.createProperty(pcf, "fileName");
-    public static final Property pcf_documentGlobal = ResourceFactory.createProperty(pcf, "docGlobal");
+    public static final Property pcf_documentToken = ResourceFactory.createProperty(s, "alternateName");
+    public static final Property pcf_documentType = ResourceFactory.createProperty(rdf, "type");
+    public static final Property pcf_documentFileName = ResourceFactory.createProperty(s, "name");
+    public static final Property pcf_documentGlobal = ResourceFactory.createProperty(pcf, "isGlobal");
     public static final Property pcf_submitted = ResourceFactory.createProperty(pcf, "submitted");
     public static final Property pcf_invitedSupplier = ResourceFactory.createProperty(pcf, "invitedSupplier");
     public static final Property pcf_withdrawn = ResourceFactory.createProperty(pcf, "withdrawn");
@@ -139,56 +140,21 @@ public class PCFappModel implements Serializable {
     /**
      * Returns private tender as JENA model
      *
-     * @param contractURI
+     * @param documentToken
      * @param namedGraph
+     * @return
      */
-    public Model getDocument(String documentToken, String namedGraph) {
-        String documentURI = config.getPrefix("contract") + "document/" + documentToken;
-        /* @formatter:off */
-        Query query = QueryFactory.create(
-                config.getPreference("prefixes")
-                + "CONSTRUCT  "
-                + "  { ?documentURI ?p1 ?o1 . "
-                + "    ?o1 ?p2 ?o2 . "
-                + "    ?o2 ?p3 ?o3 . "
-                + "    ?o3 ?p4 ?o4 . "
-                + "    ?o4 ?p5 ?o5 .} "
-                + "FROM <" + namedGraph + "> "
-                + "WHERE "
-                + "  { ?documentURI ?p1 ?o1 . "
-                + "    ?documentURI a pcfapp:Document "
-                + "    OPTIONAL "
-                + "      { ?o1 ?p2 ?o2 "
-                + "        OPTIONAL "
-                + "          { ?o2 ?p3 ?o3 "
-                + "            OPTIONAL "
-                + "              { ?o3 ?p4 ?o4 "
-                + "                OPTIONAL "
-                + "                  { ?o4 ?p5 ?o5 } "
-                + "              } "
-                + "          } "
-                + "      } "
-                + "  } "
-                + "VALUES ?documentURI { <" + documentURI + "> }");
-        /* @formatter:on */
-        Model document = QueryExecutionFactory.sparqlService(config.getSparqlPrivateQuery(), query).execConstruct();
-
-        System.out.println(query.toString());
-        // System.out.println("###################################################");
-        document.write(System.out, "Turtle");
-
-        return document;
+    public Document getDocument(String documentToken, String namedGraph) {
+        return ExtendedDocument.fetchByIdAndGraph(documentToken, namedGraph);
     }
 
-    ;
-
-	/**
-	 * Returns private contract as JENA model
-	 * 
-	 * @param contractURI
-	 * @param namedGraph
-	 */
-	public Model getSupplier(String supplierURI) {
+    /**
+     * Returns private contract as JENA model
+     *
+     * @param supplierURI
+     * @return
+     */
+    public Model getSupplier(String supplierURI) {
         /* @formatter:off */
         Query query = QueryFactory.create(
                 config.getPreference("prefixes")
@@ -226,15 +192,15 @@ public class PCFappModel implements Serializable {
         return entity;
     }
 
-    ;
-
-	/**
-	 * Returns private tender as JENA model
-	 * 
-	 * @param contractURI
-	 * @param namedGraph
-	 */
-	protected Model getTendersFromContract(String tenderURI, String namedGraph, boolean awarded) {
+    /**
+     * Returns private tender as JENA model
+     *
+     * @param tenderURI
+     * @param namedGraph
+     * @param awarded
+     * @return
+     */
+    protected Model getTendersFromContract(String tenderURI, String namedGraph, boolean awarded) {
         /* @formatter:off */
         Query query = QueryFactory.create(
                 config.getPreference("prefixes")
@@ -270,16 +236,15 @@ public class PCFappModel implements Serializable {
         return tender;
     }
 
-    ;
-
-	/**
-	 * Returns private tenders for contract as JENA model
-	 * 
-	 * @param contractURI
-	 * @param namedGraph
-	 * @param
-	 */
-	public Model getPrivateTendersForContract(String namedGraph, String contractURI, boolean awarded) {
+    /**
+     * Returns private tenders for contract as JENA model
+     *
+     * @param contractURI
+     * @param namedGraph
+     * @param awarded
+     * @return
+     */
+    public Model getPrivateTendersForContract(String namedGraph, String contractURI, boolean awarded) {
         /* @formatter:off */
         Query query = QueryFactory.create(
                 config.getPreference("prefixes")
@@ -306,15 +271,13 @@ public class PCFappModel implements Serializable {
         return tenders;
     }
 
-    ;
-
-	/**
-	 * Returns private contract as JENA model
-	 * 
-	 * @param contractURI
-	 * @param namedGraph
-	 */
-	public Model getPublicContract(String contractURI) {
+    /**
+     * Returns private contract as JENA model
+     *
+     * @param contractURI
+     * @return
+     */
+    public Model getPublicContract(String contractURI) {
         /* @formatter:off */
         Query query = QueryFactory.create(
                 config.getPreference("prefixes")
@@ -351,23 +314,8 @@ public class PCFappModel implements Serializable {
 
         return contract;
     }
-    ;
-
-	private Connection connection = null;
-
-    private Connection connectDB() throws SQLException {
-
-        if (connection != null && connection.isValid(0)) {
-            return connection;
-        }
-
-        return DriverManager.getConnection(config.getRdbAddress() + config.getRdbDatabase(),
-                config.getRdbUsername(),
-                config.getRdbPassword());
-    }
 
     public ResultSet getPublicSupplierData(String entity) {
-
         /* @formatter:off */
         Query query = QueryFactory.create(config.getPreference("prefixes")
                 + "SELECT DISTINCT ?contractURI ?title ?description ?cpv1URL ?cpvAdd ?currency ?price "
@@ -406,131 +354,71 @@ public class PCFappModel implements Serializable {
         }
 
         return QueryExecutionFactory.sparqlService(config.getSparqlPublicQuery(), query).execSelect();
-
     }
 
-    public ResultSet getUserDocuments(String namedGraph, boolean global) {
-
-        /* @formatter:off */
-        Query query = QueryFactory.create( // TODO rewrite using CONSTRUCT
-                config.getPreference("prefixes")
-                + "SELECT DISTINCT ?documentURI ?token ?fileName ?docType "
-                + "WHERE "
-                + "  { GRAPH <" + namedGraph + "> "
-                + "      {  "
-                + "			?documentURI		rdf:type 				pcfapp:Document ;"
-                + "								pcfapp:token			?token ;"
-                + "								pcfapp:fileName			?fileName ;"
-                + (global ? "						pcfapp:docGlobal		\"true\"^^xsd:boolean ; " : "")
-                + "      							pcfapp:docType			?docType ."
-                + "	  } "
-                + "	} ");
-        /* @formatter:on */
-
-        if (debug) {
-            System.out.println("###################################################");
-            System.out.println(query);
+    public List<ExtendedDocument> getUserDocuments(String namedGraph, boolean global) {
+        List<ExtendedDocument> result = ExtendedDocument.fetchAllByGraph(namedGraph);
+        for (Iterator<ExtendedDocument> it = result.iterator(); it.hasNext();) {
+            ExtendedDocument extendedDocument = it.next();
+            if (global && !extendedDocument.isGlobal()) {
+                it.remove();
+            }
         }
-
-        return QueryExecutionFactory.sparqlService(config.getSparqlPrivateQuery(), query).execSelect();
+        return result;
     }
 
     public void unlinkDocument(UserContext uc, String contractURL, String token) {
-
-        Model document = getDocument(token, uc.getNamedGraph());
-
-        if (!document.contains(null, pcf_documentGlobal)) {
-            deleteDocument(uc, token);
+        Document document = ExtendedDocument.fetchByIdAndGraph(token, uc.getNamedGraph());
+        if (document != null) {
+            UpdateRequest request;
+            /* @formatter:off */
+            request = UpdateFactory.create(
+                    config.getPreference("prefixes")
+                    + "DELETE DATA"
+                    + "{"
+                    + "	GRAPH <" + uc.getNamedGraph() + "> { "
+                    + "	<" + contractURL + ">	pcfapp:document		<" + document.getUri() + "> "
+                    + "	} "
+                    + "}");
+            /* @formatter:on */
+            UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
+            upr.execute();
+            deleteDocument(document);
         }
-
-        UpdateRequest request;
-        /* @formatter:off */
-        request = UpdateFactory.create(
-                config.getPreference("prefixes")
-                + "DELETE DATA"
-                + "{"
-                + "	GRAPH <" + uc.getNamedGraph() + "> { "
-                + "	<" + contractURL + ">	pcfapp:document		<" + config.getPrefix("contract") + "document/" + token + "> "
-                + "	} "
-                + "}");
-        /* @formatter:on */
-
-        if (debug) {
-            System.out.println("###################################################");
-            System.out.println(request);
-        }
-
-        UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
-        upr.execute();
-
     }
 
-    public int deleteDocument(UserContext uc, String token) {
-
-        /* @formatter:off */
-        UpdateRequest request = UpdateFactory.create( // TODO This works for our URIs, but might not for others
-                config.getPreference("prefixes")
-                + "WITH <" + uc.getNamedGraph() + "> "
-                + "DELETE "
-                + "{ ?s ?p ?o }"
-                + "WHERE"
-                + "{"
-                + "   ?s ?p ?o ."
-                + "   FILTER ( CONTAINS(str(?s), \"" + "document/" + token + "\") )"
-                + "}");
-        /* @formatter:on */
-
-        UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
-        upr.execute();
-
+    public int deleteDocument(Document document) {
         try {
-            Connection con = connectDB();
-            PreparedStatement pst = con.prepareStatement("DELETE FROM documents WHERE token = ? ");
-            pst.setString(1, token);
-            return pst.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+            document.deleteContentFile();
+            Map<String, Object> sparqlParams = new HashMap<>();
+            sparqlParams.put("graph-uri", document.getOwner().getNamedGraph());
+            sparqlParams.put("resource", document.getUri());
+            Sparql.privateUpdate(Mustache.getInstance().getBySparqlPath("cascaded_delete.mustache", sparqlParams)).execute();
+            return 1;
+        } catch (IOException ex) {
+            return 0;
         }
-        return 0;
-
     }
 
-    public void addDocument(String namedGraph, String documentURI, String token, String fileName, Boolean global, String docType) {
-
-        /* @formatter:off */
-        UpdateRequest request = UpdateFactory.create(
-                config.getPreference("prefixes")
-                + "INSERT DATA "
-                + "{ "
-                + "	GRAPH <" + namedGraph + "> { "
-                + "			<" + documentURI + "> 	a 					pcfapp:Document ;"
-                + " 									pcfapp:token 		\"" + token + "\"^^xsd:string ; "
-                + " 									pcfapp:fileName 	\"" + fileName + "\"^^xsd:string ; "
-                + (global ? "						pcfapp:docGlobal	\"true\"^^xsd:boolean ; " : "")
-                + "									pcfapp:docType		pcfapp:" + docType + " ."
-                + "	} "
-                + "}");
-        /* @formatter:on */
-
-        UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
-        upr.execute();
-
+    public void addDocument(ExtendedDocument document) {
+        Map<String, Object> sparqlParams = new HashMap<>();
+        sparqlParams.put("graph-uri", document.getOwner().getNamedGraph());
+        sparqlParams.put("document-uri", document.getUri());
+        sparqlParams.put("id", document.getId());
+        sparqlParams.put("doc-type", document.getDocType());
+        sparqlParams.put("content-type", document.getContentType());
+        sparqlParams.put("is-global", document.isGlobal());
+        Sparql.privateUpdate(Mustache.getInstance().getBySparqlPath("create_document.mustache", sparqlParams)).execute();
     }
 
     public void addSupplierDocs(UserContext uc, HttpServletRequest httpRequest) {
-
         String fileToken;
-        String fileName;
-        String documentObjectURI = config.getPrefix("contract") + "document/";
-
+        Document document;
         String[] docTypes = {"QualityCertificate", "CompanyProfile", "FinancialStatements"};
         List<String> docTypesList = Arrays.asList(docTypes);
-
         Collection<Part> parts;
         try {
             parts = httpRequest.getParts();
-
             Iterator<Part> i = parts.iterator();
             if (!i.hasNext()) {
                 System.out.println(":(((");
@@ -538,64 +426,53 @@ public class PCFappModel implements Serializable {
             while (i.hasNext()) {
                 Part part = i.next();
                 System.out.println(part.getName());
-
                 if (docTypesList.contains(part.getName())) {
                     fileToken = UUID.randomUUID().toString();
-                    fileName = utils.processFileUpload(httpRequest, part, uc.getUserName(), uc.getRole().getId(), fileToken);
-                    if (fileName != null && !fileName.isEmpty()) {
-                        addDocument(uc.getNamedGraph(), documentObjectURI + fileToken, fileToken, fileName, true, part.getName());
+                    document = utils.processFileUpload(part, fileToken, uc);
+                    if (document != null) {
+                        addDocument(new ExtendedDocument(true, part.getName(), document));
                     }
                 }
             }
-
-        } catch (IllegalStateException | IOException | ServletException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (IOException | ServletException ex) {
+            LogManager.getLogger("Documents").warn(ex, ex);
         }
-
-//		for (int i = 0; i < fileArrays.length; i++) {
-//			fileToken = UUID.randomUUID().toString();
-//			fileName = utils.processFileUpload(httpRequest, fileArrays[i], uc.getUserName(), fileToken);
-//			if (fileName != null && !fileName.isEmpty()) {
-//				addDocument(uc.getNamedGraph(), documentObjectURI + fileToken, fileToken, fileName, true, docTypes[i]);
-//			}
-//		}
     }
 
     public String getMailFromEntity(String entity) {
-
-        PreparedStatement pst;
-        try {
-            Connection con = connectDB();
-            pst = con.prepareStatement("SELECT * FROM user_preferences WHERE preference = 'businessEntity' AND value = ? ");
-            pst.setString(1, entity);
-            java.sql.ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                return rs.getString("username");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return "";
+        throw new UnsupportedOperationException();
+//        PreparedStatement pst;
+//        try {
+//            Connection con = connectDB();
+//            pst = con.prepareStatement("SELECT * FROM user_preferences WHERE preference = 'businessEntity' AND value = ? ");
+//            pst.setString(1, entity);
+//            java.sql.ResultSet rs = pst.executeQuery();
+//            if (rs.next()) {
+//                return rs.getString("username");
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return "";
     }
 
     public String getMailFromNS(String entity) {
-
-        PreparedStatement pst;
-        try {
-            Connection con = connectDB();
-            pst = con.prepareStatement("SELECT * FROM user_preferences WHERE preference = 'namedGraph' AND value = ? ");
-            pst.setString(1, entity);
-            java.sql.ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                return rs.getString("username");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return "";
+        throw new UnsupportedOperationException();
+//        PreparedStatement pst;
+//        try {
+//            Connection con = connectDB();
+//            pst = con.prepareStatement("SELECT * FROM user_preferences WHERE preference = 'namedGraph' AND value = ? ");
+//            pst.setString(1, entity);
+//            java.sql.ResultSet rs = pst.executeQuery();
+//            if (rs.next()) {
+//                return rs.getString("username");
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return "";
     }
 
     public ResultSet getBuyerActivityData(String namedGraph) {

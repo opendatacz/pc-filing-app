@@ -35,30 +35,10 @@ public class ComponentConfiguration implements Serializable {
     private String sparqlPublicUpdate;
 
     /**
-     * JDBC connection string to access relational database
-     */
-    private String rdbAddress;
-
-    /**
-     * Name of the relational database
-     */
-    private String rdbDatabase;
-
-    /**
-     * Username to access relational database
-     */
-    private String rdbUsername;
-
-    /**
-     * Password to access relational database
-     */
-    private String rdbPassword;
-
-    /**
      * Component preferences
      */
     private HashMap<String, String> preferences = new HashMap<>();
-    private HashMap<String, String> prefixes = new HashMap<>();
+    private final HashMap<String, String> prefixes = new HashMap<>();
 
     public void setPrefix(String id, String uri) {
         prefixes.put(id, uri);
@@ -97,34 +77,6 @@ public class ComponentConfiguration implements Serializable {
      */
     public HashMap<String, String> getPreferences() {
         return preferences;
-    }
-
-    /**
-     * @return JDBC connection string to access relational database
-     */
-    public String getRdbAddress() {
-        return rdbAddress;
-    }
-
-    /**
-     * @return Name of the relational database
-     */
-    public String getRdbDatabase() {
-        return rdbDatabase;
-    }
-
-    /**
-     * @return Password to access relational database
-     */
-    public String getRdbPassword() {
-        return rdbPassword;
-    }
-
-    /**
-     * @return Username to access relational database
-     */
-    public String getRdbUsername() {
-        return rdbUsername;
     }
 
     /**
@@ -172,34 +124,6 @@ public class ComponentConfiguration implements Serializable {
      */
     public void setPreferences(HashMap<String, String> preferences) {
         this.preferences = preferences;
-    }
-
-    /**
-     * @param rdbAddress JDBC connection string to access relational database
-     */
-    public void setRdbAddress(String rdbAddress) {
-        this.rdbAddress = rdbAddress;
-    }
-
-    /**
-     * @param rdbDatabase Name of the relational database
-     */
-    public void setRdbDatabase(String rdbDatabase) {
-        this.rdbDatabase = rdbDatabase;
-    }
-
-    /**
-     * @param rdbPassword Password to access relational database
-     */
-    public void setRdbPassword(String rdbPassword) {
-        this.rdbPassword = rdbPassword;
-    }
-
-    /**
-     * @param rdbUsername Username to access relational database
-     */
-    public void setRdbUsername(String rdbUsername) {
-        this.rdbUsername = rdbUsername;
     }
 
     /**

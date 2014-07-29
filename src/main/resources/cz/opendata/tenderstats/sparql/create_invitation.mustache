@@ -1,0 +1,22 @@
+{{!
+@param Array<Map>      prefixes
+@param IRI             contract-uri
+@param IRI             invitation-entity
+@param String          email
+}}
+
+{{> prefixes}}
+
+WITH graph:internal
+INSERT DATA {
+  GRAPH graph:internal {
+    <{{invitation-entity}}> a schema:InviteAction ;
+      schema:recipient [
+        a schema:Organization ;
+        schema:contactPoint [
+          schema:email "{{email}}"
+        ]
+      ] ;
+      schema:object <{{contract-uri}}> .
+  }
+}

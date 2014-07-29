@@ -7,6 +7,8 @@ import cz.opendata.tenderstats.sparql.FetchCondition;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Holds user context information, such as username and user preferences.<br>
@@ -60,6 +62,18 @@ public class UserContext implements Serializable {
             return id;
         }
 
+    }
+
+    public static UserContext fetchUserByNamedGraph(String namedGraph) {
+        Matcher matcher = Pattern.compile(".+/(.+)/(.+)").matcher(namedGraph);
+        if (matcher.matches()) {
+            for (Role role : Role.values()) {
+                if (role.getName().equals(matcher.group(1))) {
+                    return fetchUserByEmailAndRole(matcher.group(2), role, null);
+                }
+            }
+        }
+        return null;
     }
 
     public static UserContext fetchUserByEmailAndRole(String email, Role role, FetchCondition condition) {

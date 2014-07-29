@@ -14,12 +14,6 @@
             </load>
         </operations>
     </matchmaker>
-    <mysql>
-        <server></server>
-        <dbname></dbname>
-        <username></username>
-        <password></password>
-    </mysql>
     <sparql>
         <public-graph-name></public-graph-name>
         <endpoints>
@@ -35,5 +29,6 @@
     </emails>
     <system>
         <session-timeout>86400</session-timeout>
+        <documents-dir>C:\Users\venca\AppData\Local\Temp</documents-dir>
     </system>
 </config>
