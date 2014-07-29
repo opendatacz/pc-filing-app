@@ -1,36 +1,39 @@
 {{!
+@param IRI graph-uri
 @param IRI resource
 }}
 
 DELETE WHERE {
-  <{{resource}}> ?p1 ?o1 .
-  FILTER (isBlank(?o1))
-  OPTIONAL {
-    ?o1 ?p2 ?o2 .
-    FILTER (isBlank(?o2))
+  GRAPH <{{graph-uri}}> {
+    <{{resource}}> ?p1 ?o1 .
     OPTIONAL {
-      ?o2 ?p3 ?o3 .
-      FILTER (isBlank(?o3))
+      FILTER (isBlank(?o1))
+      ?o1 ?p2 ?o2 .
       OPTIONAL {
-        ?o3 ?p4 ?o4 .
-        FILTER (isBlank(?o4))
+        FILTER (isBlank(?o2))
+        ?o2 ?p3 ?o3 .
         OPTIONAL {
-          ?o4 ?p5 ?o5 .
-          FILTER (isBlank(?o5))
+          FILTER (isBlank(?o3))
+          ?o3 ?p4 ?o4 .
           OPTIONAL {
-            ?o5 ?p6 ?o6 .
-            FILTER (isBlank(?o6))
+            FILTER (isBlank(?o4))
+            ?o4 ?p5 ?o5 .
             OPTIONAL {
-              ?o6 ?p7 ?o7 .
-              FILTER (isBlank(?o7))
+              FILTER (isBlank(?o5))
+              ?o5 ?p6 ?o6 .
               OPTIONAL {
-                ?o7 ?p8 ?o8 .
-                FILTER (isBlank(?o8))
+                FILTER (isBlank(?o6))
+                ?o6 ?p7 ?o7 .
                 OPTIONAL {
-                  ?o8 ?p9 ?o9 .
-                  FILTER (isBlank(?o9))
+                  FILTER (isBlank(?o7))
+                  ?o7 ?p8 ?o8 .
                   OPTIONAL {
-                    ?o9 ?p10 ?o10 .
+                    FILTER (isBlank(?o8))
+                    ?o8 ?p9 ?o9 .
+                    OPTIONAL {
+                      FILTER (isBlank(?o9))
+                      ?o9 ?p10 ?o10 .
+                    }
                   }
                 }
               }
