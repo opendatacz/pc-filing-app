@@ -1,5 +1,16 @@
 var MATCHMAKER = {
   matchesPerPage: 10,
+  dateFormat: function (date) {
+    // If `date` is valid, then format it using long form,
+    // else return the date unformatted.
+    var formattedDate;
+    try {
+      formattedDate = dateFormat(date, dateFormat.masks.longDate);
+    } catch (e) {
+      formattedDate = date;
+    }
+    return formattedDate;
+  },
   decodeEntities: (function() {
     // Stolen from <http://stackoverflow.com/a/9609450/385505>
     //
@@ -45,10 +56,10 @@ var MATCHMAKER = {
                 match.rank = i + 1;
                 match.label = MATCHMAKER.decodeEntities(match.label);
                 if (match.publicationDate) {
-                  match.publicationDate = dateFormat(match.publicationDate, dateFormat.masks.longDate);
+                  match.publicationDate = MATCHMAKER.dateFormat(match.publicationDate);
                 }
                 if (match.tenderDeadline) {
-                  match.tenderDeadline = dateFormat(match.tenderDeadline, dateFormat.masks.longDate);
+                  match.tenderDeadline = MATCHMAKER.dateFormat(match.tenderDeadline);
                 }
                 return match;
               }
