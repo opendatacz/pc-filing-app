@@ -381,13 +381,20 @@ public class PCFappModelContract implements Serializable {
         // files
         String token;
         String fileName;
-        String docType;
+        String docType = "";
 
         JsonArray docs = new JsonArray();
         StmtIterator i = contractRes.listProperties(PCFappModel.pcf_document);
         while (i.hasNext()) {
             Statement st = i.next();
-            docType = st.getProperty(PCFappModel.pcf_documentType).getObject().asResource().getLocalName();
+            StmtIterator listProperties = st.getObject().asResource().listProperties(PCFappModel.pcf_documentType);
+            while (listProperties.hasNext()) {
+                String typeUri = listProperties.next().getObject().asResource().getLocalName();
+                if (!typeUri.equals("MediaObject")) {
+                    docType = typeUri;
+                }
+            }
+            //docType = st.getProperty(PCFappModel.pcf_documentType).getObject().asResource().getLocalName();
             token = st.getProperty(PCFappModel.pcf_documentToken).getObject().asLiteral().getString();
             fileName = st.getProperty(PCFappModel.pcf_documentFileName).getObject().asLiteral().getString();
             JsonObject fileGenTerms = new JsonObject();
@@ -817,7 +824,7 @@ public class PCFappModelContract implements Serializable {
             Model contractModel = getPrivateContract(contractURL, uc.getNamedGraph(), "none");
             StmtIterator i = contractModel.getResource(contractURL).listProperties(PCFappModel.pcf_document);
             while (i.hasNext()) {
-                String token = i.next().getObject().asResource().getURI().substring(contractURL.lastIndexOf('/') + 1);
+                String token = i.next().getObject().asResource().getURI().replaceAll(".+/", "");
                 model.unlinkDocument(uc, contractURL, token);
             }
 
@@ -1406,7 +1413,7 @@ public class PCFappModelContract implements Serializable {
             throw new PCFappException("Call for tenders is incomplete, please fill in required fields.");
         }
 
-        sendInvitationsPublished(contractRes);
+        //sendInvitationsPublished(contractRes);
 
         if (contract.contains(ResourceFactory.createResource(contractURL),
                 ResourceFactory.createProperty(PCFappModel.pcf, "confidentialPrice"),

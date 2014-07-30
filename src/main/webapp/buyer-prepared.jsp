@@ -168,7 +168,7 @@
 
                                                         // Suppliers
                                                         newSuppliers = $('<a>');
-                                                        newSuppliers.attr('href', 'buyer-suitable-suppliers.jsp?private=true');
+                                                        newSuppliers.attr('href', 'buyer-suitable-suppliers.jsp?private=true&invite=false');
                                                         newSuppliers.click(function() {
                                                             saveEventInfo(i);
                                                         });

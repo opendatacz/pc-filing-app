@@ -65,7 +65,7 @@
                         <h4 style="margin-bottom: 20px;"><fmt:message key="documents" bundle="${cons}" /></h4>
 
                         <!-- <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm" enctype="multipart/form-data"> -->
-                        <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm" >
+                        <form action="PCFilingApp" method="post" enctype="multipart/form-data" class="form-horizontal" id="contractForm" >
                             <input type="hidden" name="action" value="supplierDocsUpload"/>
                             <input name="forward" type="hidden" value="supplier-account.jsp">          
 
@@ -183,17 +183,18 @@
                 $.getJSON("PCFilingApp?action=getSupplierDocs", function(data) {
                     if (data != null && data.docs) {
                         $.each(data.docs, function() {
+                            docElement = '<li id="doc-' + this.token + '"> <a href="PCFilingApp?action=document&token=' + this.token + '"><i class="icon-download"></i></a>&nbsp;<a href="PCFilingApp?action=supplierDocsUnlink&forward=supplier-account.jsp&token=' + this.token + '"><i class="icon-remove"></i></a> ' + this.fileName + '</li>';
                             switch (this.docType) {
                                 case "QualityCertificate":
-                                    $("#fileCerts").append('<li id="doc-' + this.token + '"> <a href="PCFilingApp?action=document&token=' + this.token + '"><i class="icon-download"></i> ' + this.fileName + '</a></li>');
+                                    $("#fileCerts").append(docElement);
                                     break;
 
                                 case "CompanyProfile":
-                                    $("#fileProfile").append('<li id="doc-' + this.token + '"> <a href="PCFilingApp?action=document&token=' + this.token + '"><i class="icon-download"></i> ' + this.fileName + '</a></li>');
+                                    $("#fileProfile").append(docElement);
                                     break;
 
                                 case "FinancialStatements":
-                                    $("#fileFinStatements").append('<li id="doc-' + this.token + '"> <a href="PCFilingApp?action=document&token=' + this.token + '"><i class="icon-download"></i> ' + this.fileName + '</a></li>');
+                                    $("#fileFinStatements").append(docElement);
                                     break;
                             }
                         });

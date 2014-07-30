@@ -25,7 +25,7 @@
                     <hr>
 
                     <!-- <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm" enctype="multipart/form-data"> -->
-                    <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm" >
+                    <form action="PCFilingApp" method="post" enctype="multipart/form-data" class="form-horizontal" id="contractForm" >
                         <input name="action" type="hidden" value="addPrivateContract">
                         <input name="forward" type="hidden" value="buyer-prepared.jsp">
 

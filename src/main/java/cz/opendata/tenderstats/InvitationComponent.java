@@ -7,6 +7,10 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import cz.opendata.tenderstats.pcfapp.PCFappModel;
+import cz.opendata.tenderstats.pcfapp.PCFappModelContract;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLDecoder;
@@ -130,8 +134,7 @@ public class InvitationComponent extends AbstractComponent {
                     contractURL = getInvitationContract(inv_id, email);
 
                     if (contractURL != null) {
-
-                        addInvitation(getUserContext(request), inv_id, contractURL);
+                        addInvitation(getUserContext(request), INVITATION_PREFIX + inv_id, contractURL);
                         session.removeAttribute("invitations");
                         response.sendRedirect(request.getParameter("forward"));
                     } else {
@@ -144,33 +147,40 @@ public class InvitationComponent extends AbstractComponent {
                     email = request.getParameter("email");
                     String name = request.getParameter("name");
                     String contract = request.getParameter("contract");
+                    String status = "";
+
+                    PCFappModelContract pcFappModelContract = new PCFappModelContract(config);
+                    Model privateContract = pcFappModelContract.getPrivateContract(request.getParameter("contractURL"), getUserContext(request).getNamedGraph());
+                    for (NodeIterator it = privateContract.listObjectsOfProperty(PCFappModel.pcf_status); it.hasNext();) {
+                        status = it.next().asResource().getLocalName();
+                    }
+
+                    if (!status.equals("Published")) {
+                        response.sendError(400);
+                        return;
+                    }
 
                     String message = "";
 
                     boolean sent = false;
                     if (email != null) {
-
                         // System.out.println("..."+contractURL);
                         inv_id = UUID.randomUUID().toString();
                         String mail_content = MessageFormat.format(mailTrans.getString("invitation.create.body"), name, contract, request.getRemoteHost(), inv_id, email);
                         System.out.println(mail_content);
-
                         addInvitationEntry(inv_id, URLDecoder.decode(email, "UTF-8"), URLDecoder.decode(contractURL, "UTF-8"));
                         sent = new Mailer(config.getPreference("invitationEmail"), email, mailTrans.getString("invitation.create.subject"), mail_content).send();
                         message = (sent) ? "Message sent" : "Internal error";
                         response.setContentType("application/json; charset=UTF-8");
-
                     } else {
                         message = "Invalid parameters";
                         sent = false;
                     }
-
                     response.setContentType("application/json; charset=UTF-8");
                     resp.addProperty("sent", sent);
                     resp.addProperty("message", message);
                     response.getWriter().println(resp);
                     break;
-
                 case "getInvitations":
                     if (!allDefined(request.getParameter("from"), request.getParameter("to"))) {
                         response.sendError(400);

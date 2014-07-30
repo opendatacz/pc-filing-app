@@ -38,13 +38,19 @@ function CPVs(cpv1, cpvAll) {
 	var cpv = new Array();
 
 	if (cpv1 != undefined) {
-		cpv.push(cpv1.replace("http://purl.org/weso/cpv/2008/", "", "g"));						
+		cpv.push(cpv1.replace(/\S+\//g, ""));						
 	}
+        console.log(cpv);
 
-	if (cpvAll != undefined) {		
-		cpv.push((cpvAll.replace("http://purl.org/weso/cpv/2008/", "", "g")).split(" "));
+	if (cpvAll != undefined) {	
+            acpvs = (cpvAll.replace(/\S+\//g, "")).split(" ");
+            for (x in acpvs)
+		cpv.push(acpvs[x]);
 		
 	}	
+        
+        console.log(cpv);
+        
 	var list = $("<ul>");	
 	$.each(cpv,function(index){
 		list.append( $('<li>').append(cpvs["cpv"+cpv[index]]));

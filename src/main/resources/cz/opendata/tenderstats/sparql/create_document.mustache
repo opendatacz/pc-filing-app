@@ -13,10 +13,10 @@
 INSERT DATA {
   GRAPH <{{graph-uri}}> {
     <{{document-uri}}> a schema:MediaObject ;
-    a pcfapp:{{doc-type}}
-    dcterms:identifier "{{id}}" ;
-    schema:name "{{name}}" ;
-    dcterms:format "{{content-type}}" ;
-    pcfapp:isGlobal {{is-global}} .
+      a pcfapp:{{doc-type}} ;
+      dcterms:identifier "{{id}}" ;
+      schema:name "{{name}}" ;
+      dcterms:format "{{content-type}}" ;
+      pcfapp:isGlobal {{is-global}} .
   }
 }

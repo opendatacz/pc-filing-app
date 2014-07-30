@@ -450,7 +450,6 @@
 
                         $.each(data.documents, function() {
                             var appendObj;
-
                             switch (this.docType) {
 
                                 case "GeneralTerms":
@@ -489,8 +488,8 @@
                                     appendObj = $("#fileBidSubForm");
                                     break;
                             }
-
-                            appendObj.append('<li id="doc-' + this.token + '"><a href="PCFilingApp?action=document&token=' + this.token + '"><i class="icon-download"></i> <a href="PCFilingApp?action=document&token=' + this.token + '">' + this.fileName + '</a></li>');
+                            appendObj.append('<li id="doc-' + this.token + '"><a href="PCFilingApp?action=document&token=' + this.token + '&graph=' + encodeURIComponent(sessionStorage.buyerURL) + '"><i class="icon-download"></i> <a href="PCFilingApp?action=document&token=' + this.token + '&graph=' + encodeURIComponent(sessionStorage.buyerURL) + '">' + this.fileName + '</a></li>');
+                            appendObj.closest('.control-group').removeClass('hide');
                         });
 
                         $("#progressbar").hide();

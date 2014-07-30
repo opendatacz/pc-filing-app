@@ -42,6 +42,22 @@ public class ExtendedDocument extends Document {
         return result;
     }
 
+    public static List<ExtendedDocument> fetchAllByGraphAndTender(String graph, String tender) {
+        Map<String, Object> sparqlParams = new HashMap<>();
+        sparqlParams.put("graph-uri", graph);
+        sparqlParams.put("tender-uri", tender);
+        ResultSet execSelect = Sparql.privateQuery(Mustache.getInstance().getBySparqlPath("select_documents_by_tender.mustache", sparqlParams)).execSelect();
+        UserContext user = UserContext.fetchUserByNamedGraph(graph);
+        LinkedList<ExtendedDocument> result = new LinkedList<>();
+        while (execSelect.hasNext()) {
+            ExtendedDocument document = fetchByUserAndQuerySolution(user, execSelect.next());
+            if (document != null) {
+                result.add(document);
+            }
+        }
+        return result;
+    }
+
     public static ExtendedDocument fetchByUserAndQuerySolution(UserContext user, QuerySolution qs) {
         if (user != null && qs != null && qs.varNames().hasNext()) {
             return new ExtendedDocument(

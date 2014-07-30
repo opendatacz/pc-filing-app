@@ -27,9 +27,9 @@ public class PCFappUtils implements Serializable {
     }
 
     public void retreiveDocument(HttpServletRequest request,
-            HttpServletResponse response, UserContext uc) {
+            HttpServletResponse response, String graph) {
 
-        Document document = ExtendedDocument.fetchByIdAndGraph(request.getParameter("token"), uc.getNamedGraph());
+        Document document = ExtendedDocument.fetchByIdAndGraph(request.getParameter("token"), graph);
         try {
             if (document != null) {
                 try {

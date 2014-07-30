@@ -1,24 +1,5 @@
 package cz.opendata.tenderstats.pcfapp;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.hp.hpl.jena.query.Query;
@@ -36,10 +17,26 @@ import com.hp.hpl.jena.sparql.modify.UpdateProcessRemote;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
-
 import cz.opendata.tenderstats.ComponentConfiguration;
 import cz.opendata.tenderstats.Mailer;
 import cz.opendata.tenderstats.UserContext;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 public class PCFappModelTender implements Serializable {
 
@@ -70,7 +67,7 @@ public class PCFappModelTender implements Serializable {
         JsonObject supplier = new JsonObject();
         supplier.addProperty("entity", tenderRes.getProperty(PCFappModel.pc_supplier).getObject().asResource().toString());
         supplier.addProperty("name",
-                tenderRes.getProperty(PCFappModel.pc_supplier).getObject().asResource().getProperty(PCFappModel.dc_title)
+                tenderRes.getProperty(PCFappModel.pc_supplier).getObject().asResource().getProperty(PCFappModel.gr_legalName)
                 .getObject().asLiteral().getString());
         json.add("supplier", supplier);
 
@@ -114,13 +111,19 @@ public class PCFappModelTender implements Serializable {
 
         String token;
         String fileName;
-        String docType;
+        String docType = null;
 
         JsonArray docs = new JsonArray();
         StmtIterator i = tenderRes.listProperties(PCFappModel.pcf_document);
         while (i.hasNext()) {
             Statement st = i.next();
-            docType = st.getProperty(PCFappModel.pcf_documentType).getObject().asResource().getLocalName();
+            StmtIterator listProperties = st.getObject().asResource().listProperties(PCFappModel.pcf_documentType);
+            while (listProperties.hasNext()) {
+                String typeUri = listProperties.next().getObject().asResource().getLocalName();
+                if (!typeUri.equals("MediaObject")) {
+                    docType = typeUri;
+                }
+            }
             token = st.getProperty(PCFappModel.pcf_documentToken).getObject().asLiteral().getString();
             fileName = st.getProperty(PCFappModel.pcf_documentFileName).getObject().asLiteral().getString();
             JsonObject fileGenTerms = new JsonObject();
@@ -276,37 +279,31 @@ public class PCFappModelTender implements Serializable {
         return entity;
     }
 
-    ;
-
-	//
-	// private Connection connection = null;
-	//
-	// private Connection connectDB() throws SQLException {
-	//
-	// if ( connection != null && connection.isValid(0) ) return connection;
-	//
-	// return DriverManager.getConnection(config.getRdbAddress() + config.getRdbDatabase(),
-	// config.getRdbUsername(),
-	// config.getRdbPassword());
-	// }
-
-	/**
-	 * Deletes private tender with specified URL.
-	 * 
-	 * @param uc
-	 * @param tenderURL
-	 * @throws ServletException
-	 */
-	public void deletePrivateTender(UserContext uc, String tenderURL) throws ServletException {
-
+    /**
+     * Deletes private tender with specified URL.
+     *
+     * @param uc
+     * @param tenderURL
+     * @throws ServletException
+     */
+    public void deletePrivateTender(UserContext uc, String tenderURL) throws ServletException {
+        List<ExtendedDocument> documents = ExtendedDocument.fetchAllByGraphAndTender(uc.getNamedGraph(), tenderURL);
+        for (ExtendedDocument extendedDocument : documents) {
+            model.deleteDocument(extendedDocument);
+        }
         /* @formatter:off */
         UpdateRequest request = UpdateFactory.create( // TODO This works for our URIs, but might not for others
                 config.getPreference("prefixes")
                 + "WITH <" + uc.getNamedGraph() + "> "
                 + "DELETE "
-                + "{ ?s ?p ?o }"
+                + "{"
+                + "?s ?p ?o ."
+                + "?priceO ?priceP ?priceS ."
+                + "}"
                 + "WHERE"
                 + "{"
+                + "   ?s pc:offeredPrice ?priceO ."
+                + "   ?priceO ?priceP ?priceS ."
                 + "   ?s ?p ?o ."
                 + "   FILTER ( CONTAINS(str(?s), \"" + tenderURL + "\") )"
                 + "}");

@@ -22,7 +22,7 @@
                     <hr>
 
                     <!-- <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm" enctype="multipart/form-data"> -->
-                    <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm">
+                    <form action="PCFilingApp" method="post" enctype="multipart/form-data" class="form-horizontal" id="contractForm">
                         <input name="action" type="hidden" value="editTender">
                         <input name="forward" type="hidden" value="supplier-edit-tender.jsp">
                         <input name="buyerURL" id="buyerURL" type="hidden" value="">

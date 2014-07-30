@@ -106,7 +106,7 @@ public class PCFappModel implements Serializable {
     public static final Property pcf_fileGenTerms = ResourceFactory.createProperty(pcf, "documentGenTerms");
     public static final Property pcf_fileCallDoc = ResourceFactory.createProperty(pcf, "documentCallDoc");
     public static final Property pcf_document = ResourceFactory.createProperty(pcf, "document");
-    public static final Property pcf_documentToken = ResourceFactory.createProperty(s, "alternateName");
+    public static final Property pcf_documentToken = ResourceFactory.createProperty(dc, "identifier");
     public static final Property pcf_documentType = ResourceFactory.createProperty(rdf, "type");
     public static final Property pcf_documentFileName = ResourceFactory.createProperty(s, "name");
     public static final Property pcf_documentGlobal = ResourceFactory.createProperty(pcf, "isGlobal");
@@ -372,6 +372,9 @@ public class PCFappModel implements Serializable {
         if (document != null) {
             UpdateRequest request;
             /* @formatter:off */
+            if (deleteDocument(document) == 0) {
+                return;
+            }
             request = UpdateFactory.create(
                     config.getPreference("prefixes")
                     + "DELETE DATA"
@@ -383,7 +386,6 @@ public class PCFappModel implements Serializable {
             /* @formatter:on */
             UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
             upr.execute();
-            deleteDocument(document);
         }
     }
 
@@ -396,6 +398,7 @@ public class PCFappModel implements Serializable {
             Sparql.privateUpdate(Mustache.getInstance().getBySparqlPath("cascaded_delete.mustache", sparqlParams)).execute();
             return 1;
         } catch (IOException ex) {
+            LogManager.getLogger("Documents").debug(ex, ex);
             return 0;
         }
     }
@@ -405,6 +408,7 @@ public class PCFappModel implements Serializable {
         sparqlParams.put("graph-uri", document.getOwner().getNamedGraph());
         sparqlParams.put("document-uri", document.getUri());
         sparqlParams.put("id", document.getId());
+        sparqlParams.put("name", document.getName());
         sparqlParams.put("doc-type", document.getDocType());
         sparqlParams.put("content-type", document.getContentType());
         sparqlParams.put("is-global", document.isGlobal());

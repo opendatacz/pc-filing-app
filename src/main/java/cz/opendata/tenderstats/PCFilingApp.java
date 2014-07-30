@@ -513,14 +513,14 @@ public class PCFilingApp extends AbstractComponent {
                     break;
 
                 case "deletePrivateContract":
-                    if (!allDefined(request.getParameter("contractURL"))) {
+                    if (!allDefined(request.getParameter("contractURI"))) {
                         response.sendError(400);
                         return;
                     }
                     session.removeAttribute("privateContracts");
                     session.removeAttribute("callsForTenders");
                     modelContract.deletePrivateContract(getUserContext(request),
-                            request.getParameter("contractURL"), true);
+                            request.getParameter("contractURI"), true);
                     break;
 
                 case "finalizeContract":
@@ -817,25 +817,6 @@ public class PCFilingApp extends AbstractComponent {
                     json = modelTender.getTenderAsJson(tenderURL, getUserContext(request)
                             .getNamedGraph());
 
-                    Model t = modelTender.getPrivateTender(tenderURL, uc.getNamedGraph());
-                    System.out.println("-----------");
-                    t.write(System.out);
-                    System.out.println("-----------");
-                    t.removeAll(null, PCFappModel.pcf_created, null);
-
-                    t.removeAll(null, PCFappModel.pcf_created, null);
-                    t.removeAll(null, PCFappModel.pcf_modified, null);
-                    t.removeAll(null, PCFappModel.pcf_submitted, null);
-
-                    NodeIterator i = t
-                            .listObjectsOfProperty(PCFappModel.pcf_document);
-                    while (i.hasNext()) {
-                        t.removeAll(i.next().asResource(), null, null);
-                    }
-                    t.removeAll(null, PCFappModel.pcf_document, null);
-                    t.write(System.out);
-                    System.out.println("-----------");
-
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
                     break;
@@ -908,7 +889,11 @@ public class PCFilingApp extends AbstractComponent {
                     break;
 
                 case "document":
-                    utils.retreiveDocument(request, response, uc);
+                    String graph = uc.getNamedGraph();
+                    if (allDefined(request.getParameter("graph"))) {
+                        graph = request.getParameter("graph");
+                    }
+                    utils.retreiveDocument(request, response, graph);
                     break;
 
                 case "unlinkContractDocument":
@@ -946,6 +931,17 @@ public class PCFilingApp extends AbstractComponent {
 
                 case "supplierDocsUpload":
                     model.addSupplierDocs(uc, request);
+                    break;
+
+                case "supplierDocsUnlink":
+                    if (!allDefined(request.getParameter("token"))) {
+                        response.sendError(400);
+                        return;
+                    }
+                    ExtendedDocument document = ExtendedDocument.fetchByIdAndGraph(request.getParameter("token"), uc.getNamedGraph());
+                    if (document != null) {
+                        model.deleteDocument(document);
+                    }
                     break;
 
                 case "openTenders":
