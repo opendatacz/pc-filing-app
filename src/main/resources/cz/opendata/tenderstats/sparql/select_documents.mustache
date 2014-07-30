@@ -8,11 +8,11 @@
 SELECT ?docType ?id ?name ?contentType ?isGlobal
 WHERE {
   GRAPH <{{graph-uri}}> {
-    ?documentUri a schema:MediaObject , ?docType .
+    ?documentUri a schema:MediaObject, ?docType .
     FILTER (!sameTerm(schema:MediaObject, ?docType))
-    ?documentUri schema:alternateName ?id ;
-    schema:name ?name ;
-    dcterms:format ?contentType ;
-    pcfapp:isGlobal ?isGlobal .
+    ?documentUri dcterms:identifier ?id ;
+      schema:name ?name ;
+      dcterms:format ?contentType ;
+      pcfapp:isGlobal ?isGlobal .
   }
 }

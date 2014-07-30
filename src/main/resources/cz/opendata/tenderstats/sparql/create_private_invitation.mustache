@@ -10,10 +10,12 @@
 DELETE WHERE {
   GRAPH graph:internal {
     BIND(<{{invitation-entity}}> AS ?s)
-    ?s ?p ?o .
-    ?o a schema:Organization .
-    ?o ?p2 ?o2 .
+    ?s ?p ?organization .
+    {{! Delete all objects that are instances of schema:Organization to 2 levels of depth}}
+    ?organization a schema:Organization ;
+      ?p2 ?o2 .
     ?o2 ?p3 ?o3 .
+
     ?s ?p1 ?o1 .
   }
 }

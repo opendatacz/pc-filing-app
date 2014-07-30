@@ -11,9 +11,9 @@ WHERE {
   GRAPH <{{graph-uri}}> {
     <{{document-uri}}> a schema:MediaObject , ?docType .
     FILTER (!sameTerm(schema:MediaObject, ?docType))
-    <{{document-uri}}> schema:alternateName ?id ;
-    schema:name ?name ;
-    dcterms:format ?contentType ;
-    pcfapp:isGlobal ?isGlobal .
+    <{{document-uri}}> dcterms:identifier ?id ;
+      schema:name ?name ;
+      dcterms:format ?contentType ;
+      pcfapp:isGlobal ?isGlobal .
   }
 }

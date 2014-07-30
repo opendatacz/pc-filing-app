@@ -2,7 +2,7 @@
 @param Array<Map>      prefixes
 @param IRI             graph-uri
 @param IRI             document-uri
-@param String             id
+@param String          id
 @param String          doc-type
 @param String          content-type
 @param Boolean         is-global
@@ -14,7 +14,7 @@ INSERT DATA {
   GRAPH <{{graph-uri}}> {
     <{{document-uri}}> a schema:MediaObject ;
     a pcfapp:{{doc-type}}
-    schema:alternateName "{{id}}" ;
+    dcterms:identifier "{{id}}" ;
     schema:name "{{name}}" ;
     dcterms:format "{{content-type}}" ;
     pcfapp:isGlobal {{is-global}} .
