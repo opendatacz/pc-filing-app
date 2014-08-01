@@ -79,7 +79,7 @@ public class PCFappModelTender implements Serializable {
                     .getProperty(PCFappModel.pc_contractingAuthority).getObject().asResource();
 
             buyer.addProperty("entity", authority.getURI());
-            buyer.addProperty("name", authority.getProperty(PCFappModel.dc_title).getObject().asLiteral().getString());
+            buyer.addProperty("name", authority.getProperty(PCFappModel.gr_legalName).getObject().asLiteral().getString());
             json.add("buyer", buyer);
         }
 
@@ -740,13 +740,13 @@ public class PCFappModelTender implements Serializable {
         } catch (UnsupportedEncodingException unused) {
         }
 
-        Model contract = modelContract.getPrivateContract(contractURL, buyerURL, "none");
-
-        String mail = model.getMailFromNS(buyerURL);
-        String info
-                = "You have recieved an offer/tender from " + uc.getUserName() + " for event '"
-                + contract.getProperty(null, PCFappModel.dc_title).getObject().asLiteral().getString() + "'";
-        new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
+//        Model contract = modelContract.getPrivateContract(contractURL, buyerURL, "none");
+//
+//        String mail = model.getMailFromNS(buyerURL);
+//        String info
+//                = "You have recieved an offer/tender from " + uc.getUserName() + " for event '"
+//                + contract.getProperty(null, PCFappModel.dc_title).getObject().asLiteral().getString() + "'";
+//        new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
 
         return true;
     }
@@ -785,23 +785,23 @@ public class PCFappModelTender implements Serializable {
         UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
         upr.execute();
 
-        Model awarded = modelContract.getPrivateTendersForContract(uc.getNamedGraph(), contractURL, true);
-        Model contract = modelContract.getPrivateContract(contractURL, uc.getNamedGraph(), "none");
-        String title = contract.getProperty(null, PCFappModel.dc_title).getObject().asLiteral().getString();
-
-        String mail
-                = model.getMailFromEntity(awarded.getProperty(null, PCFappModel.pc_supplier).getObject().asResource().getURI());
-        String info = "Your tender/offer for event '" + title + "' has been marked as awarded.";
-        new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
-
-        Model others = modelContract.getPrivateTendersForContract(uc.getNamedGraph(), contractURL, false);
-        NodeIterator i = others.listObjectsOfProperty(PCFappModel.pc_supplier);
-        while (i.hasNext()) {
-            RDFNode node = i.next();
-            node.asResource().getURI();
-            info = "Your tender/offer for event '" + title + "' has been marked as non-awarded.";
-            new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
-        }
+//        Model awarded = modelContract.getPrivateTendersForContract(uc.getNamedGraph(), contractURL, true);
+//        Model contract = modelContract.getPrivateContract(contractURL, uc.getNamedGraph(), "none");
+//        String title = contract.getProperty(null, PCFappModel.dc_title).getObject().asLiteral().getString();
+//
+//        String mail
+//                = model.getMailFromEntity(awarded.getProperty(null, PCFappModel.pc_supplier).getObject().asResource().getURI());
+//        String info = "Your tender/offer for event '" + title + "' has been marked as awarded.";
+//        new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
+//
+//        Model others = modelContract.getPrivateTendersForContract(uc.getNamedGraph(), contractURL, false);
+//        NodeIterator i = others.listObjectsOfProperty(PCFappModel.pc_supplier);
+//        while (i.hasNext()) {
+//            RDFNode node = i.next();
+//            node.asResource().getURI();
+//            info = "Your tender/offer for event '" + title + "' has been marked as non-awarded.";
+//            new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
+//        }
 
         return true;
     }
@@ -839,14 +839,14 @@ public class PCFappModelTender implements Serializable {
         UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
         upr.execute();
 
-        Model rejected = getPrivateTender(tenderURL, uc.getNamedGraph());
-        Model contract = modelContract.getPrivateContract(contractURL, uc.getNamedGraph(), "none");
-        String title = contract.getProperty(null, PCFappModel.dc_title).getObject().asLiteral().getString();
-
-        String mail
-                = model.getMailFromEntity(rejected.getProperty(null, PCFappModel.pc_supplier).getObject().asResource().getURI());
-        String info = "Your tender/offer for event '" + title + "' has been rejected.";
-        new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
+//        Model rejected = getPrivateTender(tenderURL, uc.getNamedGraph());
+//        Model contract = modelContract.getPrivateContract(contractURL, uc.getNamedGraph(), "none");
+//        String title = contract.getProperty(null, PCFappModel.dc_title).getObject().asLiteral().getString();
+//
+//        String mail
+//                = model.getMailFromEntity(rejected.getProperty(null, PCFappModel.pc_supplier).getObject().asResource().getURI());
+//        String info = "Your tender/offer for event '" + title + "' has been rejected.";
+//        new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
 
         return true;
     }
@@ -880,12 +880,12 @@ public class PCFappModelTender implements Serializable {
         UpdateProcessRemote upr = new UpdateProcessRemote(request, config.getSparqlPrivateUpdate(), Context.emptyContext);
         upr.execute();
 
-        Model contract = modelContract.getPrivateContract(contractURL, buyerURL, "none");
-        String title = contract.getProperty(null, PCFappModel.dc_title).getObject().asLiteral().getString();
-
-        String mail = model.getMailFromNS(buyerURL);
-        String info = "Offer for your call '" + title + "' by " + uc.getUserName() + " has been withdrawn.";
-        new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
+//        Model contract = modelContract.getPrivateContract(contractURL, buyerURL, "none");
+//        String title = contract.getProperty(null, PCFappModel.dc_title).getObject().asLiteral().getString();
+//
+//        String mail = model.getMailFromNS(buyerURL);
+//        String info = "Offer for your call '" + title + "' by " + uc.getUserName() + " has been withdrawn.";
+//        new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
 
     }
 
@@ -911,7 +911,7 @@ public class PCFappModelTender implements Serializable {
                 + ".			?contractURI	pc:awardedTender	?tenderURI "
                 + ".			?contractURI	pc:actualEndDate	?endDate "
                 + ".			?contractURI	pc:contractingAuthority	?buyerEntity "
-                + ".			?buyerEntity	dc:title			?buyerName "
+                + ".			?buyerEntity	gr:legalName			?buyerName "
                 + ".			?contractURI	pcfapp:completed	?completed"
                 + ".			?contractURI	pc:actualPrice		?priceURI "
                 + ".			?priceURI		gr:hasCurrency		?currency"

@@ -1381,13 +1381,13 @@ public class PCFappModelContract implements Serializable {
 
         System.out.println(awarded.toString());
 
-        String mail
-                = model.getMailFromEntity(awarded.getProperty(null, PCFappModel.pc_supplier).getObject().asResource().getURI());
-        String info
-                = "Your tender/offer for event '"
-                + contract.getProperty(null, PCFappModel.dc_title).getObject().asLiteral().getString()
-                + "' has been marked as completed.";
-        new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
+//        String mail
+//                = model.getMailFromEntity(awarded.getProperty(null, PCFappModel.pc_supplier).getObject().asResource().getURI());
+//        String info
+//                = "Your tender/offer for event '"
+//                + contract.getProperty(null, PCFappModel.dc_title).getObject().asLiteral().getString()
+//                + "' has been marked as completed.";
+//        new Mailer(config.getPreference("infoMail"), mail, "Tender information", info).send();
 
         return true;
     }

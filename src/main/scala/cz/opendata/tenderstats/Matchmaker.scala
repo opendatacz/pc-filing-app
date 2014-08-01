@@ -99,11 +99,16 @@ object Matchmaker {
         .write(baos, "TURTLE")
       val x = baos.toString("UTF-8").replaceAll("http://purl.org/weso/cpv/2008/", "http://linked.opendata.cz/resource/cpv-2008/concept/")
       debug(s"PUT body content is:\n$x")
-      Try(PutResponse(JSON.parseRaw {
+      PutResponse(JSON.parseRaw {
         val rs = client.target(endpointUri).request.put(Entity.entity(x, "text/turtle"), classOf[String])
         debug(s"PUT response is:\n$rs")
         rs
-      })).getOrElse(None)
+      })
+    } catch {
+      case e: Throwable => {
+        warn(e, e)
+        None
+      }
     } finally {
       baos.close
     }

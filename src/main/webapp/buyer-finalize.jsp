@@ -54,7 +54,7 @@
                         </div>	
 
                         <div class="control-group">
-                            <label class="control-label"><fmt:message key="actualcompletitiondate" bundle="${cons}" /> <font color="red">*</font></label>
+                            <label class="control-label"><fmt:message key="actualcompletiondate" bundle="${cons}" /> <font color="red">*</font></label>
                             <div class="controls">				
                                 <input required id="actualEndDate" name="actualEndDate" type="text">
                             </div>
