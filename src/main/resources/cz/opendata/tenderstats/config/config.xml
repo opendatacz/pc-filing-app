@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
+    <payola>
+        <endpoint>http://live.payola.cz/datasource/41358834-d61c-4a3d-bb01-1babd60e8a5e</endpoint>
+    </payola>
     <number-of-bidders>
         <endpoint>http://i2g.unixstorm.org:8080/contract-analytics/bidders</endpoint>   
     </number-of-bidders>
