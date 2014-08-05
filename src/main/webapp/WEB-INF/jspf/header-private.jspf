@@ -1,6 +1,5 @@
 <%@page import="cz.opendata.tenderstats.Config"%>
 <%@ page pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <% pageContext.setAttribute("payolaEndpoint", Config.payolaEndpoint());%>
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
