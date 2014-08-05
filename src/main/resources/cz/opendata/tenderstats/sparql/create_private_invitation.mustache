@@ -1,0 +1,29 @@
+{{!
+@param Array<Map>   prefixes
+@param IRI          private-graph
+@param IRI          invitation-entity
+@param IRI          contract-uri
+}}
+
+{{> prefixes}}
+
+DELETE WHERE {
+  GRAPH graph:internal {
+    <{{invitation-entity}}> ?p ?organization .
+    {{! Delete all objects that are instances of schema:Organization to 2 levels of depth}}
+    ?organization a schema:Organization ;
+      ?p2 ?o2 .
+    ?o2 ?p3 ?o3 .
+
+    <{{invitation-entity}}> ?p1 ?o1 .
+  }
+}
+
+;
+
+INSERT DATA {
+  GRAPH <{{private-graph}}> {
+    <{{invitation-entity}}> a schema:InviteAction ;
+    schema:object <{{contract-uri}}> .
+  }
+}

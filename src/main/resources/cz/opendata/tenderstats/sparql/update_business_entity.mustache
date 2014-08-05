@@ -1,0 +1,51 @@
+{{!
+@param IRI        business-entity
+@param Array<Map> prefixes
+@param IRI        private-graph
+@param Map<Array<IRI>> cpv (optional) {cpv: {cpvs: [...] } }
+@param String          ico (optional)
+@param String          legal-name
+@param String          location (optional)
+}}
+
+{{> prefixes}}
+
+DELETE WHERE {
+  GRAPH <{{private-graph}}> {
+    <{{business-entity}}> gr:legalName ?legalName .
+  
+    <{{business-entity}}> rov:registration ?registration .
+    ?registration skos:notation ?ico .
+
+    <{{business-entity}}> schema:address ?address .
+    ?address schema:addressLocality ?addressLocality .
+
+    <{{business-entity}}> gr:category ?cpv .
+  }
+}
+
+;
+
+INSERT DATA {
+  GRAPH <{{private-graph}}> {
+    <{{business-entity}}> gr:legalName "{{legal-name}}" .
+
+    {{#location}}
+      <{{business-entity}}> schema:address [
+        schema:addressLocality "{{.}}"
+      ] .
+    {{/location}}
+
+    {{#ico}}
+      <{{business-entity}}> rov:registration [
+          skos:notation "{{.}}"
+        ] .
+    {{/ico}}
+
+    {{#cpv}}
+      {{#cpvs}}
+        <{{business-entity}}> gr:category <{{.}}> .
+      {{/cpvs}}
+    {{/cpv}}
+  }
+}

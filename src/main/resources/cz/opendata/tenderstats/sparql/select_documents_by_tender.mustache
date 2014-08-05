@@ -1,0 +1,20 @@
+{{!
+@param Array<Map>      prefixes
+@param IRI             graph-uri
+@param IRI             tender-uri
+}}
+
+{{> prefixes}}
+
+SELECT ?docType ?id ?name ?contentType ?isGlobal
+WHERE {
+  GRAPH <{{graph-uri}}> {
+    <{{tender-uri}}> pcfapp:document ?document .
+    ?document a schema:MediaObject, ?docType .
+    FILTER (!sameTerm(schema:MediaObject, ?docType))
+    ?document dcterms:identifier ?id ;
+      schema:name ?name ;
+      dcterms:format ?contentType ;
+      pcfapp:isGlobal ?isGlobal .
+  }
+}

@@ -4,9 +4,9 @@
 <html>
     <head>
         <%@include file="WEB-INF/jspf/header.jspf" %>
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.public" />
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.supplier" var="supp" />
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.constants" var="cons" />
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Public" />
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Supplier" var="supp" />
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
         <script src="js/functions.js"></script>    
         <script src="js/sessionstorage.1.4.js"></script>
     </head>

@@ -4,8 +4,9 @@
 <html>
     <head>
         <%@include file="WEB-INF/jspf/header.jspf" %>
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.buyer" />
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.constants" var="cons" />
+        <%@include file="WEB-INF/jspf/header-buyer.jspf" %>
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Buyer" />
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
         <link href="bootstrap/css/won.css" rel="stylesheet" />
     </head>
     <body>
@@ -24,7 +25,7 @@
                         <th><fmt:message key="rank" bundle="${cons}" /></th>
                         <th><fmt:message key="suppliername" bundle="${cons}" /></th>
                         <th><fmt:message key="location" bundle="${cons}" /></th>
-                        <th><fmt:message key="action" bundle="${cons}" /></th>
+                        <th class="<c:if test="${pageContext.request.getParameter('invite') eq 'false'}">hidden</c:if>"><fmt:message key="action" bundle="${cons}" /></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -51,7 +52,7 @@
         </div>
 
         <%@include file="WEB-INF/jspf/footer.jspf" %>
-
+        
         <%--
         <script src="js/cpvs.js"></script>
         <script src="js/functions.js"></script>
@@ -61,6 +62,7 @@
         <script src="js/table.js"></script>
         --%>
 
+        <script src="js/toolsBuyer.js"></script>
         <script src="js/main.js"></script>
         <script src="js/sessionstorage.1.4.js"></script>
         <script src="js/jquery.mustache.js"></script>
@@ -72,12 +74,13 @@
               <td>{{rank}}</td>
               <td><a href="{{uri}}">{{label}}</a></td>
               <td>{{addressLocality}}</td>
-              <td>
+              <td class="<c:if test="${pageContext.request.getParameter('invite') eq 'false'}">hidden</c:if>">
                 {{#email}}
                 <a class="notificationButton btn btn-small"
                    title="<fmt:message key="suitablesuppliers.notification.invite" />"
                    href="javascript:void(0);"
                    data-email="{{.}}"
+                   data-email-prompt="<fmt:message key="suitablesuppliers.notification" />"
                    data-subject="<fmt:message key="suitablesuppliers.notification.invite.subject" />"
                    data-template="<fmt:message key="suitablesuppliers.notification.invite.template" />">
                   <i class="icon-envelope"></i>
@@ -108,9 +111,7 @@
                   notfound: "<fmt:message key="notfound" bundle="${cons}" />",
                   prev: "<fmt:message key="prev" bundle="${cons}" />"
                 },
-                private: true, //"${pageContext.request.getParameter("private")}" === "true" ? true : false,
                 resourceUri: sessionStorage.contractURL,
-                  //"http://linked.opendata.cz/resource/vestnikverejnychzakazek.cz/public-contract/484169-7403010084169",
                 source: "contract",
                 target: "business-entity"
               };

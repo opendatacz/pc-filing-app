@@ -1,0 +1,20 @@
+{{!
+@param Array<Map>      prefixes
+@param IRI             private-graph
+}}
+
+{{> prefixes}}
+
+SELECT ?businessEntity ?businessName ?passwordhash ?salt ?businessIC ?businessPlace (group_concat(distinct ?cpv ; separator = ",") AS ?cpvs)
+WHERE {
+  GRAPH <{{private-graph}}> {
+    ?businessEntity gr:legalName ?businessName ;
+    pcfapp:active true ;
+    pcfapp:password ?passwordhash ;
+    pcfapp:salt ?salt .
+    OPTIONAL { ?businessEntity rov:registration [ skos:notation ?businessIC ] } .
+    OPTIONAL { ?businessEntity schema:address [ schema:addressLocality ?businessPlace ] } .
+    OPTIONAL { ?businessEntity gr:category ?cpv } .
+  }
+}
+GROUP BY ?businessEntity ?businessName ?passwordhash ?salt ?businessIC ?businessPlace

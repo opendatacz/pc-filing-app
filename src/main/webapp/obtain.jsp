@@ -4,8 +4,8 @@
 <html>
     <head>
         <%@include file="WEB-INF/jspf/header.jspf" %>
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.index" />
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.constants" var="cons" />
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Index" />
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
     </head>
     <body>
         <%@include file="WEB-INF/jspf/header-public.jspf" %>
@@ -15,7 +15,7 @@
             <div class="hero-unit">
                 <h1><fmt:message key="body.title.welcome" /> <sup><i>BETA</i></sup> !</h1>
                 <p><fmt:message key="body.title.description" /></p>
-                <p><a class="btn btn-primary btn-large"><fmt:message key="body.title.learmore" /> &raquo;</a></p>
+                <p><a class="btn btn-primary btn-large"><fmt:message key="body.title.learnmore" /> &raquo;</a></p>
             </div>
 
             <!-- Message from query string -->
@@ -34,8 +34,8 @@
                 <div class="span12">
                     <p class="logged-in hide"><fmt:message key="obtain.loggedas" /> <span id="username"></span></p>   
                     <p><input type="submit" form="obtain-invitation" class="btn btn-primary logged-in hide" name="submit" value="<fmt:message key="obtain.submit" />">
-                        <a id="not-logged-in" href="#login-supplier" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.sellers.login" /></a> 
-                        <a class="btn add-inv-href" href="register-supplier.jsp?inv_id={inv_id}&email={con}"><fmt:message key="body.sellers.register" /></a></p>                 
+                        <a id="not-logged-in" href="#login-supplier" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.bidders.login" /></a> 
+                        <a class="btn add-inv-href" href="register-supplier.jsp?inv_id={inv_id}&email={con}"><fmt:message key="body.bidders.register" /></a></p>                 
                 </div>
             </div>
 
@@ -60,12 +60,13 @@
             <div id="login-supplier" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="supplier-label" aria-hidden="true">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></button>
-                    <h3 id="supplier-label"><fmt:message key="body.sellers.login" /></h3>
+                    <h3 id="supplier-label"><fmt:message key="body.bidders.login" /></h3>
                 </div>
                 <div class="modal-body">
 
                     <form class="form-horizontal" id="login-supplier-form" action="SystemManager" method="post">
                         <input name="action" type="hidden" value="login">
+                        <input type="hidden" name="role" value="2">
                         <input name="forward" id="forward" class="add-inv-val" type="hidden" value="InvitationComponent?action=obtain&forward=supplier-invitations.jsp&inv_id={inv_id}&email={con}">
                         <input name="forward-if-fail" type="hidden" value="./?t=error&m=<fmt:message key="body.form.email.error" />">
                         <div class="control-group">
@@ -86,7 +87,7 @@
 
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal" aria-hidden="true"><fmt:message key="cancel" bundle="${cons}" /></button>
-                    <input form="login-supplier-form" class="btn btn-primary" type="submit" name="submit" value="<fmt:message key="body.sellers.login" />" default>
+                    <input form="login-supplier-form" class="btn btn-primary" type="submit" name="submit" value="<fmt:message key="body.bidders.login" />" default>
                     <!-- HTML < 5 : <button onclick="$('#login-supplier-form').submit();" class="btn btn-primary">Login</button>-->
                 </div>
             </div>	  

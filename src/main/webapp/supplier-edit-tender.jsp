@@ -4,8 +4,9 @@
 <html>
     <head>
         <%@include file="WEB-INF/jspf/header.jspf" %>
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.supplier" />
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.constants" var="cons" />
+        <%@include file="WEB-INF/jspf/header-supplier.jspf" %>
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Supplier" />
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
         <link href="./bootstrap/css/won.css" rel="stylesheet" />
     </head>
     <body>
@@ -21,7 +22,7 @@
                     <hr>
 
                     <!-- <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm" enctype="multipart/form-data"> -->
-                    <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm">
+                    <form action="PCFilingApp" method="post" enctype="multipart/form-data" class="form-horizontal" id="contractForm">
                         <input name="action" type="hidden" value="editTender">
                         <input name="forward" type="hidden" value="supplier-edit-tender.jsp">
                         <input name="buyerURL" id="buyerURL" type="hidden" value="">

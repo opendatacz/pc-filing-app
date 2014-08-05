@@ -25,10 +25,6 @@ class Matchmaker extends AbstractComponent {
   override def doGetPost(request: HttpServletRequest, response: HttpServletResponse) = {
     import Matchmaker._
     import Matchmaker.logger._
-    //DELETE IN PROD VERSION
-    //    val testUser = new UserContext()
-    //    testUser.setNamedGraph("http://ld.opendata.cz/tenderstats/namedgraph/demo")
-    //END
     response.setContentType("application/json; charset=UTF-8")
     val endpointUri = AutoLift(request.getParameter("source"), request.getParameter("target")) {
       case (EntityType(s), EntityType(t)) => (s, t, AutoLift(s, t) {
@@ -56,7 +52,7 @@ class Matchmaker extends AbstractComponent {
 object Matchmaker {
 
   val client = ClientBuilder.newClient
-  val logger = LogManager.getLogger(classOf[Matchmaker])
+  val logger = LogManager.getLogger("Matchmaker")
 
   import logger._
 
@@ -96,18 +92,23 @@ object Matchmaker {
     val baos = new ByteArrayOutputStream
     try {
       sparql(
-        Template(
-          this.getClass.getResource("/cz/opendata/tenderstats/sparql/resource_description.mustache"),
+        Sparql.template(
+          "resource_description.mustache",
           Map("resource" -> entityUri, "source-graph" -> graph)))
         .execConstruct
         .write(baos, "TURTLE")
       val x = baos.toString("UTF-8").replaceAll("http://purl.org/weso/cpv/2008/", "http://linked.opendata.cz/resource/cpv-2008/concept/")
       debug(s"PUT body content is:\n$x")
-      Try(PutResponse(JSON.parseRaw {
+      PutResponse(JSON.parseRaw {
         val rs = client.target(endpointUri).request.put(Entity.entity(x, "text/turtle"), classOf[String])
         debug(s"PUT response is:\n$rs")
         rs
-      })).getOrElse(None)
+      })
+    } catch {
+      case e: Throwable => {
+        warn(e, e)
+        None
+      }
     } finally {
       baos.close
     }
@@ -132,10 +133,10 @@ object Matchmaker {
       import scala.collection.JavaConversions._
       new GetResponse(
         Sparql.publicQuery(
-          Template(
+          Sparql.template(
             t match {
-              case Contract => this.getClass.getResource("/cz/opendata/tenderstats/sparql/contract_results_enrichment.mustache")
-              case BusinessEntity => this.getClass.getResource("/cz/opendata/tenderstats/sparql/business_entity_results_enrichment.mustache")
+              case Contract => "contract_results_enrichment.mustache"
+              case BusinessEntity => "business_entity_results_enrichment.mustache"
             },
             Map(
               "source-graph" -> Config.cc.getPreference("publicGraphName"),

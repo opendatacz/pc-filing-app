@@ -4,8 +4,9 @@
 <html>
     <head>
         <%@include file="WEB-INF/jspf/header.jspf" %>
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.buyer" />
-        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.constants" var="cons" />
+        <%@include file="WEB-INF/jspf/header-buyer.jspf" %>
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Buyer" />
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
         <link href="./bootstrap/css/won.css" rel="stylesheet" />
     </head>
     <body>
@@ -53,7 +54,7 @@
                         </div>	
 
                         <div class="control-group">
-                            <label class="control-label"><fmt:message key="actualcompletitiondate" bundle="${cons}" /> <font color="red">*</font></label>
+                            <label class="control-label"><fmt:message key="actualcompletiondate" bundle="${cons}" /> <font color="red">*</font></label>
                             <div class="controls">				
                                 <input required id="actualEndDate" name="actualEndDate" type="text">
                             </div>

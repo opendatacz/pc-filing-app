@@ -1,0 +1,19 @@
+{{!
+@param Array<Map>      prefixes
+@param IRI             invitation-entity
+@param String          email
+}}
+
+{{> prefixes}}
+
+SELECT ?contractURI
+WHERE {
+  GRAPH graph:internal {
+    <{{invitation-entity}}> schema:recipient [
+      schema:contactPoint [
+        schema:email "{{email}}"
+      ]
+    ] ;
+    schema:object ?contractURI . 
+  }
+}

@@ -1,0 +1,53 @@
+{{!
+@param Boolean         active
+@param IRI             business-entity
+@param Map<Array<IRI>> cpv (optional) {cpv: {cpvs: [...] } }
+@param String          email
+@param String          ico (optional)
+@param String          legal-name
+@param String          location (optional)
+@param String          password-hash
+@param Array<Map>      prefixes
+@param IRI             private-graph
+@param CURIe           role {pcfapp:bidder, pcfapp:contracting-authority}
+@param String          salt
+}}
+
+{{> prefixes}}
+
+WITH <{{private-graph}}>
+INSERT {
+  <{{business-entity}}> a gr:BusinessEntity ;
+    gr:legalName "{{legal-name}}" ;
+    schema:contactPoint [
+      schema:email "{{email}}"
+    ] ;
+    schema:hasRole [
+      a {{role}} ;
+      schema:startDate ?created
+    ] ;
+    pcfapp:password "{{password-hash}}" ;
+    pcfapp:salt "{{salt}}" ;
+    pcfapp:active {{active}} .
+
+  {{#location}}
+    <{{business-entity}}> schema:address [
+      schema:addressLocality "{{.}}"
+    ] .
+  {{/location}}
+
+  {{#ico}}
+    <{{business-entity}}> rov:registration [
+        skos:notation "{{.}}"
+      ] .
+  {{/ico}}
+
+  {{#cpv}}
+    {{#cpvs}}
+    <{{business-entity}}> gr:category <{{.}}> .
+    {{/cpvs}}
+  {{/cpv}}
+}
+WHERE {
+  BIND (NOW() AS ?created)
+}
