@@ -70,6 +70,7 @@
         <script src="js/date.format.js"></script>	
         <script src="js/toolsBuyer.js"></script>
         <script src="js/table.js"></script>
+        <script src="js/services.js"></script>
 
         <script type="text/javascript">
                                         var pagesTotal = 1;
@@ -109,9 +110,8 @@
 
                                                         // Tenders
 
+                                                        var newCol = $('<div class="btn-group">');
                                                         if (data.sealed == "true" && data.openingTime === undefined) {
-
-                                                            var newCol = $('<div class="btn-group">');
 
                                                             newTenders = $('<a class="btn disabled">');
                                                             newTenders.append(data.tendersCount);
@@ -124,8 +124,7 @@
                                                                     openTenders($(this), data.contractURI);
                                                                 });
                                                             }
-                                                            else
-                                                            {
+                                                            else {
                                                                 newOpen.addClass('disabled');
                                                             }
                                                             newOpen.appendTo(newCol);
@@ -139,8 +138,23 @@
                                                                 saveEventInfo(i);
                                                             });
                                                             newTenders.attr('href', 'buyer-submitted-tenders.jsp');
-                                                            $('<td>').append(newTenders.append(data.tendersCount)).appendTo(newRow);
+                                                            
+                                                            // Predict number of bidders
+                                                            newPredictBidders = $('<a href="javascript:void(0);" title="<fmt:message key="predictbidders" bundle="${cons}" />">');
+                                                            newPredictBidders.addClass("btn");
+                                                            predictBiddersIcon = $('<i class="icon-question-sign"></i>');
+                                                            newPredictBidders.click(function () {
+                                                                services.predictBidders(data.contractURI);
+                                                            });
+                                                            newPredictBidders.append(predictBiddersIcon).appendTo(newCol);
+                                                            
+                                                            var td = $('<td>');
+                                                            td.append(newTenders.append(data.tendersCount));
+                                                            td.append(newPredictBidders);
+                                                            td.appendTo(newRow);
                                                         }
+
+
 
                                                         // Modified
                                                         newModified = $('<td>').append(formatDate(data.modified)).appendTo(newRow);

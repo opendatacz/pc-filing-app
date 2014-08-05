@@ -80,6 +80,7 @@
         <script src="js/toolsBuyer.js"></script>
         <script src="js/date.format.js"></script>		
         <script src="js/table.js"></script>
+        <script src="js/services.js"></script>
 
         <script type="text/javascript">
                                         var pagesTotal = 1;
@@ -153,6 +154,14 @@
 
                                                         newActions.children('a').addClass('btn');
                                                         newRow.append($('<td>').append(newActions));
+
+                                                        // Predict number of bidders
+                                                        newPredictBidders = $('<a href="javascript:void(0);"><fmt:message key="predictbidders" bundle="${cons}" /></a>');
+                                                        newPredictBidders.addClass("btn");
+                                                        newPredictBidders.click(function () {
+                                                            services.predictBidders(data.contractURI);
+                                                        });
+                                                        newPredictBidders.appendTo(newActions);
 
                                                         // Matchmaker								
                                                         newMatchmaker = $('<div>');
