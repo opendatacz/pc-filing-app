@@ -40,7 +40,6 @@ function CPVs(cpv1, cpvAll) {
 	if (cpv1 != undefined) {
 		cpv.push(cpv1.replace(/\S+\//g, ""));						
 	}
-        console.log(cpv);
 
 	if (cpvAll != undefined) {	
             acpvs = (cpvAll.replace(/\S+\//g, "")).split(" ");
@@ -49,7 +48,6 @@ function CPVs(cpv1, cpvAll) {
 		
 	}	
         
-        console.log(cpv);
         
 	var list = $("<ul>");	
 	$.each(cpv,function(index){
