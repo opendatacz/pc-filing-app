@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
+    <number-of-bidders>
+        <endpoint>http://i2g.unixstorm.org:8080/contract-analytics/bidders</endpoint>   
+    </number-of-bidders>
     <matchmaker>
         <endpoint>http://lod2.vse.cz:8080/matchmaker/</endpoint>
         <operations>
@@ -29,6 +32,6 @@
     </emails>
     <system>
         <session-timeout>86400</session-timeout>
-        <documents-dir>C:\Users\venca\AppData\Local\Temp</documents-dir>
+        <documents-dir></documents-dir>
     </system>
 </config>

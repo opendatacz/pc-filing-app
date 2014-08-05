@@ -166,7 +166,7 @@ public class InvitationComponent extends AbstractComponent {
                     if (email != null) {
                         // System.out.println("..."+contractURL);
                         inv_id = UUID.randomUUID().toString();
-                        String mail_content = MessageFormat.format(mailTrans.getString("invitation.create.body"), name, contract, request.getRemoteHost(), inv_id, email);
+                        String mail_content = MessageFormat.format(mailTrans.getString("invitation.create.body"), name, contract, request.getServerName() + ":" + request.getServerPort() + request.getContextPath(), inv_id, email);
                         System.out.println(mail_content);
                         addInvitationEntry(inv_id, URLDecoder.decode(email, "UTF-8"), URLDecoder.decode(contractURL, "UTF-8"));
                         sent = new Mailer(config.getPreference("invitationEmail"), email, mailTrans.getString("invitation.create.subject"), mail_content).send();

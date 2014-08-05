@@ -7,7 +7,7 @@ import cz.opendata.tenderstats.utils.NonEmptyString
 import cz.opendata.tenderstats.utils.Boolean
 import java.io.ByteArrayOutputStream
 import java.net.URLDecoder
-import javax.servlet.annotation.WebServlet;
+import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.client.ClientBuilder

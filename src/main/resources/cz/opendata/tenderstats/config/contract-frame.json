@@ -1,0 +1,164 @@
+{
+    "@context": {
+        "@vocab": "http://purl.org/procurement/public-contracts#",
+        "cpv": "http://linked.opendata.cz/resource/cpv-2008/concept/",
+        "contract": "http://linked.opendata.cz/resource/pc-filing-app/public-contract/",
+        "nuts": "http://ec.europa.eu/eurostat/ramon/rdfdata/nuts2008/",
+        "proctypes": "http://purl.org/procurement/public-contracts-procedure-types#",
+        "be": "http://linked.opendata.cz/resource/pc-filing-app/business-entity/",
+        "graph": "http://linked.opendata.cz/resource/pc-filing-app/dataset/",
+        "criteria": "http://purl.org/procurement/public-contracts-criteria#",
+        "authkinds": "http://purl.org/procurement/public-contracts-authority-kinds#",
+        "adms": "http://www.w3.org/ns/adms#",
+        "activities": "http://purl.org/procurement/public-contracts-activities#",
+        "dc": "http://purl.org/dc/terms/",
+        "dcterms": "http://purl.org/dc/terms/",
+        "foaf": "http://xmlns.com/foaf/0.1/",
+        "gr": "http://purl.org/goodrelations/v1#",
+        "irw": "http://www.ontologydesignpatterns.org/ont/web/irw.owl#",
+        "kinds": "http://purl.org/procurement/public-contracts-kinds#",
+        "loted": "http://loted.eu/ontology#",
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "payment": "http://reference.data.gov.uk/def/payment#",
+        "pc": "http://purl.org/procurement/public-contracts#",
+        "pcInv": "http://purl.org/procurement/public-contracts-invitations#",
+        "pccz": "http://purl.org/procurement/public-contracts-czech#",
+        "pcdt": "http://purl.org/procurement/public-contracts-datatypes#",
+        "pceu": "http://purl.org/procurement/public-contracts-eu#",
+        "pcfapp": "http://linked.opendata.cz/resource/pc-filing-app/",
+        "qb": "http://purl.org/linked-data/cube#",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "rov": "http://www.w3.org/ns/regorg#",
+        "s": "http://schema.org/",
+        "schema": "http://schema.org/",
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "vann": "http://purl.org/vocab/vann/",
+        "vcard": "http://www.w3.org/2006/vcard/ns#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "activityKind": {
+            "@type": "@id"
+        },
+        "additionalObject": {
+            "@type": "@id"
+        },
+        "adms:identifier": {
+            "@type": "@id"
+        },
+        "agreedPrice": {
+            "@type": "@id"
+        },
+        "authorityKind": {
+            "@type": "@id"
+        },
+        "awardCriteriaCombination": {
+            "@type": "@id"
+        },
+        "awardCriterion": {
+            "@type": "@id"
+        },
+        "awardDate": {
+            "@type": "xsd:date"
+        },
+        "awardedTender": {
+            "@type": "@id"
+        },
+        "contractingAuthority": {
+            "@type": "@id"
+        },
+        "criterionWeight": {
+            "@type": "pcdt:percentage"
+        },
+        "dcterms:creator": {
+            "@type": "@id"
+        },
+        "dcterms:date": {
+            "@type": "xsd:date"
+        },
+        "documentationRequestDeadline": {
+            "@type": "xsd:date"
+        },
+        "documentsPrice": {
+            "@type": "@id"
+        },
+        "duration": {
+            "@type": "xsd:duration"
+        },
+        "estimatedEndDate": {
+            "@type": "xsd:date"
+        },
+        "estimatedPrice": {
+            "@type": "@id"
+        },
+        "gr:valueAddedTaxIncluded": {
+            "@type": "xsd:boolean"
+        },
+        "kind": {
+            "@type": "@id"
+        },
+        "location": {
+            "@type": "@id"
+        },
+        "lot": {
+            "@type": "@id"
+        },
+        "mainObject": {
+            "@type": "@id"
+        },
+        "offeredPrice": {
+            "@type": "@id"
+        },
+        "onBehalfOf": {
+            "@type": "@id"
+        },
+        "pceu:hasParentRegion": {
+            "@type": "@id"
+        },
+        "procedureType": {
+            "@type": "@id"
+        },
+        "profile": {
+            "@type": "@id"
+        },
+        "publicationDate": {
+            "@type": "xsd:date"
+        },
+        "publicNotice": {
+            "@type": "@id"
+        },
+        "rdf:type": {
+            "@type": "@id"
+        },
+        "rdfs:seeAlso": {
+            "@type": "@id"
+        },
+        "schema:address": {
+            "@type": "@id"
+        },
+        "schema:contact": {
+            "@type": "@id"
+        },
+        "schema:location": {
+            "@type": "@id"
+        },
+        "skos:inScheme": {
+            "@type": "@id"
+        },
+        "skos:topConceptOf": {
+            "@type": "@id"
+        },
+        "startDate": {
+            "@type": "xsd:date"
+        },
+        "supplier": {
+            "@type": "@id"
+        },
+        "tenderDeadline": {
+            "@type": "@id"
+        },
+        "weightedCriterion": {
+            "@type": "@id"
+        }
+    },
+    "@type": "Contract"
+}
