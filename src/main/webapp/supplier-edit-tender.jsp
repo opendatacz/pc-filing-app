@@ -176,7 +176,7 @@
 
             $(window).ready(function() {
                 checkUser();
-                $('#tenderTitle').append(title);
+                $('#tenderTitle').append(decodeURIComponent(title));
                 $('#buyerURL').attr('value', buyerURL);
                 $('#tenderURL').attr('value', tenderURL);
 
