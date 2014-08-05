@@ -68,25 +68,33 @@
         <script src="js/jquery.mustache.js"></script>
         <script src="js/jquery.twbsPagination.min.js"></script>
         <script src="js/matchmaker.js"></script>
+        <script src="js/services.js"></script>
         <script id="matchmaker-results-template" type="x-tmpl-mustache">
           {{#matches}}
             <tr>
               <td>{{rank}}</td>
-              <td><a href="{{uri}}">{{label}}</a></td>
+              <td><a class="uri" href="{{uri}}">{{label}}</a></td>
               <td>{{addressLocality}}</td>
-              <td class="<c:if test="${pageContext.request.getParameter('invite') eq 'false'}">hidden</c:if>">
-                {{#email}}
-                <a class="notificationButton btn btn-small"
-                   title="<fmt:message key="suitablesuppliers.notification.invite" />"
-                   href="javascript:void(0);"
-                   data-email="{{.}}"
-                   data-email-prompt="<fmt:message key="suitablesuppliers.notification" />"
-                   data-subject="<fmt:message key="suitablesuppliers.notification.invite.subject" />"
-                   data-template="<fmt:message key="suitablesuppliers.notification.invite.template" />">
-                  <i class="icon-envelope"></i>
-                  &nbsp;<fmt:message key="invite" bundle="${cons}" />
-                </a>
-                {{/email}}
+              <td>
+                <div class="btn-group">
+                  {{#email}}
+                  <a class="notificationButton btn btn-small <c:if test="${pageContext.request.getParameter('invite') eq 'false'}">disabled</c:if>"
+                    title="<fmt:message key="suitablesuppliers.notification.invite" />"
+                    href="javascript:void(0);"
+                    data-email="{{.}}"
+                    data-email-prompt="<fmt:message key="suitablesuppliers.notification" />"
+                    data-subject="<fmt:message key="suitablesuppliers.notification.invite.subject" />"
+                    data-template="<fmt:message key="suitablesuppliers.notification.invite.template" />">
+                    <i class="icon-envelope"></i>
+                    &nbsp;<fmt:message key="invite" bundle="${cons}" />
+                  </a>
+                  {{/email}}
+                  <a class="payolaView btn btn-small"
+                    href="javascript:void(0);"
+                    data-endpoint="${pageContext.                                                                                 getAttribute("payolaEndpoint")}">
+                    <i class="icon-zoom-in"></i>
+                    <fmt:message key="payola.view" /></a>
+                </div>
               </td>
             </tr>
           {{/matches}}
