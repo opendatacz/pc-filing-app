@@ -29,7 +29,9 @@
             <div class="hero-unit">
                 <h1><fmt:message key="body.title.welcome" /> <sup><i>BETA</i></sup> !</h1>
                 <p><fmt:message key="body.title.description" /></p>
+                <%--
                 <p><a class="btn btn-primary btn-large"><fmt:message key="body.title.learnmore" /> &raquo;</a></p>
+                --%>
             </div>
 
             <!-- Message from query string -->
@@ -52,11 +54,13 @@
                     <p><a href="#login-supplier" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.bidders.login" /></a>
                         <a class="btn" href="register-supplier.jsp"><fmt:message key="body.bidders.register" /></a>
                 </div>
+                <%--
                 <div class="span4">
                     <h2><fmt:message key="body.public" /></h2>
                     <p><fmt:message key="body.public.description" /></p>
                     <p><a class="btn" href="#"><fmt:message key="body.public.details" /> &raquo;</a></p>
                 </div>
+                --%>
             </div>
 
             <hr>
