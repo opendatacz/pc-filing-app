@@ -67,6 +67,7 @@
         <script src="js/sessionstorage.1.4.js"></script>
         <script src="js/jquery.mustache.js"></script>
         <script src="js/jquery.twbsPagination.min.js"></script>
+        <script src="js/application.js"></script>
         <script src="js/matchmaker.js"></script>
         <script src="js/services.js"></script>
         <script id="matchmaker-results-template" type="x-tmpl-mustache">

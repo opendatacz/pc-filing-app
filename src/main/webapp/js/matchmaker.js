@@ -1,16 +1,5 @@
 var MATCHMAKER = {
   matchesPerPage: 10,
-  dateFormat: function (date) {
-    // If `date` is valid, then format it using long form,
-    // else return the date unformatted.
-    var formattedDate;
-    try {
-      formattedDate = dateFormat(date, dateFormat.masks.longDate);
-    } catch (e) {
-      formattedDate = date;
-    }
-    return formattedDate;
-  },
   decodeEntities: (function() {
     // Stolen from <http://stackoverflow.com/a/9609450/385505>
     //
@@ -33,7 +22,10 @@ var MATCHMAKER = {
   displayMatches: function (config, matches) {
     var matchResultsBody = config.dom.$matchResultsTable.children("tbody"),
       template = $(config.dom.templateId).html();
-              
+    matchResultsBody.delegate(".contract-link", "click", function (e) {
+      sessionStorage.contractURL = $(e.target).data("contract-uri");
+    });
+
     Mustache.parse(template);
 
     config.dom.$progressbar.hide();
@@ -56,10 +48,10 @@ var MATCHMAKER = {
                 match.rank = i + 1;
                 match.label = MATCHMAKER.decodeEntities(match.label);
                 if (match.publicationDate) {
-                  match.publicationDate = MATCHMAKER.dateFormat(match.publicationDate);
+                  match.publicationDate = APP.util.dateFormat(match.publicationDate);
                 }
                 if (match.tenderDeadline) {
-                  match.tenderDeadline = MATCHMAKER.dateFormat(match.tenderDeadline);
+                  match.tenderDeadline = APP.util.dateFormat(match.tenderDeadline);
                 }
                 return match;
               }

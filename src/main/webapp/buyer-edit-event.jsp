@@ -15,9 +15,7 @@
             <div class="row-fluid">
                 <%@include file="WEB-INF/jspf/menu-buyer.jspf" %>
                 <div class="span8">
-                    <div style="text-align: center;" id="progressbar">
-                        <br> <img src="images/progressbar.gif" />
-                    </div>
+                    <div id="progressbar"></div>
                     <div class="alert hide" id="userHelper">
                         <button class="close" onclick="userHelper('off')" title="Disable guide" >×</button>
                         <fmt:message key="editevent.help" />

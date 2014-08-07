@@ -53,18 +53,23 @@
         </div>
 
         <%@include file="WEB-INF/jspf/footer.jspf" %> 
-        <script src="js/sessionstorage.1.4.js"></script>
-        <script src="js/script.js"></script>
         <script src="js/date.format.js"></script>
         <script src="js/jquery.twbsPagination.min.js"></script>
         <script src="js/jquery.mustache.js"></script>
         <script src="js/jquery.jtruncate.pack.js"></script>
+        <script src="js/sessionstorage.1.4.js"></script>
+        <script src="js/application.js"></script>
+        <script src="js/script.js"></script>
         <script src="js/matchmaker.js"></script>
         <script id="matchmaker-results-template" type="x-tmpl-mustache">
             {{#matches}}
             <tr>
             <td>{{rank}}</td>
-            <td><a href="{{uri}}">{{label}}</a></td>
+            <td>
+              <a class="contract-link"
+                 href="supplier-view-event.jsp"
+                 data-contract-uri="{{uri}}">{{label}}</a>
+             </td>
             <td class="truncate fixedCol">{{description}}</td>
             <%-- <td>{{estimatedPrice}}</td> --%>
             <td>{{publicationDate}}</td>

@@ -42,230 +42,113 @@
                     <div id="progressbar"></div>
 
                     <div class="pagination pagination-centered">
-                        <ul id="pages">
-
-                        </ul>
+                        <ul id="pagination"></ul>
                     </div>
 
-                    <div id="showAllPages" class="hide pagination pull-right" style="margin: 0; margin-top: -16px;">
-                        <ul>
-                            <li><a
-                                    onclick="$('.3dots').remove();
-                                            $('#pages li').removeClass('reallyhide');
-                                            $('#showAllPages').remove();
-                                    "
-                                    href="#"><fmt:message key="showallpages" bundle="${cons}" /></a></li>
-                        </ul>
-                    </div>
                 </div>
+                <%@include file="WEB-INF/jspf/predict-bidders-modal.jspf" %>
                 <%@include file="WEB-INF/jspf/stats-buyer.jspf" %>
             </div>
         </div>
 
         <%@include file="WEB-INF/jspf/footer.jspf" %>
-        <script src="js/cpvs.js"></script>
+
+        <script id="tablePage" type="x-tmpl-mustache">
+          {{#rows}}
+          <tr data-contract-uri="{{contractURI}}"
+              data-contract-title="{{title}}"
+              data-contract-description="{{description}}"
+              data-contract-price="{{price}}"
+              data-contract-currency="{{currency}}"
+              data-contract-cpv="{{cpv1URL}}"
+              data-contract-place="{{place}}">
+            <td>
+              <a class="contract-link"
+                 href="buyer-view-event.jsp">{{title}}</a>
+            </td>
+            <td>{{price}} {{currency}}</td>
+            <td>{{{cpvs}}}</td>
+            <td>
+              <div class="btn-group">
+                <a class="btn {{#sealed}}{{^openingTime}}disabled{{/openingTime}}{{/sealed}} view-tenders"
+                   href="buyer-submitted-tenders.jsp">
+                  {{tendersCount}}
+                </a>
+                {{#sealed}}{{^openingTime}}
+                  <a class="btn {{#openDisabled}}disabled{{/openDisabled}} open-tenders"
+                     data-confirmation="<fmt:message key="published.open.confirm" />"
+                     data-unable-to-open="<fmt:message key="published.open.unableopen" />"
+                     data-unable-to-process="<fmt:message key="published.open.unableprocess" />"
+                     href="#">
+                    <fmt:message key="opentenders" bundle="${cons}" />
+                  </a>
+                {{/openingTime}}{{/sealed}}
+              </div>
+            </td>
+            <td>{{modified}}</td>
+            <td>{{deadline}}</td>
+            <td>
+              <div class="btn-group btn-group-vertical">
+                <a class="btn btn-danger confirm"
+                  href="PCFilingApp?action=cancelContract&forward=buyer-cancelled.jsp&contractURL={{encodedContractURI}}"
+                  data-confirmation="<fmt:message key="published.cancel.confirm" />">
+                  <i class="icon-remove-sign"></i>
+                  <fmt:message key="cancel" bundle="${cons}" />
+                </a>
+                <a class="btn send-notification"
+                  href="#"
+                  data-prompt="<fmt:message key="published.notification" />">
+                  <i class="icon-envelope"></i>
+                  <fmt:message key="published.invite" />
+                </a>
+                <a class="btn predict-bidders"
+                   data-toggle="modal"
+                   data-target="#predict-bidders"
+                   href="#">
+                  <i class="icon-question-sign"></i>
+                  <fmt:message key="predictbidders" bundle="${cons}" />
+                </a>
+              </div>
+            </td>
+            <td>
+              <div class="btn-group btn-group-vertical">
+                <a class="btn save-contract"
+                   href="buyer-similar-events.jsp?private=true">
+                  <i class="icon-search"></i>
+                  <fmt:message key="similarevents" bundle="${cons}" />
+                </a>
+                <a class="btn save-contract"
+                   href="buyer-suitable-suppliers.jsp?private=true&invite=false">
+                  <i class="icon-magnet"></i>
+                  <fmt:message key="suitablesuppliers" bundle="${cons}" />
+                </a>
+              </div>
+            </td>
+          </tr>
+          {{/rows}}
+        </script>
+
+        <script src="js/jquery.twbsPagination.min.js"></script>
+        <script src="js/jquery.mustache.js"></script>
+        <script src="js/date.format.js"></script>		
+        <script src="js/application.js"></script>
+        
         <script src="js/functions.js"></script>
         <script src="js/sessionstorage.1.4.js"></script>
+        <script src="js/cpv-codes.js"></script>
+        <script src="js/cpvs.js"></script>
         <script src="js/script.js"></script>
-        <script src="js/date.format.js"></script>	
         <script src="js/toolsBuyer.js"></script>
         <script src="js/table.js"></script>
         <script src="js/services.js"></script>
 
         <script type="text/javascript">
-                                        var pagesTotal = 1;
-                                        var currentPage = 1;
-                                        var windowSize = 3; // in each direction from the current page
-                                        var tableItemsPerPage = 10;
-                                        var tableAddress = "PCFilingApp?action=table&tableName=PublishedCalls";
-
-                                        function fillTable() {
-
-                                            $('#progressbar').hide();
-                                            $('#contractTable').fadeIn('slow');
-                                            $('#contractTable tbody').remove();
-                                            $.each(
-                                                    tableData[currentPage],
-                                                    function(i, data) {
-                                                        newRow = $('<tr>');
-
-                                                        // Title
-                                                        newTitle = $('<a>');
-                                                        newTitle.attr('href', 'buyer-view-event.jsp');
-                                                        newTitle.click(function() {
-                                                            showEvent(htmlEncode(data.contractURI));
-                                                        });
-                                                        newTitle.html(data.title);
-                                                        newRow.append($('<td>').append(newTitle));
-
-                                                        // Price								
-                                                        newPrice = $('<td>');
-                                                        if (data.price != undefined && data.currency != undefined)
-                                                            newPrice.append(Number(data.price).toFixed(2) + " " + data.currency);
-                                                        newRow.append(newPrice);
-
-                                                        // CPVs
-                                                        newCPVs = $('<td>').append(
-                                                                CPVs(data.cpv1URL, data.cpvAdd)).appendTo(newRow);
-
-                                                        // Tenders
-
-                                                        var newCol = $('<div class="btn-group">');
-                                                        if (data.sealed == "true" && data.openingTime === undefined) {
-
-                                                            newTenders = $('<a class="btn disabled">');
-                                                            newTenders.append(data.tendersCount);
-                                                            newTenders.appendTo(newCol);
-
-                                                            newOpen = $('<a class="btn">');
-                                                            newOpen.append('<fmt:message key="opentenders" bundle="${cons}" />');
-                                                            if (new Date(data.deadline) <= new Date()) {
-                                                                newOpen.on('click', function() {
-                                                                    openTenders($(this), data.contractURI);
-                                                                });
-                                                            }
-                                                            else {
-                                                                newOpen.addClass('disabled');
-                                                            }
-                                                            newOpen.appendTo(newCol);
-                                                            $('<td>').append(newCol).appendTo(newRow);
-                                                        }
-                                                        else
-                                                        {
-                                                            newTenders = $('<a>');
-                                                            newTenders.addClass('btn');
-                                                            newTenders.click(function() {
-                                                                saveEventInfo(i);
-                                                            });
-                                                            newTenders.attr('href', 'buyer-submitted-tenders.jsp');
-                                                            
-                                                            // Predict number of bidders
-                                                            newPredictBidders = $('<a href="javascript:void(0);" title="<fmt:message key="predictbidders" bundle="${cons}" />">');
-                                                            newPredictBidders.addClass("btn");
-                                                            predictBiddersIcon = $('<i class="icon-question-sign"></i>');
-                                                            newPredictBidders.click(function () {
-                                                                services.predictBidders(data.contractURI);
-                                                            });
-                                                            newPredictBidders.append(predictBiddersIcon).appendTo(newCol);
-                                                            
-                                                            var td = $('<td>');
-                                                            td.append(newTenders.append(data.tendersCount));
-                                                            td.append(newPredictBidders);
-                                                            td.appendTo(newRow);
-                                                        }
-
-
-
-                                                        // Modified
-                                                        newModified = $('<td>').append(formatDate(data.modified)).appendTo(newRow);
-
-                                                        // Deadline
-                                                        newDeadline = $('<td>').append(formatDate(data.deadline)).appendTo(newRow);
-
-                                                        // Actions								
-                                                        newActions = $('<div>');
-                                                        newActions.addClass('btn-group');
-
-                                                        // Cancel
-                                                        newEdit = $('<a>');
-                                                        newEdit.attr('href', 'PCFilingApp?action=cancelContract&forward=buyer-cancelled.jsp&contractURL=' + data.contractURI);
-                                                        newEdit.click(function() {
-                                                            return cancelContract();
-                                                        });
-                                                        newEdit.append('<fmt:message key="cancel" bundle="${cons}" />').appendTo(newActions);
-
-                                                        // Notify
-                                                        newNotify = $('<a>');
-                                                        newNotify.click(function() {
-                                                            sendNotification(data.title, data.contractURI);
-                                                        });
-                                                        newNotify.append($('<i>').addClass("icon-envelope")).appendTo(newActions);
-
-                                                        newActions.children('a').addClass('btn');
-                                                        newRow.append($('<td>').append(newActions));
-
-                                                        // Matchmaker								
-                                                        newMatchmaker = $('<div>');
-                                                        newMatchmaker.addClass('btn-group');
-
-                                                        // Similar
-                                                        newSimilar = $('<a>');
-                                                        newSimilar.attr('href', 'buyer-similar-events.jsp');
-                                                        newSimilar.click(function() {
-                                                            saveEventInfo(i);
-                                                        });
-                                                        newSimilar.append('<fmt:message key="similarevents" bundle="${cons}" />').appendTo(newMatchmaker);
-
-                                                        // Suppliers
-                                                        newSuppliers = $('<a>');
-                                                        newSuppliers.attr('href', 'buyer-suitable-suppliers.jsp');
-                                                        newSuppliers.click(function() {
-                                                            saveEventInfo(i);
-                                                        });
-                                                        newSuppliers.append('<fmt:message key="suitablesuppliers" bundle="${cons}" />').appendTo(newMatchmaker);
-
-                                                        newMatchmaker.children('a').addClass('btn');
-                                                        newRow.append($('<td>').append(newMatchmaker));
-
-                                                        newRow.appendTo("#contractTable");
-
-                                                    }
-                                            );
-
-                                        }
-
-                                        function cancelContract() {
-                                            return confirm('<fmt:message key="published.cancel.confirm" />');
-                                        }
-
-                                        function sendNotification(title, contract) {
-                                            var recipient = prompt("<fmt:message key="published.notification" />", "@");
-                                            if (recipient == null) {
-                                                return;
-                                            }
-                                            var description = "undefined"; // todo get from sessionStore			
-                                            $.getJSON("InvitationComponent?action=send&contractURL=" + encodeURIComponent(contract) + "&name=" + encodeURIComponent(sessionStorage.username) + "&contract=" + encodeURIComponent(title) + "&email=" + encodeURIComponent(recipient), function(data)
-                                            {
-                                                if (data.sent) {
-                                                    alert(data.message);
-                                                }
-                                            });
-                                        }
-
-                                        function openTenders(caller, contract) {
-
-                                            if (!confirm("<fmt:message key="published.open.confirm" />"))
-                                                return false;
-
-                                            $.getJSON("PCFilingApp?action=openTenders&contractURL=" + encodeURIComponent(contract), function(data)
-                                            {
-                                                if (data.success == true) {
-                                                    var link = caller.prev();
-                                                    caller.fadeOut(function() {
-                                                        $(this).remove();
-                                                    });
-                                                    link.removeClass("btn disabled");
-                                                    link.addClass("btn");
-                                                    link.on('click', function() {
-                                                        saveEventInfo(i);
-                                                    });
-                                                    link.attr('href', 'buyer-submitted-tenders.jsp');
-
-                                                }
-                                                else
-                                                {
-                                                    alert('Unable to open tenders.');
-                                                }
-                                            }).error(function() {
-                                                alert('Unable to process request.');
-                                            });
-                                        }
-
-                                        $(window).ready(function() {
-                                            loadPage(true);
-                                        });
-
-                                        $('a').tooltip();
+          (function ($) {
+            $(document).ready(function () {
+              var tableName = "PublishedCalls";
+              TABLE.init(tableName);
+            });
+          })(jQuery);
         </script>
     </body>
 </html>

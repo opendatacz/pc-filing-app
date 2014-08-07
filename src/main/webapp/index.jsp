@@ -44,14 +44,14 @@
                 <div class="span4">
                     <h2><fmt:message key="body.contractingauthorities" /></h2>
                     <p><fmt:message key="body.contractingauthorities.description" /></p>
-                    <p><a href="#login-buyer" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.contractingauthorities.login" /></a>
+                    <p class="btn-group btn-group-vertical"><a href="#login-buyer" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.contractingauthorities.login" /></a>
                         <a class="btn" href="register-buyer.jsp"><fmt:message key="body.contractingauthorities.register" /></a>
                     </p>
                 </div>
                 <div class="span4">
                     <h2><fmt:message key="body.bidders" /></h2>
                     <p><fmt:message key="body.bidders.description" /></p>
-                    <p><a href="#login-supplier" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.bidders.login" /></a>
+                    <p class="btn-group btn-group-vertical"><a href="#login-supplier" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.bidders.login" /></a>
                         <a class="btn" href="register-supplier.jsp"><fmt:message key="body.bidders.register" /></a>
                 </div>
                 <%--

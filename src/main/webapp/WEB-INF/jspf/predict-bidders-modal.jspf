@@ -1,0 +1,26 @@
+<%@ page pageEncoding="UTF-8" %>
+<div id="predict-bidders"
+  class="modal hide fade"
+  role="dialog"
+  tabindex="-1"
+  aria-labelledby="predictBiddersLabel"
+  aria-hidden="true"
+  data-predicted-number="<fmt:message key="prediction.bidder.number" />">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true"
+            title="<fmt:message key="close" bundle="${cons}" />">
+            &times;</span>
+        </button>
+        <h4 class="modal-title" id="predictBiddersLabel">
+          <fmt:message key="prediction.bidder.label" />
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div id="progressbar"></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,3 +1,177 @@
+var TABLE = {
+  itemsPerPage: 10,
+  dom: {
+    $body: $('#contractTable tbody'),
+    $contractTable: $('#contractTable'),
+    $pagination: $("#pagination"),
+    $predictBiddersModal: $("#predict-bidders"),
+    $progressbar: $("#progressbar"),
+    $template: $("#tablePage").html(),
+  },
+
+  display: function (data) {
+    if (data["data"].length <= TABLE.itemsPerPage) {
+      TABLE.dom.$pagination.hide();
+    }
+    TABLE.dom.$progressbar.hide();
+    TABLE.dom.$contractTable.removeClass("hide").fadeIn("slow");
+    result = Mustache.render(TABLE.dom.$template, {
+        rows: jQuery.map(data["data"], function (item, i) {
+                var row = jQuery.extend(true, {}, item);
+                if (typeof row.deadline !== "undefined" && new Date(row.deadline) >= new Date()) {
+                  row.openDisabled = true;
+                }
+                if (typeof row.price !== "undefined" && typeof row.currency !== "undefined") {
+                  row.price = Number(row.price).toFixed(2);
+                }
+                row.cpvs = CPVs(row.cpv1URL, row.cpvAdd).html();
+                if (typeof row.modified !== "undefined") {
+                  row.modified = APP.util.dateFormat(row.modified);
+                }
+                if (typeof row.created !== "undefined") {
+                  row.created = APP.util.dateFormat(row.created);
+                }
+                if (typeof row.deadline !== "undefined") {
+                  row.deadline = APP.util.dateFormat(row.deadline);
+                }
+                row.encodedContractURI = encodeURIComponent(row.contractURI);
+                return row;
+              })
+      });
+    TABLE.dom.$body.html(result);
+  },
+  init: function (tableName) {
+    Mustache.parse(TABLE.$template);
+    TABLE.dom.$contractTable.tooltip({});
+
+    TABLE.dom.$contractTable
+      .delegate(".contract-link", "click", function (e) {
+        sessionStorage.contractURL = TABLE.util.getClosestContractUri(e);
+      })
+      .delegate(".confirm", "click", function (e) {
+        return confirm($(e.target).data("confirmation"));
+      })
+      .delegate(".contract-edit-link", "click", function (e) {
+        sessionStorage.editContractURL = TABLE.util.getClosestContractUri(e); 
+      })
+      .delegate(".predict-bidders", "click", function (e) {
+        services.predictBidders(TABLE.util.getClosestContractUri(e), function (data) {
+          var $modal = TABLE.dom.$predictBiddersModal, 
+            predictedNumberLabel = $modal.data("predicted-number"),
+            template = "<p><strong>{{predictedNumberLabel}}:</strong> {{predictedNumber}}</p>";
+          $modal.find("#progressbar").hide();
+
+          $modal.find(".modal-body").html(
+            Mustache.render(template, {
+              predictedNumber: data["prediction"],
+              predictedNumberLabel: predictedNumberLabel
+            }));
+        });
+      })
+      .delegate(".save-contract", "click", function (e) {
+        TABLE.saveContractData(e);
+      })
+      .delegate(".open-tenders", "click", function (e) {
+        var $target = $(e.target),
+          confirmation = $target.data("confirmation"),
+          unableToOpenMessage = $target.data("unable-to-open"),
+          unableToProcessMessage = $target.data("unable-to-process");
+        if (!$target.hasClass("disabled")) {
+          if (confirm(confirmation)) {
+            $.getJSON("PCFilingApp", {
+              action: "openTenders",
+              contractURL: TABLE.util.getClosestContractUri(e) 
+            }, function (data) {
+              if (data.success) {
+                var tendersLink = $target.prev();
+                $target.fadeOut(function () {
+                  $(this).remove();
+                });
+                tendersLink.removeClass("disabled").on("click", function () {
+                  TABLE.saveContractData(e); 
+                });
+              } else {
+                alert(unableToOpenMessage);
+              }
+            }).error(function () {
+              alert(unableToProcessMessage);
+            });
+          } else {
+            return false;
+          }
+        }
+      })
+      .delegate(".view-tenders", "click", function (e) {
+        if ($(e.target).hasClass("disabled")) {
+          return false;
+        }
+      })
+      .delegate(".send-notification", "click", function (e) {
+        var $target = $(e.target),
+          $row = TABLE.util.getClosestRow(e),
+          recipient = prompt($target.data("prompt"));
+        if (recipient) {
+          $.getJSON("InvitationComponent", {
+              action: "send",
+              contract: $row.data("contract-title"), 
+              contractURL: $row.data("contract-uri"),
+              email: recipient,
+              name: sessionStorage.username
+            }, function (data) {
+              if (data.sent) {
+                alert(data.message);
+              }
+            });
+        }
+      });
+
+    TABLE.dom.$pagination.twbsPagination({
+      startPage: 1, 
+      totalPages: TABLE.itemsPerPage, // FIXME: This needs to be present, but what to use for dynamic data?
+      href: "#page={{number}}",
+      visiblePages: 3,
+      onPageClick: function (event, page) {
+        TABLE.load(tableName, page);
+      }
+    });
+  },
+  load: function (tableName, page, itemsPerPage) {
+    TABLE.dom.$body.empty();
+    TABLE.dom.$contractTable.addClass("hide");
+    TABLE.dom.$progressbar.show();
+
+    var opts = {
+      action: "table",
+      items: itemsPerPage || TABLE.itemsPerPage,
+      page: page - 1, // Server-side pagination is zero-offseted
+      tableName: tableName
+    };
+    if (page === 1) {
+      opts["reload"] = true;
+    }
+    $.getJSON("PCFilingApp", opts, TABLE.display);
+  },
+  saveContractData: function (e) {
+    var $row = TABLE.util.getClosestRow(e);
+    
+    sessionStorage.contractURI = decodeURIComponent($row.data("contract-uri"));
+    sessionStorage.contractTitle = decodeURIComponent($row.data("contract-title"));
+    sessionStorage.contractDescription = decodeURIComponent($row.data("contract-description"));
+    sessionStorage.contractPrice = decodeURIComponent($row.data("contract-price"));
+    sessionStorage.contractCurrency = decodeURIComponent($row.data("contract-currency"));
+    sessionStorage.contractCpvString = decodeURIComponent($row.data("contract-cpv"));
+    sessionStorage.contractPlace = decodeURIComponent($row.data("place"));
+  },
+  util: {
+    getClosestRow: function (e) {
+      return $(e.target).closest("tr");
+    },
+    getClosestContractUri: function (e) {
+      return TABLE.util.getClosestRow(e).data("contract-uri");
+    }
+  }
+};
+
 var tableData;
 
 function loadPage(init) {
@@ -48,9 +222,8 @@ function CPVs(cpv1, cpvAll) {
 		
 	}	
         
-        
 	var list = $("<ul>");	
-	$.each(cpv,function(index){
+	$.each(cpv, function (index) {
 		list.append( $('<li>').append(cpvs["cpv"+cpv[index]]));
 	});
 	

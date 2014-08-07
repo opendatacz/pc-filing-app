@@ -104,3 +104,7 @@ input::-webkit-inner-spin-button {
 .fixedCol {
   width: 350px;
 }
+
+.modal:focus, .btn:focus, button:focus {
+  outline: none;
+}

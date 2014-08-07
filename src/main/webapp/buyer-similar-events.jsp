@@ -131,6 +131,7 @@
     <script src="js/jquery.mustache.js"></script>
     <script src="js/jquery.twbsPagination.min.js"></script>
     <script src="js/jquery.jtruncate.pack.js"></script>
+    <script src="js/application.js"></script>
     <script src="js/matchmaker.js"></script>
     <script id="matchmaker-results-template" type="x-tmpl-mustache">
       {{#matches}}

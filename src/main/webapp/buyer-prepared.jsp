@@ -43,161 +43,107 @@
                     <div id="progressbar"></div>
 
                     <div class="pagination pagination-centered">
-                        <ul id="pages">
-
-                        </ul>
-
-                        <div class="pull-right">
-                            <a href="buyer-create-event.jsp" class="btn"
-                               style="text-align: left; margin-left: 0px; margin-right: 10px; margin-top: 5px; padding-left: 0px;"
-                               title="<fmt:message key="prepared.create.title" />">&nbsp;&nbsp;<i class="icon-plus"></i>&nbsp;&nbsp;<fmt:message key="prepared.create" /></a>
-                        </div>
-
+                        <ul id="pagination"></ul>
                     </div>
 
-                    <div id="showAllPages" class="hide pagination pull-right" style="margin: 0; margin-top: -16px;">
-                        <ul>
-                            <li><a
-                                    onclick="$('.3dots').remove();
-                                            $('#pages li').removeClass('reallyhide');
-                                            $('#showAllPages').remove();
-                                            "
-                                    href="#"><fmt:message key="showallpages" bundle="${cons}" /></a></li>
-                        </ul>
+                    <div class="pull-right">
+                      <a href="buyer-create-event.jsp" class="btn"
+                        style="text-align: left; margin-left: 0px; margin-right: 10px; margin-top: 5px; padding-left: 0px;"
+                        title="<fmt:message key="prepared.create.title" />">&nbsp;&nbsp;<i class="icon-plus"></i>&nbsp;&nbsp;<fmt:message key="prepared.create" /></a>
                     </div>
+
                 </div>
+                <%@include file="WEB-INF/jspf/predict-bidders-modal.jspf" %>
                 <%@include file="WEB-INF/jspf/stats-buyer.jspf" %>
             </div>
         </div>
 
         <%@include file="WEB-INF/jspf/footer.jspf" %>
 
+        <script id="tablePage" type="x-tmpl-mustache">
+          {{#rows}}
+          <tr data-contract-uri="{{contractURI}}"
+              data-contract-title="{{title}}"
+              data-contract-description="{{description}}"
+              data-contract-price="{{price}}"
+              data-contract-currency="{{currency}}"
+              data-contract-cpv="{{cpv1URL}}"
+              data-contract-place="{{place}}">
+            <td>
+              <a class="contract-link"
+                 href="buyer-view-event.jsp">{{title}}</a>
+            </td>
+            <td>{{price}} {{currency}}</td>
+            <td>{{{cpvs}}}</td>
+            <td>{{modified}}</td>
+            <td>{{created}}</td>
+            <td>
+              <div class="btn-group btn-group-vertical">
+                <a class="btn confirm"
+                  href="PCFilingApp?forward=buyer-published.jsp&action=publishPrivateContract&contractURI={{encodedContractURI}}"
+                  data-confirmation="<fmt:message key="prepared.publish.confirm" />">
+                  <i class="icon-globe"></i>
+                  <fmt:message key="publish" bundle="${cons}" />
+                </a>
+                <a class="btn contract-edit-link"
+                  href="buyer-edit-event.jsp">
+                  <i class="icon-edit"></i>
+                  <fmt:message key="edit" bundle="${cons}" />
+                </a>
+                <a class="btn btn-danger confirm"
+                  href="PCFilingApp?forward=buyer-prepared.jsp&action=deletePrivateContract&contractURI={{encodedContractURI}}"
+                  data-confirmation="<fmt:message key="prepared.delete.confirm" />">
+                  <i class="icon-trash"></i>
+                  <fmt:message key="delete" bundle="${cons}" />
+                </a>
+                <a class="btn predict-bidders"
+                   data-toggle="modal"
+                   data-target="#predict-bidders"
+                   href="#">
+                  <i class="icon-question-sign"></i>
+                  <fmt:message key="predictbidders" bundle="${cons}" />
+                </a>
+              </div>
+            </td>
+            <td>
+              <div class="btn-group btn-group-vertical">
+                <a class="btn save-contract"
+                   href="buyer-similar-events.jsp?private=true">
+                  <i class="icon-search"></i>
+                  <fmt:message key="similarevents" bundle="${cons}" />
+                </a>
+                <a class="btn save-contract"
+                   href="buyer-suitable-suppliers.jsp?private=true&invite=false">
+                  <i class="icon-magnet"></i>
+                  <fmt:message key="suitablesuppliers" bundle="${cons}" />
+                </a>
+              </div>
+            </td>
+          </tr>
+          {{/rows}}
+        </script>
+
+        <script src="js/jquery.twbsPagination.min.js"></script>
+        <script src="js/jquery.mustache.js"></script>
+        <script src="js/date.format.js"></script>		
+        <script src="js/application.js"></script>
+        
         <script src="js/functions.js"></script>
         <script src="js/sessionstorage.1.4.js"></script>
         <script src="js/cpv-codes.js"></script>
         <script src="js/cpvs.js"></script>
         <script src="js/script.js"></script>
         <script src="js/toolsBuyer.js"></script>
-        <script src="js/date.format.js"></script>		
         <script src="js/table.js"></script>
         <script src="js/services.js"></script>
-
+        
         <script type="text/javascript">
-                                        var pagesTotal = 1;
-                                        var currentPage = 1;
-                                        var windowSize = 3; // in each direction from the current page
-                                        var tableItemsPerPage = 10;
-                                        var tableAddress = "PCFilingApp?action=table&tableName=PrivateContracts";
-
-                                        function fillTable() {
-
-                                            $('#progressbar').hide();
-                                            $('#contractTable').removeClass('hide');
-                                            $('#contractTable').fadeIn('slow');
-                                            $('#contractTable tbody').remove();
-                                            $.each(
-                                                    tableData[currentPage],
-                                                    function(i, data) {
-                                                        newRow = $('<tr>');
-
-                                                        // Title
-                                                        newTitle = $('<a>');
-                                                        newTitle.attr('href', 'buyer-view-event.jsp');
-                                                        newTitle.click(function() {
-                                                            showEvent(htmlEncode(data.contractURI));
-                                                        });
-                                                        newTitle.html(data.title);
-                                                        newRow.append($('<td>').append(newTitle));
-                                                        // Price								
-                                                        newPrice = $('<td>');
-                                                        if (data.price != undefined && data.currency != undefined)
-                                                            newPrice.append(Number(data.price).toFixed(2) + " " + data.currency);
-                                                        newRow.append(newPrice);
-
-                                                        // CPVs
-                                                        newCPVs = $('<td>').append(
-                                                                CPVs(data.cpv1URL, data.cpvAdd)).appendTo(newRow);
-
-                                                        // Modified
-                                                        newModified = $('<td>').append(formatDate(data.modified)).appendTo(newRow);
-
-                                                        // Created
-                                                        newCreated = $('<td>').append(formatDate(data.created)).appendTo(newRow);
-
-                                                        // Actions								
-                                                        newActions = $('<div>');
-                                                        newActions.addClass('btn-group');
-
-                                                        // Publish
-                                                        newPublish = $('<a>');
-                                                        newPublish.attr('href', 'PCFilingApp?forward=buyer-published.jsp&action=publishPrivateContract&contractURI=' + htmlEncode(data.contractURI));
-                                                        newPublish.click(function() {
-                                                            return confirm('<fmt:message key="prepared.publish.confirm" />');
-                                                        });
-                                                        newPublish.append('<fmt:message key="publish" bundle="${cons}" />').appendTo(newActions);
-
-                                                        // Edit
-                                                        newEdit = $('<a>');
-                                                        newEdit.attr('href', 'buyer-edit-event.jsp');
-                                                        newEdit.click(function() {
-                                                            editEvent(htmlEncode(data.contractURI));
-                                                        });
-                                                        newEdit.append('<fmt:message key="edit" bundle="${cons}" />').appendTo(newActions);
-
-                                                        // Delete
-                                                        newPublish = $('<a>');
-                                                        newPublish.attr('href', 'PCFilingApp?forward=buyer-prepared.jsp&action=deletePrivateContract&contractURI=' + htmlEncode(data.contractURI));
-                                                        newPublish.click(function() {
-                                                            return confirm('<fmt:message key="prepared.delete.confirm" />');
-                                                        });
-                                                        newPublish.append('<fmt:message key="delete" bundle="${cons}" />').appendTo(newActions);
-
-                                                        newActions.children('a').addClass('btn');
-                                                        newRow.append($('<td>').append(newActions));
-
-                                                        // Predict number of bidders
-                                                        newPredictBidders = $('<a href="javascript:void(0);"><fmt:message key="predictbidders" bundle="${cons}" /></a>');
-                                                        newPredictBidders.addClass("btn");
-                                                        newPredictBidders.click(function () {
-                                                            services.predictBidders(data.contractURI);
-                                                        });
-                                                        newPredictBidders.appendTo(newActions);
-
-                                                        // Matchmaker								
-                                                        newMatchmaker = $('<div>');
-                                                        newMatchmaker.addClass('btn-group');
-
-                                                        // Similar
-                                                        newSimilar = $('<a>');
-                                                        newSimilar.attr('href', 'buyer-similar-events.jsp?private=true');
-                                                        newSimilar.click(function() {
-                                                            saveEventInfo(i);
-                                                        });
-                                                        newSimilar.append('<fmt:message key="similarevents" bundle="${cons}" />').appendTo(newMatchmaker);
-
-                                                        // Suppliers
-                                                        newSuppliers = $('<a>');
-                                                        newSuppliers.attr('href', 'buyer-suitable-suppliers.jsp?private=true&invite=false');
-                                                        newSuppliers.click(function() {
-                                                            saveEventInfo(i);
-                                                        });
-                                                        newSuppliers.append('<fmt:message key="suitablesuppliers" bundle="${cons}" />').appendTo(newMatchmaker);
-
-                                                        newMatchmaker.children('a').addClass('btn');
-                                                        newRow.append($('<td>').append(newMatchmaker));
-
-                                                        newRow.appendTo("#contractTable");
-
-                                                    }
-                                            );
-
-                                        }
-
-                                        $(window).ready(function() {
-                                            loadPage(true);
-                                        });
-
-                                        $('a').tooltip();
+          (function ($) {
+            $(document).ready(function () {
+              var tableName = "PrivateContracts";
+              TABLE.init(tableName);
+            });
+          })(jQuery);
         </script>
     </body>
 </html>

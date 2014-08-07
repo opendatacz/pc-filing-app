@@ -11,11 +11,9 @@ var services = {
       window.open(payolaUrl);
     });
   })(),
-  predictBidders : function (contractUri) {
+  predictBidders : function (contractUri, callback) {
     $.getJSON("NumberOfBidders",
       {uri: contractUri},
-      function (data) {
-        alert("Predicting: " + data["prediction"]);
-      });
+      callback);
   }
 };
