@@ -26,7 +26,7 @@
                                 <th><fmt:message key="title" bundle="${cons}" /></th>
                                 <th><fmt:message key="actualprice" bundle="${cons}" /></th>
                                 <th><fmt:message key="actualcompletiondate" bundle="${cons}" /></th>
-                                <th><fmt:message key="specifications" bundle="${cons}" /></th>							
+                                <th><fmt:message key="cpvcodes" bundle="${cons}" /></th>							
                                 <th><fmt:message key="supplier" bundle="${cons}" /></th>
                                 <th><fmt:message key="action" bundle="${cons}" /></th>							
                             </tr>
@@ -36,8 +36,7 @@
                     </table>
                     <div id="progressbar"></div>
                     <div class="pagination pagination-centered">
-                        <ul id="pages">
-                        </ul>
+                        <ul id="pages"></ul>
                     </div>
                     <div id="showAllPages" class="hide pagination pull-right" style="margin: 0; margin-top: -16px;">
                         <ul>

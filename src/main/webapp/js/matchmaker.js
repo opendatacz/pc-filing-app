@@ -78,29 +78,20 @@ var MATCHMAKER = {
     }
     config.dom.$matchResultsTable.delegate(".notificationButton", "click", function (e) {
       var $target = $(e.target),
-        contract = sessionStorage.contractURL,
-        email = prompt($target.data("email-prompt"), $target.data("email")),
-        contractTitle = sessionStorage.contractTitle,
-        subjectLine = $target.data("subject"),
-        bodyTemplate = $target.data("template"),
-        link = Mustache.render("mailto:{{email}}?subject={{subject}}&body={{body}}",
-          {email: email,
-           subject: encodeURIComponent(Mustache.render(
-                         "{{subject}} \"{{contractTitle}}\" | PC Filing App",
-                         {subject: subjectLine,
-                          contractTitle: contractTitle})),
-           body: encodeURIComponent(bodyTemplate + " " + contract)
-          });
+        email = prompt($target.data("email-prompt"), $target.data("email"));
       if (email) {
-        $.getJSON("InvitationComponent",
-          {action: "send",
-           contract: sessionStorage.contractTitle,
-           contractURL: contract,
-           email: email,
-           name: sessionStorage.username},
-           function (data) {
-             window.location.href = link;
-           });
+        $.getJSON("InvitationComponent", {
+            action: "send",
+            contract: sessionStorage.contractTitle,
+            contractURL: sessionStorage.contractURL,
+            email: email,
+            name: sessionStorage.username
+          },
+          function (data) {
+            if (data.sent) {
+              alert(data.message);
+            }
+          });
       }
     });
 

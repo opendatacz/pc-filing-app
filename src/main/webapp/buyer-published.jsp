@@ -118,7 +118,7 @@
                   <fmt:message key="similarevents" bundle="${cons}" />
                 </a>
                 <a class="btn save-contract"
-                   href="buyer-suitable-suppliers.jsp?private=true&invite=false">
+                   href="buyer-suitable-suppliers.jsp?private=true">
                   <i class="icon-magnet"></i>
                   <fmt:message key="suitablesuppliers" bundle="${cons}" />
                 </a>

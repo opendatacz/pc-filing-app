@@ -6,7 +6,7 @@ var services = {
         endpoint = $target.data("endpoint"),
         payolaUrl = endpoint 
           + "#browseUri="
-          + businessEntityUri
+          + encodeURIComponent(businessEntityUri)
           + "&viewPlugin=cz_payola_web_client_views_graph_sigma_GraphSigmaPluginView";
       window.open(payolaUrl);
     });

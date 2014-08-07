@@ -11,7 +11,7 @@ var TABLE = {
 
   display: function (data) {
     if (data["data"].length <= TABLE.itemsPerPage) {
-      TABLE.dom.$pagination.hide();
+      TABLE.dom.$pagination.find(".next, .last").addClass("disabled");
     }
     TABLE.dom.$progressbar.hide();
     TABLE.dom.$contractTable.removeClass("hide").fadeIn("slow");

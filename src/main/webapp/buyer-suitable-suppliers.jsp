@@ -76,25 +76,23 @@
               <td>{{rank}}</td>
               <td><a class="uri" href="{{uri}}">{{label}}</a></td>
               <td>{{addressLocality}}</td>
-              <td>
+              <td class="<c:if test="${pageContext.request.getParameter('invite') eq 'false'}">hidden</c:if>">
                 <div class="btn-group">
-                  {{#email}}
-                  <a class="notificationButton btn btn-small <c:if test="${pageContext.request.getParameter('invite') eq 'false'}">disabled</c:if>"
+                  <a class="btn notificationButton"
                     title="<fmt:message key="suitablesuppliers.notification.invite" />"
                     href="javascript:void(0);"
-                    data-email="{{.}}"
+                    data-email="{{email}}"
                     data-email-prompt="<fmt:message key="suitablesuppliers.notification" />"
                     data-subject="<fmt:message key="suitablesuppliers.notification.invite.subject" />"
                     data-template="<fmt:message key="suitablesuppliers.notification.invite.template" />">
                     <i class="icon-envelope"></i>
                     &nbsp;<fmt:message key="invite" bundle="${cons}" />
                   </a>
-                  {{/email}}
-                  <a class="payolaView btn btn-small"
+                  <a class="btn payolaView"
                     href="javascript:void(0);"
                     data-endpoint="${pageContext.                                                                                 getAttribute("payolaEndpoint")}">
-                    <i class="icon-zoom-in"></i>
-                    <fmt:message key="payola.view" /></a>
+                    <i class="icon-arrow-right"></i>
+                    <fmt:message key="visualization.view" /></a>
                 </div>
               </td>
             </tr>
