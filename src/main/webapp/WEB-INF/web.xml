@@ -49,6 +49,14 @@
         <url-pattern>/Matchmaker/*</url-pattern>
     </servlet-mapping>
     <servlet>
+        <servlet-name>PriceEstimation</servlet-name>
+        <servlet-class>cz.opendata.tenderstats.PriceEstimation</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PriceEstimation</servlet-name>
+        <url-pattern>/PriceEstimation/*</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>NumberOfBidders</servlet-name>
         <servlet-class>cz.opendata.tenderstats.NumberOfBidders</servlet-class>
     </servlet>
