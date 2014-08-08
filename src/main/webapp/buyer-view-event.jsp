@@ -15,6 +15,13 @@
             <div class="row-fluid">
                 <%@include file="WEB-INF/jspf/menu-buyer.jspf" %>
                 <div class="span8">
+                    <div class="alert hide" id="userHelper">
+                      <button class="close"
+                        onclick="userHelper('off')"
+                        title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>
+                        <fmt:message key="viewcontract.help" />
+                    </div>
+
                     <div id="progressbar"></div>
                     <div id="view" style="display: none">
                         <h3>

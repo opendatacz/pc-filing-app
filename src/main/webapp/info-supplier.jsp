@@ -11,9 +11,7 @@
         <div class="container">
             <div class="row">
                 <div class="span12">
-                    <div style="text-align: center;" id="progressbar">
-                        <br> <img src="images/progressbar.gif" />
-                    </div>
+                    <div id="progressbar"></div>
                     <h3 style="margin-bottom: 20px;"><fmt:message key="supplier" bundle="${cons}" /></h3>
                     <div id="message" class="alert fade in hide">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>

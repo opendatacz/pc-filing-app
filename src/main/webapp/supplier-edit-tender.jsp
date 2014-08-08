@@ -17,6 +17,13 @@
 
                 <div class="span10">
 
+                    <div class="alert hide" id="userHelper">
+                      <button class="close"
+                         onclick="userHelper('off')"
+                         title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>
+                        <fmt:message key="edittender.help" />
+                    </div>
+
                     <h3><fmt:message key="edittender.title" /> '<span style="display:inline;" id="tenderTitle"></span>'</h3>
 
                     <hr>

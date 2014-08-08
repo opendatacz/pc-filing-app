@@ -7,7 +7,7 @@
         <%@include file="WEB-INF/jspf/header-buyer.jspf" %>
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Buyer" />
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
-        <link href="./bootstrap/css/won.css" rel="stylesheet" />
+        <link href="bootstrap/css/won.css" rel="stylesheet" />
     </head>
     <body>
         <%@include file="WEB-INF/jspf/header-private.jspf" %>
@@ -16,9 +16,14 @@
 			<%@include file="WEB-INF/jspf/menu-buyer.jspf" %>
 			<div class="span8">
 				<div class="span12">
-					<div style="text-align: center;" id="progressbar">
-						<br> <img src="images/progressbar.gif" />
-					</div>
+          <div class="alert hide" id="userHelper">
+            <button class="close"
+              onclick="userHelper('off')"
+              title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>
+              <fmt:message key="viewtender.help" />
+          </div>
+          
+          <div id="progressbar"></div>
 					<div id="view" style="display:none">
 						<h3><fmt:message key="viewtender.title" /> '<span style="display: inline;" id="tenderTitle"></span>'</h3>
 						<hr>

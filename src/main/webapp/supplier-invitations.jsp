@@ -18,7 +18,9 @@
                 <div class="span10">	
 
                     <div class="alert hide" id="userHelper">
-                        <button class="close" onclick="userHelper('off')" title="Disable guide" >×</button>
+                      <button class="close"
+                        onclick="userHelper('off')"
+                        title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>
                         <fmt:message key="invitations.help" />
                     </div>
 

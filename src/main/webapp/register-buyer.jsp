@@ -15,7 +15,9 @@
         <div class="container">
 
             <div class="alert hide" id="userHelper">
-                <button class="close" onclick="hideHint()" title="Disable guide" >×</button>		
+              <button class="close"
+                onclick="hideHint()"
+                title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>		
                 <fmt:message key="buyer.body.welcome" />
             </div>
 
