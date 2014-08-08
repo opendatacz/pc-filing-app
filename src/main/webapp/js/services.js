@@ -1,5 +1,6 @@
 var services = {
   payolaView : (function () {
+    var defaultViewPlugin = "cz_payola_web_client_views_graph_visual_techniques_tree_TreeTechnique";
     $("#matchResultsTable").delegate(".payolaView", "click", function (e) {
       var $target = $(e.target),
         businessEntityUri = $target.closest("tr").find(".uri").attr("href"),
@@ -7,7 +8,8 @@ var services = {
         payolaUrl = endpoint 
           + "#browseUri="
           + encodeURIComponent(businessEntityUri)
-          + "&viewPlugin=cz_payola_web_client_views_graph_sigma_GraphSigmaPluginView";
+          + "&viewPlugin="
+          + defaultViewPlugin;
       window.open(payolaUrl);
     });
   })(),

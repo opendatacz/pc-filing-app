@@ -25,7 +25,7 @@
                         <th><fmt:message key="rank" bundle="${cons}" /></th>
                         <th><fmt:message key="suppliername" bundle="${cons}" /></th>
                         <th><fmt:message key="location" bundle="${cons}" /></th>
-                        <th class="<c:if test="${pageContext.request.getParameter('invite') eq 'false'}">hidden</c:if>"><fmt:message key="action" bundle="${cons}" /></th>
+                        <th><fmt:message key="action" bundle="${cons}" /></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -76,9 +76,9 @@
               <td>{{rank}}</td>
               <td><a class="uri" href="{{uri}}">{{label}}</a></td>
               <td>{{addressLocality}}</td>
-              <td class="<c:if test="${pageContext.request.getParameter('invite') eq 'false'}">hidden</c:if>">
+              <td>
                 <div class="btn-group">
-                  <a class="btn notificationButton"
+                  <a class="btn notificationButton <c:if test="${pageContext.request.getParameter('invite') eq 'false'}">hidden</c:if>"
                     title="<fmt:message key="suitablesuppliers.notification.invite" />"
                     href="javascript:void(0);"
                     data-email="{{email}}"
