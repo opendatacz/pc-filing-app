@@ -1,5 +1,5 @@
 var services = {
-  payolaView : (function () {
+  payolaView: (function () {
     var defaultViewPlugin = "cz_payola_web_client_views_graph_visual_techniques_tree_TreeTechnique";
     $("#matchResultsTable").delegate(".payolaView", "click", function (e) {
       var $target = $(e.target),
@@ -13,9 +13,15 @@ var services = {
       window.open(payolaUrl);
     });
   })(),
-  predictBidders : function (contractUri, callback) {
+  predictBidders: function (contractUri, callback) {
     $.getJSON("NumberOfBidders",
       {uri: contractUri},
+      callback);
+  },
+  predictContractPrice: function (cpv, duration, callback) {
+    $.getJSON("PriceEstimation",
+      {cpv: cpv,
+       dur: duration},
       callback);
   }
 };

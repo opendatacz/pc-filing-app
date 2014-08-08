@@ -134,6 +134,12 @@
                                 </div>
                             </div>
                             <div class="control-group">
+                                <label title="Contract duration" class="control-label" for="inputStartDate"><fmt:message key="createevent.startend" /> <font color="red">*</font></label>
+                                <div class="controls">
+                                    <input required name="estimatedStartDate" type="text" id="inputStartDate"> - <input required id="inputEndDate" name="estimatedEndDate" type="text">
+                                </div>
+                            </div>
+                            <div class="control-group">
                                 <label class="control-label" for="inputExactPrice"><fmt:message key="estimatedprice" bundle="${cons}" /></label>
                                 <div class="controls">
                                     <input type="number" step="0.01" name="estimatedPrice" id="inputExactPrice">
@@ -142,15 +148,17 @@
                                         <option>EUR</option>
                                         <option>CZK</option>
                                     </select>
+                                    <a href="#"
+                                       id="predict-price"
+                                       class="hidden btn btn-small"
+                                       data-server-error="<fmt:message key="createevent.predictprice.servererror" />"
+                                       data-wrong-input="<fmt:message key="createevent.predictprice.wronginput" />">
+                                      <i class="icon-question-sign"></i>
+                                      <fmt:message key="createevent.predictprice.label" />
+                                    </a>
                                     <label class="checkbox">
                                         <input type="checkbox" checked="checked" name="priceIsConfidential"> <fmt:message key="createevent.priceisconfidential" />
                                     </label>
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label title="Contract duration" class="control-label" for="inputStartDate"><fmt:message key="createevent.startend" /> <font color="red">*</font></label>
-                                <div class="controls">
-                                    <input required name="estimatedStartDate" type="text" id="inputStartDate"> - <input required id="inputEndDate" name="estimatedEndDate" type="text">
                                 </div>
                             </div>
 
@@ -257,10 +265,39 @@
                         </div>
                     </form>
                 </div>
+
+                <div id="predict-price-modal"
+                  class="modal hide fade"
+                  role="dialog"
+                  tabindex="-1"
+                  aria-labelledby="predictPriceLabel"
+                  aria-hidden="true"
+                  data-predicted-price="<fmt:message key="createevent.predictprice.prediction" />"
+                  <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                          <span aria-hidden="true"
+                            title="<fmt:message key="close" bundle="${cons}" />">
+                            &times;</span>
+                        </button>
+                        <h4 class="modal-title" id="predictPriceLabel">
+                          <fmt:message key="createevent.predictprice.label" />
+                        </h4>
+                      </div>
+                      <div class="modal-body">
+                        <div id="progressbar"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <%@include file="WEB-INF/jspf/stats-buyer.jspf" %>
             </div>
         </div>
         <%@include file="WEB-INF/jspf/footer.jspf" %>
+        
+        <script src="js/jquery.mustache.js"></script>
         <script src="js/cpv-codes.js"></script>
         <script src="js/locations.js"></script>
         <script src="js/cpvs.js"></script>	
@@ -270,6 +307,63 @@
         <script src="js/toolsBuyer.js"></script>
         <script src="js/date.format.js"></script>
         <script src="js/table.js"></script>
+        <script src="js/services.js"></script>
+
+        <script type="text/javascript">
+          (function ($) {
+            $(document).ready(function () {
+              var $predictButton = $("#predict-price"),
+                $predictPriceModal = $("#predict-price-modal"),
+                dateRegex = new RegExp(/\d{4}-\d{2}-\d{2}/);
+
+              var togglePredictionButton = function (e) {
+                var startDate = $("#inputStartDate").val(),
+                  endDate = $("#inputEndDate").val();
+
+                if (e.target.value.length > 0 && startDate.length > 0 && endDate.length > 0) {
+                  $predictButton.removeClass("hidden");   
+                } else {
+                  $predictButton.addClass("hidden");
+                }
+              };
+
+              $("#contractForm")
+                .delegate("#cpv1", "input", togglePredictionButton)
+                .delegate("#inputStartDate, #inputEndDate", "change", togglePredictionButton);
+                
+              $predictButton.on("click", function (e) {
+                var cpv = $("#cpv1").val().match(/^\d{8}/),
+                  startDate = $("#inputStartDate").val(),
+                  endDate = $("#inputEndDate").val();
+                
+                if (cpv && dateRegex.test(startDate) && dateRegex.test(endDate)) {
+                  var duration = Math.round((new Date(endDate) - new Date(startDate)) / 86400000);
+                  services.predictContractPrice(cpv[0], duration, function (data) {
+                    if (data && typeof data.price !== "undefined") {
+                      $predictPriceModal.modal("toggle");
+                      var template = "<p><strong>{{predictionLabel}}:</strong> {{prediction}} {{currency}}</p>",
+                        currency = $("select[name = 'estimatedPriceCurrency']").val();
+                        
+                      $predictPriceModal.find("#progressbar").hide();
+                      $predictPriceModal.find(".modal-body").html(
+                        Mustache.render(template, {
+                          currency: currency,
+                          prediction: Number(data.price.toFixed(2)).toString(),
+                          predictionLabel: $predictPriceModal.data("predicted-price"),
+                        })
+                      );
+                    } else {
+                      alert($predictButton.data("server-error"));
+                    }
+                  }); 
+                } else {
+                  alert($predictButton.data("wrong-input"));
+                }
+                return false;
+              });
+            });
+          })(window.jQuery);
+        </script>
 
         <script>
                                         $("#enableGuide").tooltip({placement: 'bottom'});
