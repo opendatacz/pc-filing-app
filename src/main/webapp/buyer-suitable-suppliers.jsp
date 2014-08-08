@@ -122,7 +122,7 @@
                 source: "contract",
                 target: "business-entity"
               };
-              
+
               if (config.resourceUri) {
                 MATCHMAKER.getMatches(config);
               }

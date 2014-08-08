@@ -29,7 +29,7 @@
                             <tr>
                                 <th><fmt:message key="title" bundle="${cons}" /></th>
                                 <th><fmt:message key="estimatedprice" bundle="${cons}" /></th>
-                                <th><fmt:message key="specifications" bundle="${cons}" /></th>
+                                <th><fmt:message key="cpvcodes" bundle="${cons}" /></th>
                                 <th><fmt:message key="lastupdate" bundle="${cons}" /></th>
                                 <th><fmt:message key="creationdate" bundle="${cons}" /></th>
                                 <th><fmt:message key="action" bundle="${cons}" /></th>

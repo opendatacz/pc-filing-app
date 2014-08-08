@@ -154,7 +154,7 @@ var TABLE = {
   saveContractData: function (e) {
     var $row = TABLE.util.getClosestRow(e);
     
-    sessionStorage.contractURI = decodeURIComponent($row.data("contract-uri"));
+    sessionStorage.contractURL = decodeURIComponent($row.data("contract-uri"));
     sessionStorage.contractTitle = decodeURIComponent($row.data("contract-title"));
     sessionStorage.contractDescription = decodeURIComponent($row.data("contract-description"));
     sessionStorage.contractPrice = decodeURIComponent($row.data("contract-price"));
@@ -332,7 +332,7 @@ function togglePageButtons() {
 }
 
 function saveEventInfo(contractURI, title, description, price, currency, cpvString, place) {
-	sessionStorage.contractURI = decodeURIComponent(contractURI);
+	sessionStorage.contractURL = decodeURIComponent(contractURI);
 	sessionStorage.contractTitle = decodeURIComponent(title);
 	sessionStorage.contractDescription = decodeURIComponent(description);
 	sessionStorage.contractPrice = decodeURIComponent(price);
