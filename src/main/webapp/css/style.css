@@ -108,3 +108,12 @@ input::-webkit-inner-spin-button {
 .modal:focus, .btn:focus, button:focus {
   outline: none;
 }
+
+.col-span-170 {
+  min-width: 170px;
+  max-width: 170px;
+}
+.col-span-210 {
+  min-width: 210px;
+  max-width: 210px;
+}

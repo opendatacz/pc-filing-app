@@ -32,8 +32,8 @@
                                 <th><fmt:message key="cpvcodes" bundle="${cons}" /></th>
                                 <th><fmt:message key="lastupdate" bundle="${cons}" /></th>
                                 <th><fmt:message key="creationdate" bundle="${cons}" /></th>
-                                <th><fmt:message key="action" bundle="${cons}" /></th>
-                                <th><fmt:message key="matchmaker" bundle="${cons}" /></th>
+                                <th class="col-span-210"><fmt:message key="action" bundle="${cons}" /></th>
+                                <th class="col-span-170"><fmt:message key="matchmaker" bundle="${cons}" /></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,24 +79,24 @@
             <td>{{created}}</td>
             <td>
               <div class="btn-group btn-group-vertical">
-                <a class="btn confirm"
+                <a class="btn btn-small confirm"
                   href="PCFilingApp?forward=buyer-published.jsp&action=publishPrivateContract&contractURI={{encodedContractURI}}"
                   data-confirmation="<fmt:message key="prepared.publish.confirm" />">
                   <i class="icon-globe"></i>
                   <fmt:message key="publish" bundle="${cons}" />
                 </a>
-                <a class="btn contract-edit-link"
+                <a class="btn btn-small contract-edit-link"
                   href="buyer-edit-event.jsp">
                   <i class="icon-edit"></i>
                   <fmt:message key="edit" bundle="${cons}" />
                 </a>
-                <a class="btn btn-danger confirm"
+                <a class="btn btn-small btn-danger confirm"
                   href="PCFilingApp?forward=buyer-prepared.jsp&action=deletePrivateContract&contractURI={{encodedContractURI}}"
                   data-confirmation="<fmt:message key="prepared.delete.confirm" />">
                   <i class="icon-trash"></i>
                   <fmt:message key="delete" bundle="${cons}" />
                 </a>
-                <a class="btn predict-bidders"
+                <a class="btn btn-small predict-bidders"
                    data-toggle="modal"
                    data-target="#predict-bidders"
                    href="#">
@@ -107,12 +107,12 @@
             </td>
             <td>
               <div class="btn-group btn-group-vertical">
-                <a class="btn save-contract"
+                <a class="btn btn-small save-contract"
                    href="buyer-similar-events.jsp?private=true">
                   <i class="icon-search"></i>
                   <fmt:message key="similarevents" bundle="${cons}" />
                 </a>
-                <a class="btn save-contract"
+                <a class="btn btn-small save-contract"
                    href="buyer-suitable-suppliers.jsp?private=true&invite=false">
                   <i class="icon-magnet"></i>
                   <fmt:message key="suitablesuppliers" bundle="${cons}" />

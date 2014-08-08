@@ -31,8 +31,8 @@
                                 <th><fmt:message key="tenderstocontract" bundle="${cons}" /></th>
                                 <th><fmt:message key="lastupdate" bundle="${cons}" /></th>
                                 <th><fmt:message key="tenderdeadline" bundle="${cons}" /></th>
-                                <th><fmt:message key="action" bundle="${cons}" /></th>
-                                <th><fmt:message key="matchmaker" bundle="${cons}" /></th>
+                                <th class="col-span-210"><fmt:message key="action" bundle="${cons}" /></th>
+                                <th class="col-span-170"><fmt:message key="matchmaker" bundle="${cons}" /></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -70,12 +70,12 @@
             <td>{{{cpvs}}}</td>
             <td>
               <div class="btn-group">
-                <a class="btn {{#sealed}}{{^openingTime}}disabled{{/openingTime}}{{/sealed}} view-tenders"
+                <a class="btn btn-small {{#sealed}}{{^openingTime}}disabled{{/openingTime}}{{/sealed}} view-tenders"
                    href="buyer-submitted-tenders.jsp">
                   {{tendersCount}}
                 </a>
                 {{#sealed}}{{^openingTime}}
-                  <a class="btn {{#openDisabled}}disabled{{/openDisabled}} open-tenders"
+                  <a class="btn btn-small {{#openDisabled}}disabled{{/openDisabled}} open-tenders"
                      data-confirmation="<fmt:message key="published.open.confirm" />"
                      data-unable-to-open="<fmt:message key="published.open.unableopen" />"
                      data-unable-to-process="<fmt:message key="published.open.unableprocess" />"
@@ -89,19 +89,19 @@
             <td>{{deadline}}</td>
             <td>
               <div class="btn-group btn-group-vertical">
-                <a class="btn btn-danger confirm"
+                <a class="btn btn-small btn-danger confirm"
                   href="PCFilingApp?action=cancelContract&forward=buyer-cancelled.jsp&contractURL={{encodedContractURI}}"
                   data-confirmation="<fmt:message key="published.cancel.confirm" />">
                   <i class="icon-remove-sign"></i>
                   <fmt:message key="cancel" bundle="${cons}" />
                 </a>
-                <a class="btn send-notification"
+                <a class="btn btn-small send-notification"
                   href="#"
                   data-prompt="<fmt:message key="published.notification" />">
                   <i class="icon-envelope"></i>
                   <fmt:message key="published.invite" />
                 </a>
-                <a class="btn predict-bidders"
+                <a class="btn btn-small predict-bidders"
                    data-toggle="modal"
                    data-target="#predict-bidders"
                    href="#">
@@ -112,12 +112,12 @@
             </td>
             <td>
               <div class="btn-group btn-group-vertical">
-                <a class="btn save-contract"
+                <a class="btn btn-small save-contract"
                    href="buyer-similar-events.jsp?private=true">
                   <i class="icon-search"></i>
                   <fmt:message key="similarevents" bundle="${cons}" />
                 </a>
-                <a class="btn save-contract"
+                <a class="btn btn-small save-contract"
                    href="buyer-suitable-suppliers.jsp?private=true">
                   <i class="icon-magnet"></i>
                   <fmt:message key="suitablesuppliers" bundle="${cons}" />

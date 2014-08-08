@@ -137,7 +137,13 @@
       {{#matches}}
         <tr>
           <td>{{rank}}</td>
-          <td><a href="{{uri}}">{{label}}</a></td>
+          <td>
+            <a class="contract-link"
+               href="buyer-view-event.jsp"
+               data-contract-uri="{{uri}}">
+              {{label}}
+            </a>
+          </td>
           <td class="fixedCol truncate">{{description}}</td>
         </tr>
       {{/matches}}
