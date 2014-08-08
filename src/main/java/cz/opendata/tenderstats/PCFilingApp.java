@@ -41,18 +41,18 @@ import cz.opendata.tenderstats.pcfapp.PCFappUtils;
  */
 @MultipartConfig
 public class PCFilingApp extends AbstractComponent {
-
+    
     private static final long serialVersionUID = 8835885186029723439L;
-
+    
     private PCFappModel model;
     private PCFappModelContract modelContract;
     private PCFappModelTender modelTender;
     private PCFappUtils utils;
-
+    
     @Override
     public void init() throws ServletException {
         super.init();
-
+        
         model = new PCFappModel(config);
         modelContract = new PCFappModelContract(config);
         modelTender = new PCFappModelTender(config);
@@ -66,9 +66,9 @@ public class PCFilingApp extends AbstractComponent {
      * @author Ivan Kosdy
      */
     class TendersTableRow implements Serializable {
-
+        
         private static final long serialVersionUID = 5601810594357757380L;
-
+        
         String tenderURL;
         String buyerURL;
         String contractURL;
@@ -78,7 +78,7 @@ public class PCFilingApp extends AbstractComponent {
         String cpv;
         String published;
         String deadline;
-
+        
         public TendersTableRow(String tenderURL, String buyerURL,
                 String contractURL, String title, String price,
                 String currency, String cpv, String published, String deadline) {
@@ -103,16 +103,16 @@ public class PCFilingApp extends AbstractComponent {
      * @author Ivan Kosdy
      */
     class STendersTableRow implements Serializable {
-
+        
         private static final long serialVersionUID = 5601810594357757380L;
-
+        
         String tenderURL;
         String supplier;
         String supplierName;
         String currency;
         String price;
         String submitted;
-
+        
         public STendersTableRow(String tenderURL, String supplier,
                 String supplierName, String currency, String price,
                 String submitted) {
@@ -125,31 +125,31 @@ public class PCFilingApp extends AbstractComponent {
                     submitted.indexOf('T')) : submitted;
         }
     }
-
+    
     protected ResultSet actionTablePrivateContracts(HttpServletRequest request, UserContext uc) {
         return modelContract.getPrivateContracts(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTablePublishedCalls(HttpServletRequest request, UserContext uc) {
         return modelContract.getContracts(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableWithdrawnCalls(HttpServletRequest request, UserContext uc) {
         return modelContract.getWithdrawnContracts(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableAwardedContracts(HttpServletRequest request, UserContext uc) {
         return modelContract.getAwardedContracts(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableCompletedContracts(HttpServletRequest request, UserContext uc) {
         return modelContract.getCompletedContracts(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableCanceledCalls(HttpServletRequest request, UserContext uc) {
         return modelContract.getCanceledContracts(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableContractSubmittedTenders(HttpServletRequest request, UserContext uc) {
         String contractURI = request.getParameter("contractURI");
 //		TODO: security check ...		
@@ -157,104 +157,104 @@ public class PCFilingApp extends AbstractComponent {
 //		Resource contractRes = contract.getResource(contractURI);		
         return modelTender.getSubmittedTenders(uc.getNamedGraph(), contractURI);
     }
-
+    
     protected ResultSet actionTablePublicSupplierData(HttpServletRequest request, UserContext uc) {
         return model.getPublicSupplierData(request.getParameter("entity"));
     }
-
+    
     protected ResultSet actionTableDashboard(HttpServletRequest request, UserContext uc) {
         return model.getBuyerActivityData(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTablePrivateTenders(HttpServletRequest request, UserContext uc) {
         return modelTender.getSupplierPreparedTenders(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableSubmittedTenders(HttpServletRequest request, UserContext uc) {
         return modelTender.getSupplierSubmittedTenders(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableWithdrawnTenders(HttpServletRequest request, UserContext uc) {
         return modelTender.getSupplierWithdrawnTenders(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableRejectedTenders(HttpServletRequest request, UserContext uc) {
         return modelTender.getSupplierRejectedTenders(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableAwardedTenders(HttpServletRequest request, UserContext uc) {
         return modelTender.getSupplierAwardedTenders(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableTendersForCancelled(HttpServletRequest request, UserContext uc) {
         return modelTender.getSupplierTendersForCancelled(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableTendersForWithdrawn(HttpServletRequest request, UserContext uc) {
         return modelTender.getSupplierTendersForWithdrawn(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableCompletedTenders(HttpServletRequest request, UserContext uc) {
         return modelTender.getSupplierCompletedTenders(uc.getNamedGraph());
     }
-
+    
     protected ResultSet actionTableNonAwardedTenders(HttpServletRequest request, UserContext uc) {
         return modelTender.getSupplierNonAwardedTenders(uc.getNamedGraph());
     }
-
+    
     protected JsonArray resultSetAsJson(ResultSet resultSet) {
-
+        
         JsonArray array = new JsonArray();
         List<String> vars = resultSet.getResultVars();
         QuerySolution resultRow;
-
+        
         while (resultSet.hasNext()) {
-
+            
             resultRow = resultSet.next();
             Iterator<String> i = vars.iterator();
             JsonObject row = new JsonObject();
-
+            
             while (i.hasNext()) {
                 String var = i.next();
                 RDFNode node = resultRow.get(var);
-
+                
                 if (node != null) {
                     row.addProperty(var, (node.isLiteral()) ? node.asLiteral()
                             .getValue().toString() : node.toString());
                 }
             }
-
+            
             array.add(row);
         }
-
+        
         return array;
-
+        
     }
-
+    
     protected List<HashMap<String, Object>> serializeResultSet(
             ResultSet resultSet) {
-
+        
         List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
         List<String> vars = resultSet.getResultVars();
-
+        
         while (resultSet.hasNext()) {
             HashMap<String, Object> row = new HashMap<String, Object>();
             QuerySolution resultRow = resultSet.next();
             Iterator<String> i = vars.iterator();
-
+            
             while (i.hasNext()) {
                 String var = i.next();
                 RDFNode node = resultRow.get(var);
-
+                
                 if (node != null) {
                     row.put(var, (node.isLiteral()) ? node.asLiteral()
                             .getValue() : node.toString());
                 }
             }
-
+            
             list.add(row);
         }
-
+        
         return list;
     }
 
@@ -267,11 +267,11 @@ public class PCFilingApp extends AbstractComponent {
      */
     protected List<TendersTableRow> getSupplierCompletedTendersAsTable(
             UserContext uc) throws ServletException {
-
+        
         List<TendersTableRow> table = new ArrayList<>();
         try {
             ResultSet rs = modelTender.getSupplierCompletedTenders(uc.getNamedGraph());
-
+            
             while (rs.hasNext()) {
                 QuerySolution row = rs.next();
                 table.add(new TendersTableRow(row.get("tenderURI").toString(),
@@ -286,7 +286,7 @@ public class PCFilingApp extends AbstractComponent {
                         .get("publicationDate").asLiteral().getString()
                         : ""), (row.get("endDate") != null ? row
                         .get("endDate").asLiteral().getString() : "")));
-
+                
             }
         } catch (Exception e) {
             throw new ServletException(
@@ -305,13 +305,13 @@ public class PCFilingApp extends AbstractComponent {
      */
     protected List<TendersTableRow> getSupplierRejectedTendersAsTable(
             UserContext uc) throws ServletException {
-
+        
         List<TendersTableRow> table = new ArrayList<>();
         try {
             ResultSet rs = modelTender.getSupplierRejectedTenders(uc.getNamedGraph());
             while (rs.hasNext()) {
                 QuerySolution row = rs.next();
-
+                
                 table.add(new TendersTableRow(row.get("tenderURI").toString(),
                         row.get("buyerURI").toString(), row.get("contractURI")
                         .toString(), row.get("title").asLiteral()
@@ -324,7 +324,7 @@ public class PCFilingApp extends AbstractComponent {
                         .get("publicationDate").asLiteral().getString()
                         : ""), (row.get("deadline") != null ? row.get(
                                 "deadline").toString() : "")));
-
+                
             }
         } catch (Exception e) {
             throw new ServletException(
@@ -343,14 +343,14 @@ public class PCFilingApp extends AbstractComponent {
      */
     protected List<TendersTableRow> getSupplierNonAwardedTendersAsTable(
             UserContext uc) throws ServletException {
-
+        
         List<TendersTableRow> table = new ArrayList<>();
         try {
             ResultSet rs = modelTender.getSupplierNonAwardedTenders(uc
                     .getNamedGraph());
             while (rs.hasNext()) {
                 QuerySolution row = rs.next();
-
+                
                 table.add(new TendersTableRow(row.get("tenderURI").toString(),
                         row.get("buyerURI").toString(), row.get("contractURI")
                         .toString(), row.get("title").asLiteral()
@@ -363,7 +363,7 @@ public class PCFilingApp extends AbstractComponent {
                         .get("publicationDate").asLiteral().getString()
                         : ""), (row.get("deadline") != null ? row.get(
                                 "deadline").toString() : "")));
-
+                
             }
         } catch (Exception e) {
             throw new ServletException(
@@ -372,18 +372,18 @@ public class PCFilingApp extends AbstractComponent {
         }
         return table;
     }
-
+    
     protected List<STendersTableRow> getSubmittedTendersAsTable(UserContext uc,
             String contractURI) throws ServletException {
-
+        
         List<STendersTableRow> table = new ArrayList<>();
         try {
             ResultSet rs = modelTender.getSubmittedTenders(uc.getNamedGraph(),
                     contractURI);
-
+            
             while (rs.hasNext()) {
                 QuerySolution row = rs.next();
-
+                
                 table.add(new STendersTableRow(row.get("tenderURL").toString(),
                         row.get("grSupplier").toString(), row
                         .get("supplierName").asLiteral().getString(),
@@ -392,7 +392,7 @@ public class PCFilingApp extends AbstractComponent {
                         (row.get("submitted") != null ? row.get("submitted")
                         .toString() : "")));
             }
-
+            
         } catch (Exception e) {
             throw new ServletException(
                     "Can't get users calls for tenders from private SPARQL endpoint "
@@ -400,7 +400,7 @@ public class PCFilingApp extends AbstractComponent {
         }
         return table;
     }
-
+    
     private void writeJsonResponse(HttpServletResponse response, JsonObject json) throws IOException {
         response.setContentType("application/json; charset=UTF-8");
         response.getWriter().print(json);
@@ -434,30 +434,30 @@ public class PCFilingApp extends AbstractComponent {
     @Override
     protected void doGetPost(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
-
+        
         if (isUserLoggedIn(request)) {
             String action = request.getParameter("action");
             if (action == null) {
                 response.sendError(400);
                 return;
             }
-
+            
             String tenderURL;
             HttpSession session = request.getSession(false);
             JsonObject json = new JsonObject();
 
             // TODO refactor - split into methods
             System.out.println(action);
-
+            
             UserContext uc = getUserContext(request);
-
+            
             switch (action) {
-
+                
                 case "buyerStats":
                     json = model.getBuyerStats(uc.getNamedGraph(), false);
                     writeJsonResponse(response, json);
                     break;
-
+                
                 case "table":
                     try {
                         json = getTableData(request, response, uc, session);
@@ -470,7 +470,7 @@ public class PCFilingApp extends AbstractComponent {
                         response.getWriter().print(json);
                     }
                     break;
-
+                
                 case "addPrivateContract":
                     if (!allDefined(request.getParameter("title"))) {
                         response.sendError(400);
@@ -506,11 +506,11 @@ public class PCFilingApp extends AbstractComponent {
                             null,
                             request,
                             null);
-
+                    
                     session.removeAttribute("privateContracts");
                     session.removeAttribute("callsForTenders");
                     break;
-
+                
                 case "deletePrivateContract":
                     if (!allDefined(request.getParameter("contractURI"))) {
                         response.sendError(400);
@@ -521,7 +521,7 @@ public class PCFilingApp extends AbstractComponent {
                     modelContract.deletePrivateContract(getUserContext(request),
                             request.getParameter("contractURI"), true);
                     break;
-
+                
                 case "finalizeContract":
                     if (!allDefined(request.getParameter("contractURL"),
                             request.getParameter("publishTenders"),
@@ -542,7 +542,7 @@ public class PCFilingApp extends AbstractComponent {
                     session.removeAttribute("awardedCallsForTenders");
                     session.removeAttribute("completedCallsForTenders");
                     break;
-
+                
                 case "cancelContract":
                     if (!allDefined(request.getParameter("contractURL"))) {
                         response.sendError(400);
@@ -556,7 +556,7 @@ public class PCFilingApp extends AbstractComponent {
 
                     modelContract.cancelContract(getUserContext(request), request.getParameter("contractURL"));
                     break;
-
+                
                 case "withdrawContract":
                     if (!allDefined(request.getParameter("contractURL"))) {
                         response.sendError(400);
@@ -570,7 +570,7 @@ public class PCFilingApp extends AbstractComponent {
 
                     modelContract.withdrawContract(getUserContext(request), request.getParameter("contractURL"));
                     break;
-
+                
                 case "publishPrivateContract":
                     if (!allDefined(request.getParameter("contractURI"))) {
                         response.sendError(400);
@@ -590,7 +590,7 @@ public class PCFilingApp extends AbstractComponent {
                     session.removeAttribute("callsForTenders");
                     session.removeAttribute("withdrawnCallsForTenders");
                     break;
-
+                
                 case "addPrivateTender":
                     if (!allDefined(request.getParameter("contractURL"))) {
                         response.sendError(400);
@@ -615,7 +615,7 @@ public class PCFilingApp extends AbstractComponent {
                     }
                     session.removeAttribute("preparedTenders");
                     break;
-
+                
                 case "submitPrivateTender":
                     if (!allDefined(request.getParameter("tenderURL"),
                             request.getParameter("contractURL"),
@@ -637,7 +637,7 @@ public class PCFilingApp extends AbstractComponent {
                     session.removeAttribute("preparedTenders");
                     session.removeAttribute("supplierSubmittedTenders");
                     break;
-
+                
                 case "deletePrivateTender":
                     if (!allDefined(request.getParameter("tenderURL"))) {
                         response.sendError(400);
@@ -647,7 +647,7 @@ public class PCFilingApp extends AbstractComponent {
                             request.getParameter("tenderURL"));
                     session.removeAttribute("preparedTenders");
                     break;
-
+                
                 case "withdrawTender":
                     if (!allDefined(request.getParameter("tenderURL"),
                             request.getParameter("contractURL"),
@@ -662,7 +662,7 @@ public class PCFilingApp extends AbstractComponent {
                     session.removeAttribute("preparedTenders");
                     session.removeAttribute("supplierSubmittedTenders");
                     break;
-
+                
                 case "awardTender":
                     if (!allDefined(request.getParameter("tenderURL"),
                             request.getParameter("contractURL"))) {
@@ -676,7 +676,7 @@ public class PCFilingApp extends AbstractComponent {
                     session.removeAttribute("awardedCallsForTenders");
                     session.removeAttribute("callsForTenders");
                     break;
-
+                
                 case "rejectTender":
                     if (!allDefined(request.getParameter("tenderURL"),
                             request.getParameter("contractURL"))) {
@@ -690,22 +690,22 @@ public class PCFilingApp extends AbstractComponent {
                     session.removeAttribute("submittedTenders");
                     session.removeAttribute("callsForTenders");
                     break;
-
+                
                 case "getBusinessEntitySupplier":
                     if (!allDefined(request.getParameter("entity"))) {
                         response.sendError(400);
                         return;
                     }
-
+                    
                     System.out.println(request.getParameter("entity"));
-
+                    
                     Model supplier = model.getSupplier(request
                             .getParameter("entity"));
                     Resource supplierResource = supplier.getResource(request
                             .getParameter("entity"));
-
+                    
                     supplier.write(System.out);
-
+                    
                     Statement supplierName = supplierResource.getProperty(PCFappModel.dc_title);
                     if (supplierName != null) {
                         json.addProperty("success", true);
@@ -713,21 +713,21 @@ public class PCFilingApp extends AbstractComponent {
                     } else {
                         json.addProperty("success", false);
                     }
-
+                    
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
                     break;
-
+                
                 case "getBusinessEntityBuyer":
                     if (!allDefined(request.getParameter("entity"))) {
                         response.sendError(400);
                         return;
                     }
-
+                    
                     Model buyer = model.getSupplier(request.getParameter("entity"));
                     Resource buyerResource = buyer.getResource(request
                             .getParameter("entity"));
-
+                    
                     Statement buyerName = buyerResource
                             .getProperty(PCFappModel.dc_title);
                     if (buyerName != null) {
@@ -736,36 +736,36 @@ public class PCFilingApp extends AbstractComponent {
                     } else {
                         json.addProperty("success", false);
                     }
-
+                    
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
                     break;
-
+                
                 case "getContractJson":
                     if (!allDefined(request.getParameter("copyContractURL"))) {
                         response.sendError(400);
                         return;
                     }
                     String copyURL = request.getParameter("copyContractURL");
-
+                    Boolean isPublic = request.getParameter("public") != null && request.getParameter("public").equals("true");
+                    
                     try {
-                        json = modelContract.getContractAsJson(copyURL, getUserContext(request)
-                                .getNamedGraph());
+                        json = modelContract.getContractAsJson(copyURL, isPublic ? getConfiguration().getPreference("publicGraphName") : getUserContext(request).getNamedGraph(), isPublic);
                     } catch (PCFappException e) {
                         throw new ServletException(e);
                     }
-
+                    
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
                     break;
-
+                
                 case "getPublicContractJson":
                     if (!allDefined(request.getParameter("contractURL"))) {
                         response.sendError(400);
                         return;
                     }
                     String contractURI = request.getParameter("contractURL");
-
+                    
                     JsonObject ret;
                     try {
                         ret = modelContract.getPublicContractAsJson(model.getPublicContract(contractURI), contractURI);
@@ -774,11 +774,11 @@ public class PCFilingApp extends AbstractComponent {
                     }
                     json.add("data", ret);
                     json.addProperty("success", true);
-
+                    
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
                     break;
-
+                
                 case "getContractJsonSupplier":
                     if (!allDefined(request.getParameter("contractURL"),
                             request.getParameter("buyerURL"))) {
@@ -787,49 +787,49 @@ public class PCFilingApp extends AbstractComponent {
                     }
                     contractURI = request.getParameter("contractURL");
                     String ns = request.getParameter("buyerURL");
-
+                    
                     try {
                         json = modelContract.getContractAsJson(contractURI, ns);
                     } catch (PCFappException e) {
                         throw new ServletException(e);
                     }
-
+                    
                     if (json.has("confidential")
                             && json.get("confidential").getAsBoolean()) {
                         json.remove("price");
                         json.remove("currency");
                     }
-
+                    
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
                     break;
-
+                
                 case "getTenderJson":
                     if (!allDefined(request.getParameter("editTenderURL"))) {
                         response.sendError(400);
                         return;
                     }
-
+                    
                     tenderURL = request.getParameter("editTenderURL");
                     tenderURL = URLDecoder.decode(tenderURL, "UTF-8").toString();
-
+                    
                     json = modelTender.getTenderAsJson(tenderURL, getUserContext(request)
                             .getNamedGraph());
-
+                    
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
                     break;
-
+                
                 case "editTender":
-
+                    
                     if (!allDefined(request.getParameter("tenderURL"))) {
                         response.sendError(400);
                         return;
                     }
-
+                    
                     tenderURL = URLDecoder.decode(
                             request.getParameter("tenderURL"), "UTF-8").toString();
-
+                    
                     modelTender.editPrivateTender(getUserContext(request), tenderURL,
                             request.getParameter("description"),
                             request.getParameter("price"),
@@ -839,20 +839,20 @@ public class PCFilingApp extends AbstractComponent {
                             request.getParameter("inputFileCerts"),
                             request.getParameter("inputFileProfile"),
                             request.getParameter("inputFileFinStatements"), request);
-
+                    
                     break;
-
+                
                 case "editEvent":
                     if (!allDefined(request.getParameter("editContractURL"))) {
                         response.sendError(400);
                         return;
                     }
-
+                    
                     contractURI = request.getParameter("editContractURL");
                     Model contractModel = modelContract.getPrivateContract(contractURI,
                             uc.getNamedGraph(), "all");
                     Resource contractRes = contractModel.getResource(contractURI);
-
+                    
                     modelContract.deletePrivateContract(uc, contractURI, false);
                     modelContract.addPrivateContract(getUserContext(request),
                             request.getParameter("title"),
@@ -882,11 +882,11 @@ public class PCFilingApp extends AbstractComponent {
                             request.getParameter("tendersSealed"), contractRes
                             .getProperty(PCFappModel.pcf_created)
                             .getLiteral().getString(), contractURI, request, null);
-
+                    
                     session.removeAttribute("privateContracts");
-
+                    
                     break;
-
+                
                 case "document":
                     String graph = uc.getNamedGraph();
                     if (allDefined(request.getParameter("graph"))) {
@@ -894,23 +894,23 @@ public class PCFilingApp extends AbstractComponent {
                     }
                     utils.retreiveDocument(request, response, graph);
                     break;
-
+                
                 case "unlinkContractDocument":
                     if (!allDefined(request.getParameter("contractURL"),
                             request.getParameter("token"))) {
                         response.sendError(400);
                         return;
                     }
-
+                    
                     model.unlinkDocument(uc, request.getParameter("contractURL"),
                             request.getParameter("token"));
-
+                    
                     json.addProperty("success", true);
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
-
+                    
                     break;
-
+                
                 case "unlinkTenderDocument":
                     if (!allDefined(request.getParameter("tenderURL"),
                             request.getParameter("token"))) {
@@ -921,17 +921,17 @@ public class PCFilingApp extends AbstractComponent {
                             request.getParameter("tenderURL"), "UTF-8").toString();
                     model.unlinkDocument(uc, tenderURL,
                             request.getParameter("token"));
-
+                    
                     json.addProperty("success", true);
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
-
+                    
                     break;
-
+                
                 case "supplierDocsUpload":
                     model.addSupplierDocs(uc, request);
                     break;
-
+                
                 case "supplierDocsUnlink":
                     if (!allDefined(request.getParameter("token"))) {
                         response.sendError(400);
@@ -942,30 +942,30 @@ public class PCFilingApp extends AbstractComponent {
                         model.deleteDocument(document);
                     }
                     break;
-
+                
                 case "openTenders":
                     if (!allDefined(request.getParameter("contractURL"))) {
                         response.sendError(400);
                         return;
                     }
-
+                    
                     json.addProperty("success", modelContract.openTenders(request.getParameter("contractURL"), uc.getNamedGraph()));
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
-
+                    
                     break;
-
+                
                 case "getSupplierDocs":
                     json.add("docs", getDocumentsArray(uc));
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().println(json.toString());
                     break;
-
+                
                 default:
                     response.sendError(400);
                     break;
             }
-
+            
             if (allDefined(request.getParameter("forward"))
                     && !response.isCommitted()) {
                 try {
@@ -973,131 +973,131 @@ public class PCFilingApp extends AbstractComponent {
                 } catch (IllegalStateException unused) {
                 }
             }
-
+            
         } else {
             response.sendError(403, "No user logged in.");
         }
-
+        
     }
-
+    
     private JsonArray getDocumentsArray(UserContext uc) {
-
+        
         Iterator<ExtendedDocument> rs = model.getUserDocuments(uc.getNamedGraph(), true).iterator();
-
+        
         JsonArray array = new JsonArray();
-
+        
         while (rs.hasNext()) {
             ExtendedDocument row = rs.next();
-
+            
             JsonObject obj = new JsonObject();
             obj.addProperty("documentURI", row.getUri());
             obj.addProperty("fileName", row.getName());
             obj.addProperty("token", row.getId());
             obj.addProperty("docType", row.getDocType());
             array.add(obj);
-
+            
         }
-
+        
         return array;
-
+        
     }
-
+    
     private class TableLimit {
-
+        
         public TableLimit(int pageIn, int itemsIn) {
             this.page = pageIn;
             this.items = itemsIn;
         }
-
+        
         public int page;
         public int items;
-
+        
     }
-
+    
     private TableLimit checkTableInput(Object pageObj, Object itemsObj, Object tableNameObj) throws PCFappException {
-
+        
         if (!allDefined(pageObj, itemsObj, tableNameObj)) {
             throw new PCFappException("Values are not set.");
         }
-
+        
         int page;
         int items;
-
+        
         try {
             page = Integer.parseInt((String) pageObj);
             items = Integer.parseInt((String) itemsObj);
             if (page < 0 || items < 1) {
                 throw new NumberFormatException();
             }
-
+            
         } catch (NumberFormatException e) {
             throw new PCFappException("Invalid values");
         }
-
+        
         return new TableLimit(page, items);
     }
-
+    
     private JsonObject getTableData(HttpServletRequest request, HttpServletResponse response, UserContext uc, HttpSession session) throws PCFappException, IOException {
-
+        
         TableLimit limits = checkTableInput(request.getParameter("page"), request.getParameter("items"), request.getParameter("tableName"));
-
+        
         JsonArray resource = null;
         Method actionTable = null;
-
+        
         try {
             actionTable = this.getClass().getDeclaredMethod("actionTable" + request.getParameter("tableName"), HttpServletRequest.class, UserContext.class);
         } catch (NoSuchMethodException | SecurityException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
             throw new PCFappException("No such table");
-
+            
         }
-
+        
         ResultSet set;
         JsonParser p = new JsonParser();
         synchronized (session) {
-
+            
             String resourceString = (String) session.getAttribute(request.getParameter("tableName"));
             if (request.getParameter("reload") != null || resourceString == null) {
-
+                
                 try {
                     set = (ResultSet) actionTable.invoke(this, request, uc);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     throw new PCFappException("Unable to load table data. Server error");
                 }
-
+                
                 resource = resultSetAsJson(set);
                 session.setAttribute(request.getParameter("tableName"), resource.toString());
             } else {
                 resource = (JsonArray) p.parse(resourceString);
             }
-
+            
         }
-
+        
         JsonObject responseJson = new JsonObject();
         JsonArray data = new JsonArray();
-
+        
         if (request.getParameter("reload") != null) {
             responseJson.addProperty("pages", Math.ceil((float) resource.size() / limits.items));
             responseJson.addProperty("items", resource.size());
         }
-
+        
         for (int i = (limits.page * limits.items); i >= 0 && i < ((limits.page + 1) * limits.items) && i < resource.size(); i++) {
             data.add(resource.get(i));
         }
-
+        
         responseJson.add("data", data);
-
+        
         return responseJson;
     }
-
+    
     String joinCPV(RDFNode main, RDFNode other) {
-
+        
         String cpv = main.toString()
                 + (other != null ? " " + other.toString() : "");
         cpv = cpv.replaceAll(getConfiguration().getPrefix("cpv"), "");
         cpv = cpv.replaceAll(" ", ", ");
         return cpv;
-
+        
     }
 }

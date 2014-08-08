@@ -214,8 +214,12 @@ public class PCFappModelContract implements Serializable {
     }
 
     public JsonObject getContractAsJson(String contractURI, String namedGraph) throws PCFappException {
+        return getContractAsJson(contractURI, namedGraph, false);
+    }
+    
+    public JsonObject getContractAsJson(String contractURI, String namedGraph, Boolean isPublic) throws PCFappException {
 
-        Model contract = getPrivateContract(contractURI, namedGraph, "none");
+        Model contract = isPublic ? getPublicContract(contractURI) : getPrivateContract(contractURI, namedGraph, "none");
 
         if (!contract.containsResource(ResourceFactory.createResource(contractURI))) {
             throw new PCFappException("Contract " + contractURI + " not found.");
