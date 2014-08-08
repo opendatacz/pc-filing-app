@@ -17,6 +17,11 @@
                 <%@include file="WEB-INF/jspf/menu-supplier.jspf" %>
                 <div class="span10">	                     
 
+                    <div class="alert hide" id="userHelper">
+                        <button class="close" onclick="userHelper('off')" title="Disable guide" >×</button>
+                        <fmt:message key="profile.help" />
+                    </div>
+
                     <h3 style="margin-bottom: 20px;"><fmt:message key="account.title" /></h3>
 
                     <div id="progressbar"></div>

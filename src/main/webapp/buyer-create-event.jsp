@@ -338,9 +338,9 @@
                 
                 if (cpv && dateRegex.test(startDate) && dateRegex.test(endDate)) {
                   var duration = Math.round((new Date(endDate) - new Date(startDate)) / 86400000);
+                  $predictPriceModal.modal("toggle");
                   services.predictContractPrice(cpv[0], duration, function (data) {
                     if (data && typeof data.price !== "undefined") {
-                      $predictPriceModal.modal("toggle");
                       var template = "<p><strong>{{predictionLabel}}:</strong> {{prediction}} {{currency}}</p>",
                         currency = $("select[name = 'estimatedPriceCurrency']").val();
                         

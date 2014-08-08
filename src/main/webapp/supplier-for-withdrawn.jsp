@@ -17,6 +17,11 @@
 
                 <div class="span10">	                 
 
+                    <div class="alert hide" id="userHelper">
+                        <button class="close" onclick="userHelper('off')" title="Disable guide" >×</button>
+                        <fmt:message key="withdrawn.help" />
+                    </div>
+
                     <%@include file="WEB-INF/jspf/list-tools.jspf" %>
 
                     <h3 style="margin-bottom: 20px;"><fmt:message key="forwithdrawn.title" /></h3>

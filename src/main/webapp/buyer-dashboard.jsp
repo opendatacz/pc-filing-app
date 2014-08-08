@@ -15,6 +15,11 @@
             <div class="row-fluid">	
                 <%@include file="WEB-INF/jspf/menu-buyer.jspf" %>
                 <div class="span8">
+                    <div class="alert hide" id="userHelper">
+                        <button class="close" onclick="userHelper('off')" title="Disable guide" >×</button>
+                        <fmt:message key="dashboard.help" />
+                    </div>
+                    
                     <h4><fmt:message key="dashboard.activities.title" /></h4>
                     <table class="table activities" style="display: none;" id="activityTable">					
                         <tbody>
