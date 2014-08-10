@@ -317,7 +317,7 @@
                             + "&contractURL="
                             + encodeURIComponent(sessionStorage.contractURL)
                 } else {
-                    address = "PCFilingApp?action=getContractJson&copyContractURL="
+                    address = "PCFilingApp?action=getContractJson&public=true&copyContractURL="
                             + encodeURIComponent(sessionStorage.contractURL)
                 }
                 $.getJSON(address, function(data) {
