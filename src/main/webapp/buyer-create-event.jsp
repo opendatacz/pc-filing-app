@@ -317,13 +317,18 @@
             $(document).ready(function () {
               var $predictButton = $("#predict-price"),
                 $predictPriceModal = $("#predict-price-modal"),
+                $currencySelect = $("select[name='estimatedPriceCurrency']"),
                 dateRegex = new RegExp(/\d{4}-\d{2}-\d{2}/);
 
               var togglePredictionButton = function (e) {
                 var startDate = $("#inputStartDate").val(),
-                  endDate = $("#inputEndDate").val();
+                  endDate = $("#inputEndDate").val(),
+                  currency = $currencySelect.val();
 
-                if (e.target.value.length > 0 && startDate.length > 0 && endDate.length > 0) {
+                if (e.target.value.length > 0
+                    && startDate.length > 0
+                    && endDate.length > 0
+                    && currency === "CZK") {
                   $predictButton.removeClass("hidden");   
                 } else {
                   $predictButton.addClass("hidden");
@@ -332,7 +337,8 @@
 
               $("#contractForm")
                 .delegate("#cpv1", "input", togglePredictionButton)
-                .delegate("#inputStartDate, #inputEndDate", "change", togglePredictionButton);
+                .delegate("#inputStartDate, #inputEndDate", "change", togglePredictionButton)
+                .delegate("select[name='estimatedPriceCurrency']", "change", togglePredictionButton);
                 
               $predictButton.on("click", function (e) {
                 var cpv = $("#cpv1").val().match(/^\d{8}/),
