@@ -168,6 +168,7 @@
         <script src="js/toolsSupplier.js"></script>
         <script src="js/table.js"></script>
         <script src="js/script.js"></script>
+        <script src="js/application.js"></script>
 
         <script>
             $("a").tooltip();
@@ -182,6 +183,7 @@
             var buyerURL = sessionStorage.buyerURL;
 
             $(window).ready(function() {
+                APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
                 checkUser();
                 $('#tenderTitle').append(decodeURIComponent(title));
                 $('#buyerURL').attr('value', buyerURL);

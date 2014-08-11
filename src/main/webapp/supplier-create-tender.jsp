@@ -130,6 +130,7 @@
         <script src="js/jquery-ui.js"></script>
         <script src="js/main.js"></script>
         <script src="js/toolsSupplier.js"></script>        
+        <script src="js/application.js"></script>
 
         <script>
                                 $("a").tooltip();
@@ -144,6 +145,7 @@
                                 var buyerURL = sessionStorage.buyerURL;
 
                                 $(window).ready(function() {
+                        APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
                                     $('#contractTitle').append(title);
                                     $('#buyerURL').attr('value', buyerURL);
                                     $('#contractURL').attr('value', contractURL);

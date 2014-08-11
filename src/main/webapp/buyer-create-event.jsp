@@ -310,6 +310,7 @@
         <script src="js/date.format.js"></script>
         <script src="js/table.js"></script>
         <script src="js/services.js"></script>
+        <script src="js/application.js"></script>
 
         <script type="text/javascript">
           (function ($) {
@@ -382,6 +383,7 @@
                                         $("#inputEndDate").datepicker({dateFormat: 'yy-mm-dd'});
 
                                         $(window).ready(function() {
+                        APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
 
 
                                             $("#addDoc").on('click', function() {

@@ -93,8 +93,13 @@
         <script src="js/script.js"></script>
         <script src="js/toolsBuyer.js"></script>
         <script src="js/table.js"></script>
+        <script src="js/application.js"></script>
 
         <script type="text/javascript">
+
+            $(document).ready(function (e) {
+              APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
+            });
 
             var contractURL = sessionStorage.contractURL;
             var title = sessionStorage.contractTitle;

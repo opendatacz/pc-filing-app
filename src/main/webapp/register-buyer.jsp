@@ -99,12 +99,15 @@
         </div> <!-- /container -->
 
         <%@include file="WEB-INF/jspf/footer.jspf" %>
+        <script src="js/application.js" type="text/javascript"></script>
 
         <script>
             $("a").tooltip();
 
             // ?m=lorem ipsum&t=info
             $(window).ready(function() {
+                APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
+
                 var mtype = $_GET("t");
                 if (mtype != null) {
                     $('#message').addClass('alert-' + mtype);

@@ -130,6 +130,7 @@
         <script src="js/main.js"></script>
         <script type="text/javascript" src="js/locations.js"></script> 
         <script type="text/javascript" src="js/cpv-codes.js"></script>
+        <script src="js/application.js"></script>
         <script type="text/javascript">
 
             function searchStringInArray(str, strArray) {
@@ -141,6 +142,7 @@
             }
 
             $(window).ready(function() {
+                APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
 
                 $("#cpv1").typeahead({source: collection});
                 $("#cpv2").typeahead({source: collection});

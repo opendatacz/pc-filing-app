@@ -142,9 +142,11 @@
         </div> <!-- /container -->
 
         <%@include file="WEB-INF/jspf/footer.jspf" %>
+        <script src="js/application.js"></script>
 
         <script type="text/javascript">
             $(window).ready(function() {
+                APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
                 var mtype = $_GET("t");
                 if (typeof mtype !== "undefined" && mtype !== null) {
                     $('#message').addClass('alert-' + mtype);

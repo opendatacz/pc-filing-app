@@ -238,6 +238,7 @@
         <script src="js/toolsBuyer.js"></script>
         <script src="js/script.js"></script>	
         <script src="js/table.js"></script>    
+        <script src="js/application.js"></script>
 
 
         <script>
@@ -254,6 +255,7 @@
                                         $("#inputEndDate").datepicker({dateFormat: 'yy-mm-dd'});
 
                                         $(window).ready(function() {
+                        APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
                                             fillEvent();
                                         });
 

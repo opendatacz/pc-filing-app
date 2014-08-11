@@ -336,6 +336,7 @@
         <script src="js/sessionstorage.1.4.js"></script>
         <script src="js/script.js"></script>
         <script src="js/table.js"></script>
+        <script src="js/application.js"></script>
 
         <script type="text/javascript">
 
@@ -352,6 +353,7 @@
                                             $("#inputEndDate").datepicker({dateFormat: 'yy-mm-dd'});
 
                                             $(window).ready(function() {
+                        APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
                                                 fillEvent();
 
                                                 function newDoc(inputName, name) {
