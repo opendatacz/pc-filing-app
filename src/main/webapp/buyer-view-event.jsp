@@ -282,9 +282,14 @@
             });
 
             function fillEvent() {
-                var address = "PCFilingApp?action=getContractJson&copyContractURL=" + encodeURIComponent(sessionStorage.contractURL);
-
-                $.getJSON(address, function(data)
+                var opts = {
+                  action: "getContractJson",
+                  copyContractURL: sessionStorage.contractURL,
+                };
+                if (!buyerURL) {
+                  opts["public"] = true;
+                }
+                $.getJSON("PCFilingApp", opts, function (data)
                 {
                     if (data == null || data.length == 0) {
                         sessionStorage.clear();
