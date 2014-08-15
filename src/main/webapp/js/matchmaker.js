@@ -96,19 +96,13 @@ var MATCHMAKER = {
     });
 
     $.getJSON("Matchmaker",
-      {private: true, // MATCHMAKER.getParameterByName("private") === "true" ? true : false,
+      {private: true, 
        source: config.source,
        target: config.target,
        uri: config.resourceUri},
       function (matches) {
         return MATCHMAKER.displayMatches(config, matches);
       });
-  },
-  getParameterByName: function (name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
   },
   inPage: function (index, page) {
     return (index >= (page * MATCHMAKER.matchesPerPage) - MATCHMAKER.matchesPerPage)
