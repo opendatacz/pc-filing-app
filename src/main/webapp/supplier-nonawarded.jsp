@@ -23,8 +23,10 @@
                         title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>
                         <fmt:message key="nonawarded.help" />
                     </div>
-
+                    
+                    <%--
                     <%@include file="WEB-INF/jspf/list-tools.jspf" %>
+                    --%>
 
                     <h3 style="margin-bottom: 20px;"><fmt:message key="nonawarded.title" /></h3>
 

@@ -24,7 +24,9 @@
                         <fmt:message key="calls.help" />
                     </div>
 
+                    <%--
                     <%@include file="WEB-INF/jspf/list-tools.jspf" %>
+                    --%>
 
                     <h3 class="matchmakerResultsTitle"><fmt:message key="calls.title" /></h3>          
 

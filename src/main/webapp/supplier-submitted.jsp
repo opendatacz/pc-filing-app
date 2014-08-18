@@ -23,9 +23,11 @@
             title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>
           <fmt:message key="submitted.help" />
         </div>
-          
-<%@include file="WEB-INF/jspf/list-tools.jspf" %>
-                    
+        
+        <%--
+        <%@include file="WEB-INF/jspf/list-tools.jspf" %>
+        --%>
+
           <h3 style="margin-bottom: 20px;"><fmt:message key="submitted.title" /></h3>
           
           <table class="table table-striped table-bordered" style="display:none;" id="contractTable">
