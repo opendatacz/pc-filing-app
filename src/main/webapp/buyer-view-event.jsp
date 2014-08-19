@@ -303,7 +303,9 @@
                         contr.on('click', function() {
                             showEntity(data.contractingAuthority.entity);
                         });
-                        contr.append(data.contractingAuthority.name);
+                        if (typeof data.contractingAuthority !== "undefined") {
+                          contr.append(data.contractingAuthority.name);
+                        }
                         $("#contractor").append(contr);
 
                         field = $("#inputDescription")
