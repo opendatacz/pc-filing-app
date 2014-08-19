@@ -36,7 +36,7 @@
                                 <th><fmt:message key="title" bundle="${cons}" /></th>
                                 <th><fmt:message key="buyer" bundle="${cons}" /></th>
                                 <th><fmt:message key="estimatedprice" bundle="${cons}" /></th>
-                                <th><fmt:message key="specifications" bundle="${cons}" /></th>
+                                <th><fmt:message key="cpvcodes" bundle="${cons}" /></th>
                                 <th><fmt:message key="publicationdate" bundle="${cons}" /></th>
                                 <th><fmt:message key="tenderdeadline" bundle="${cons}" /></th>
                                 <th><fmt:message key="action" bundle="${cons}" /></th>
