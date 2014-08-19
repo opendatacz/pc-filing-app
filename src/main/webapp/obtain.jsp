@@ -68,7 +68,7 @@
                         <input name="action" type="hidden" value="login">
                         <input type="hidden" name="role" value="2">
                         <input name="forward" id="forward" class="add-inv-val" type="hidden" value="InvitationComponent?action=obtain&forward=supplier-invitations.jsp&inv_id={inv_id}&email={con}">
-                        <input name="forward-if-fail" type="hidden" value="./?t=error&m=<fmt:message key="body.form.email.error" />">
+                        <input name="forward-if-fail" type="hidden" value="<fmt:message key="body.form.email.error" />">
                         <div class="control-group">
                             <label class="control-label"><fmt:message key="email" bundle="${cons}" /></label>
                             <div class="controls">

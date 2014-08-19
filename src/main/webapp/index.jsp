@@ -70,14 +70,14 @@
             <div id="login-buyer" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="buyer-label" aria-hidden="true">
                 <form class="form-horizontal" id="login-buyer-form" style="margin-bottom: 0px;" action="SystemManager" method="post">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></button>
+                        <a type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></a>
                         <h3 id="buyer-label"><fmt:message key="body.contractingauthorities.login" /></h3>
                     </div>
                     <div class="modal-body">
                         <input name="action" type="hidden" value="login">
                         <input name="role" type="hidden" value="1">
                         <input name="forward" id="forward" type="hidden" value="buyer-dashboard.jsp">
-                        <input name="forward-if-fail" type="hidden" value="?t=error&m=<fmt:message key="body.form.email.error" />">
+                        <input name="forward-if-fail" type="hidden" value="<fmt:message key="body.form.email.error" />">
                         <div class="control-group">
                             <label class="control-label"><fmt:message key="email" bundle="${cons}" /></label>
                             <div class="controls">
@@ -92,8 +92,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal" aria-hidden="true"><fmt:message key="cancel" bundle="${cons}" /></button>
-                        <input form="login-buyer-form" class="btn btn-primary" type="submit" name="submit" value="<fmt:message key="body.contractingauthorities.login" />" default>
+                        <a class="btn" data-dismiss="modal" aria-hidden="true"><fmt:message key="cancel" bundle="${cons}" /></a>
+                        <input form="login-buyer-form"  class="btn btn-primary" type="submit" name="submit" value="<fmt:message key="body.contractingauthorities.login" />" default>
                         <!-- HTML < 5 : <button onclick="$('#login-buyer-form').submit();" class="btn btn-primary">Login</button>-->
                     </div>
                 </form>
@@ -103,14 +103,14 @@
             <div id="login-supplier" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="supplier-label" aria-hidden="true">
                 <form class="form-horizontal" id="login-supplier-form" style="margin-bottom: 0px;" action="SystemManager" method="post">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></button>
+                        <a type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></a>
                         <h3 id="supplier-label"><fmt:message key="body.bidders.login" /></h3>
                     </div>
                     <div class="modal-body">
                         <input name="action" type="hidden" value="login">
                         <input name="role" type="hidden" value="2">
                         <input name="forward" id="forward" type="hidden" value="supplier-calls.jsp">
-                        <input name="forward-if-fail" type="hidden" value="./?t=error&m=<fmt:message key="body.form.email.error" />">
+                        <input name="forward-if-fail" type="hidden" value="<fmt:message key="body.form.email.error" />">
                         <div class="control-group">
                             <label class="control-label"><fmt:message key="email" bundle="${cons}" /></label>
                             <div class="controls">
@@ -125,7 +125,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal" aria-hidden="true"><fmt:message key="cancel" bundle="${cons}" /></button>
+                        <a class="btn" data-dismiss="modal" aria-hidden="true"><fmt:message key="cancel" bundle="${cons}" /></a>
                         <input form="login-supplier-form" class="btn btn-primary" type="submit" name="submit" value="<fmt:message key="body.bidders.login" />" default>
                         <!-- HTML < 5 : <button onclick="$('#login-supplier-form').submit();" class="btn btn-primary">Login</button>-->
                     </div>
@@ -140,12 +140,12 @@
         <script type="text/javascript">
             $(window).ready(function() {
                 APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
-                var mtype = $_GET("t");
-                if (typeof mtype !== "undefined" && mtype !== null) {
+                var mtype = '${mt}';
+                if (typeof mtype !== "undefined" && mtype !== null && mtype.length > 0) {
                     $('#message').addClass('alert-' + mtype);
                 }
-                var mtext = $_GET("m");
-                if (typeof mtext !== "undefined" && mtext !== null) {
+                var mtext = '${message}';
+                if (typeof mtext !== "undefined" && mtext !== null && mtext.length > 0) {
                     $('#message').append(mtext).fadeIn('slow');
                 }
             });
