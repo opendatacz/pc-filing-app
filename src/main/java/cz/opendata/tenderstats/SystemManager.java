@@ -4,9 +4,7 @@ import com.google.gson.JsonObject;
 import com.hp.hpl.jena.query.QuerySolution;
 import cz.opendata.tenderstats.UserContext.Role;
 import cz.opendata.tenderstats.sparql.FetchCondition;
-import cz.opendata.tenderstats.utils.UriEncoder;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -17,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.HttpHeaders;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 

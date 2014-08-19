@@ -588,6 +588,7 @@ public class PCFappModelContract implements Serializable {
                 + "      } "
                 + "  } "
                 + "VALUES ?contractURI { <" + contractURI + "> }");
+            System.out.println(query.toString());
         /* @formatter:on */
         Model contract = QueryExecutionFactory.sparqlService(config.getSparqlPublicQuery(), query).execConstruct();
 

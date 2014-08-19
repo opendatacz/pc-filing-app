@@ -138,7 +138,9 @@ public class InvitationComponent extends AbstractComponent {
                         session.removeAttribute("invitations");
                         response.sendRedirect(request.getParameter("forward"));
                     } else {
-                        response.sendRedirect(request.getParameter("forward-if-fail"));
+                        request.setAttribute("flash.mt", "error");
+                        request.setAttribute("flash.message", request.getParameter("forward-if-fail"));
+                        response.sendRedirect("obtain.jsp");
                     }
                     break;
 
