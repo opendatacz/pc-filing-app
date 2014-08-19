@@ -15,9 +15,9 @@
         <div class="container">
 
             <div class="alert hide" id="userHelper">
-              <button class="close"
-                onclick="hideHint()"
-                title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>		
+                <button class="close"
+                        onclick="hideHint()"
+                        title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>		
                 <fmt:message key="buyer.body.welcome" />
             </div>
 
@@ -31,8 +31,9 @@
 
             <form action="SystemManager" class="form-horizontal" method="post">
                 <input name="action" type="hidden" value="register">
-                <input name="forward" type="hidden" value="./?t=success&m=<fmt:message key="buyer.body.success" />">
-                <input name="forward-if-fail" type="hidden" value="register-buyer.jsp?t=error&m=<fmt:message key="buyer.body.error" />">
+                <input name="forward" type="hidden" value="./">
+                <input name="forward-message" type="hidden" value="<fmt:message key="buyer.body.success" />">
+                <input name="forward-if-fail" type="hidden" value="<fmt:message key="buyer.body.error" />">
                 <input name="role" type="hidden" value="1">
                 <input name="active" type="hidden" value="1">
 
@@ -60,7 +61,7 @@
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label">IC (<fmt:message key="optional" bundle="${cons}" />)</label>
+                    <label class="control-label">IC</label>
                     <div class="controls">
                         <input name="businessIC" type="text">
                     </div>
@@ -102,29 +103,29 @@
         <script src="js/application.js" type="text/javascript"></script>
 
         <script>
-            $("a").tooltip();
+                            $("a").tooltip();
 
-            // ?m=lorem ipsum&t=info
-            $(window).ready(function() {
-                APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
+                            // ?m=lorem ipsum&t=info
+                            $(window).ready(function() {
+                                APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
 
-                var mtype = $_GET("t");
-                if (mtype != null) {
-                    $('#message').addClass('alert-' + mtype);
-                }
-                var mtext = $_GET("m");
-                if (mtext != null) {
-                    $('#message').append(mtext).fadeIn('slow');
-                }
-            });
+                                var mtype = '${mt}';
+                                if (mtype != null && mtype.length > 0) {
+                                    $('#message').addClass('alert-' + mtype);
+                                }
+                                var mtext = '${message}';
+                                if (mtext != null && mtext.length > 0) {
+                                    $('#message').append(mtext).fadeIn('slow');
+                                }
+                            });
 
-            function hideHint() {
-                $("#userHelper").slideUp();
-            }
+                            function hideHint() {
+                                $("#userHelper").slideUp();
+                            }
 
-            function showHint() {
-                $("#userHelper").slideDown();
-            }
+                            function showHint() {
+                                $("#userHelper").slideDown();
+                            }
 
         </script>
     </body>

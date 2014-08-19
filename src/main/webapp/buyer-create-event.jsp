@@ -146,8 +146,8 @@
                                 <div class="controls">
                                     <input type="number" step="0.01" name="estimatedPrice" id="inputExactPrice">
                                     <select name="estimatedPriceCurrency">
-                                        <option>USD</option>
                                         <option>EUR</option>
+                                        <option>USD</option>
                                         <option>CZK</option>
                                     </select>
                                     <a href="#"

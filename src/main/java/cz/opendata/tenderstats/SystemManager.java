@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.hp.hpl.jena.query.QuerySolution;
 import cz.opendata.tenderstats.UserContext.Role;
 import cz.opendata.tenderstats.sparql.FetchCondition;
-import cz.opendata.tenderstats.utils.UriEncoder;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -193,7 +192,9 @@ public class SystemManager extends AbstractComponent {
                     if (uc == null) {
                         if (allDefined(request.getParameter("forward-if-fail"))) {
                             try {
-                                response.sendRedirect(UriEncoder.apply(request.getParameter("forward-if-fail")).part("m").encode());
+                                request.setAttribute("flash.mt", "error");
+                                request.setAttribute("flash.message", request.getParameter("forward-if-fail"));
+                                response.sendRedirect(request.getHeader("referer"));
                             } catch (IllegalStateException unused) {
                             }
                         } else {
@@ -210,6 +211,7 @@ public class SystemManager extends AbstractComponent {
                 if (session != null) {
                     session.invalidate();
                 }
+                request.getSession(true);
                 response.getWriter().println("User logged out.");
                 break;
 
@@ -235,7 +237,9 @@ public class SystemManager extends AbstractComponent {
                 } else {
                     if (allDefined(request.getParameter("forward-if-fail"))) {
                         try {
-                            response.sendRedirect(UriEncoder.apply(request.getParameter("forward-if-fail")).part("m").encode());
+                            request.setAttribute("flash.mt", "error");
+                            request.setAttribute("flash.message", request.getParameter("forward-if-fail"));
+                            response.sendRedirect(request.getHeader("referer"));
                         } catch (IllegalStateException unused) {
                         }
                     } else {
@@ -318,7 +322,7 @@ public class SystemManager extends AbstractComponent {
                     Sparql.privateUpdate(Mustache.getInstance().getBySparqlPath("update_business_entity.mustache", sparqlTemplateMap)).execute();
 
                     getUserContext(request, true);
-                    
+
                     JsonObject json = new JsonObject();
                     json.addProperty("success", true);
 
@@ -367,7 +371,9 @@ public class SystemManager extends AbstractComponent {
         }
         if (allDefined(request.getParameter("forward")) && !response.isCommitted()) {
             try {
-                response.sendRedirect(UriEncoder.apply(request.getParameter("forward")).part("m").encode());
+                request.setAttribute("flash.mt", "success");
+                request.setAttribute("flash.message", request.getParameter("forward-message"));
+                response.sendRedirect(request.getParameter("forward"));
             } catch (IllegalStateException unused) {
             }
         }

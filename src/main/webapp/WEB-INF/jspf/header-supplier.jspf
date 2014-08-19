@@ -9,4 +9,5 @@
         response.sendRedirect(request.getContextPath());
         return;
     }
+    request.setAttribute("homepage", "supplier-calls.jsp");
 %>

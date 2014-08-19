@@ -31,8 +31,9 @@
 
             <form action="SystemManager" class="form-horizontal" method="post">
                 <input name="action" type="hidden" value="register">
-                <input name="forward" id="fwd" type="hidden" value="./?t=success&m=<fmt:message key="supplier.body.success" />">
-                <input name="forward-if-fail" type="hidden" value="register-supplier.jsp?t=error&m=<fmt:message key="supplier.body.error" />">
+                <input name="forward" id="fwd" type="hidden" value="./">
+                <input name="forward-message" type="hidden" value="<fmt:message key="supplier.body.success" />">
+                <input name="forward-if-fail" type="hidden" value="<fmt:message key="supplier.body.error" />">
                 <input name="role" type="hidden" value="2">
                 <input name="active" type="hidden" value="1">
 
@@ -66,7 +67,7 @@
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label">IC (<fmt:message key="optional" bundle="${cons}" />)</label>
+                    <label class="control-label">IC</label>
                     <div class="controls">
                         <input name="businessIC" type="text">
                     </div>
@@ -135,12 +136,12 @@
                     $(window).ready(function() {
                         APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
 
-                        var mtype = $_GET("t");
-                        if (mtype != null) {
+                        var mtype = '${mt}';
+                        if (mtype != null && mtype.length > 0) {
                             $('#message').addClass('alert-' + mtype);
                         }
-                        var mtext = $_GET("m");
-                        if (mtext != null) {
+                        var mtext = '${message}';
+                        if (mtext != null && mtext.length > 0) {
                             $('#message').append(mtext).fadeIn('slow');
                         }
                         var inv = $_GET("inv_id");
