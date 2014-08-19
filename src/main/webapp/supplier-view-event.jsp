@@ -332,27 +332,6 @@
             $("button").tooltip();
             $("label").tooltip();
             //$('#eventType button').button();  
-            $("#cpv1").typeahead({
-                source: collection
-            });
-            $("#cpv2").typeahead({
-                source: collection
-            });
-            $("#cpv3").typeahead({
-                source: collection
-            });
-            $("#inputLocationNUTS").typeahead({
-                source: locations
-            });
-            $("#inputDeadline").datepicker({
-                dateFormat: 'yy-mm-dd'
-            });
-            $("#inputStartDate").datepicker({
-                dateFormat: 'yy-mm-dd'
-            });
-            $("#inputEndDate").datepicker({
-                dateFormat: 'yy-mm-dd'
-            });
 
             $(window).ready(function() {
                 fillEvent();
@@ -442,8 +421,8 @@
                             $("#priceConfidential").removeClass("hide");
                         }
 
-                        $("#inputStartDate").html(data.startDate);
-                        $("#inputEndDate").html(data.estimatedEndDate);
+                        $("#inputStartDate").html(data.startDate || "N/A");
+                        $("#inputEndDate").html(data.estimatedEndDate || "N/A");
 
                         $("#inputLocation").html(data.locationLabel);
 
