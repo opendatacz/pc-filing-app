@@ -53,7 +53,7 @@
                 <input name="inv_id" class="add-inv-val" type="hidden" value="{inv_id}">
                 <input name="email" class="add-inv-val" type="hidden" value="{con}">		
                 <input name="forward" id="forward" type="hidden" value="supplier-invitations.jsp">
-                <input name="forward-if-fail" type="hidden" value="./?t=error&m=<strong>Oops. Something went wrong.</strong>">		
+                <input name="forward-if-fail" type="hidden" value="<strong>Oops. Something went wrong.</strong>">		
             </form>
 
             <!-- Modal -->
@@ -67,7 +67,7 @@
                     <form class="form-horizontal" id="login-supplier-form" action="SystemManager" method="post">
                         <input name="action" type="hidden" value="login">
                         <input type="hidden" name="role" value="2">
-                        <input name="forward" id="forward" class="add-inv-val" type="hidden" value="InvitationComponent?action=obtain&forward=supplier-invitations.jsp&inv_id={inv_id}&email={con}">
+                        <input name="forward" id="forward" class="add-inv-val" type="hidden" value="InvitationComponent?action=obtain&forward=supplier-invitations.jsp&inv_id={inv_id}&email={con}&forward-if-fail=<fmt:message key="body.form.email.error" />">
                         <input name="forward-if-fail" type="hidden" value="<fmt:message key="body.form.email.error" />">
                         <div class="control-group">
                             <label class="control-label"><fmt:message key="email" bundle="${cons}" /></label>
@@ -125,12 +125,12 @@
             // ?m=lorem ipsum&t=info
             $(window).ready(function() {
                 APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
-                var mtype = $_GET("t");
-                if (mtype != null) {
+                var mtype = '${mt}';
+                if (typeof mtype !== "undefined" && mtype !== null && mtype.length > 0) {
                     $('#message').addClass('alert-' + mtype);
                 }
-                var mtext = $_GET("m");
-                if (mtext != null) {
+                var mtext = '${message}';
+                if (typeof mtext !== "undefined" && mtext !== null && mtext.length > 0) {
                     $('#message').append(mtext).fadeIn('slow');
                 }
 
