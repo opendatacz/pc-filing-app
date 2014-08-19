@@ -67,7 +67,7 @@
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label">IC (<fmt:message key="optional" bundle="${cons}" />)</label>
+                    <label class="control-label">IC</label>
                     <div class="controls">
                         <input name="businessIC" type="text">
                     </div>
