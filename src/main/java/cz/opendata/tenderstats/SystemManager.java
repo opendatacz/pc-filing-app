@@ -155,6 +155,8 @@ public class SystemManager extends AbstractComponent {
      * action=getuser<br>
      * <b>Reload user preferences stored session from database:</b><br>
      * action=reload
+     * @throws javax.servlet.ServletException
+     * @throws java.io.IOException
      */
     @Override
     protected void doGetPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
