@@ -234,7 +234,7 @@
                                             $("#contractName").html(data.title);
                                             $("#inputTitle").html(data.title);
                                             $("#inputDescription").html(data.description);
-                                            $.each(collection, function(key, value) {
+                                            $.each(cpvCollection, function(key, value) {
                                                 if (value.indexOf(data.mainCPV) > -1)
                                                     $("#cpv1").html(value);
                                                 if (data.additionalCPV)

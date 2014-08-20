@@ -333,8 +333,6 @@
         <script src="js/table.js"></script>
 
         <script type="text/javascript">
-
-
             var buyerURL = sessionStorage.buyerURL;
 
             $(window).ready(function() {
@@ -373,7 +371,7 @@
                             field.closest(".control-group").addClass('hide');
                         }
 
-                        $.each(collection, function(key, value) {
+                        $.each(cpvCollection, function(key, value) {
                             if (value.indexOf(data.mainCPV) > -1)
                                 $("#cpv1").html(value);
                             if (data.additionalCPV)

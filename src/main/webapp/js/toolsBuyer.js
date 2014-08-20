@@ -74,7 +74,7 @@ function linkTender(tenderTitle,tenderURI) {
 function linkEvent(eventTitle,eventURI) {
 	var link = $('<a>');
 	link.attr('href','buyer-view-event.jsp');
-	link.on('click',function(){ showEvent(eventURI);  });
+	link.on('click',function(){ showEvent(eventURI); });
 	link.append(eventTitle);
 	return link;
 }

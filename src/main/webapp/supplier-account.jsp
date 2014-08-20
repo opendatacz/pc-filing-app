@@ -157,19 +157,19 @@
                 $.getJSON("SystemManager?action=getUserPreferences", function(data) {
                     if (data != null) {
                         if (data.cpv1) {
-                            var index = searchStringInArray(data.cpv1, collection);
+                            var index = searchStringInArray(data.cpv1, cpvCollection);
                             if (index > -1)
-                                $("#cpv1").val(collection[index]);
+                                $("#cpv1").val(cpvCollection[index]);
                         }
                         if (data.cpv2) {
-                            var index = searchStringInArray(data.cpv2, collection);
+                            var index = searchStringInArray(data.cpv2, cpvCollection);
                             if (index > -1)
-                                $("#cpv2").val(collection[index]);
+                                $("#cpv2").val(cpvCollection[index]);
                         }
                         if (data.cpv3) {
-                            var index = searchStringInArray(data.cpv3, collection);
+                            var index = searchStringInArray(data.cpv3, cpvCollection);
                             if (index > -1)
-                                $("#cpv3").val(collection[index]);
+                                $("#cpv3").val(cpvCollection[index]);
                         }
                         if (data.businessName) {
                                 $("#businessName").val(data.businessName);

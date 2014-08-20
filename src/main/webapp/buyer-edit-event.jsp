@@ -432,7 +432,7 @@
                                                         $("#inputDescription").html(data.description);
                                                         $("#inputTendersSealed").attr("checked", data.tendersSealed);
 
-                                                        $.each(collection, function(key, value) {
+                                                        $.each(cpvCollection, function(key, value) {
                                                             if (value.indexOf(data.mainCPV) > -1)
                                                                 $("#cpv1").val(value);
                                                             if (data.additionalCPV)
