@@ -58,13 +58,18 @@
                     <p class="btn-group btn-group-vertical"><a href="#login-supplier" role="button" class="btn btn-primary" data-toggle="modal"><fmt:message key="body.bidders.login" /></a>
                         <a class="btn" href="register-supplier.jsp"><fmt:message key="body.bidders.register" /></a>
                 </div>
-                <%--
                 <div class="span4">
+                    <h2><fmt:message key="body.acknowledgements.title" /></h2>
+                    <p>
+                      <img src="/images/LOD2_logo.png" alt="<fmt:message key="body.acknowledgements.logo" />"/>
+                    </p>
+                    <p><fmt:message key="body.acknowledgements.desc" /></p>
+                    <%--
                     <h2><fmt:message key="body.public" /></h2>
                     <p><fmt:message key="body.public.description" /></p>
                     <p><a class="btn" href="#"><fmt:message key="body.public.details" /> &raquo;</a></p>
+                    --%>
                 </div>
-                --%>
             </div>
 
             <hr>
