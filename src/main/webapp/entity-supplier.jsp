@@ -67,7 +67,6 @@
 
         <script src="js/sessionstorage.1.4.js"></script>
         <script src="js/script.js"></script>
-        <script src="js/cpvs.js"></script>
         <script src="js/table.js"></script>
 
         <script type="text/javascript">

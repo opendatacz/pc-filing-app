@@ -130,7 +130,6 @@
 
     <%@include file="WEB-INF/jspf/footer.jspf" %>
 
-    <!--<script src="js/cpvs.js"></script>-->
     <script src="js/functions.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/script.js"></script>

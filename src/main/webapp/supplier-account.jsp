@@ -128,11 +128,10 @@
         <script src="js/functions.js"></script>
         <script src="js/toolsSupplier.js"></script>
         <script src="js/main.js"></script>
-        <script type="text/javascript" src="js/locations.js"></script> 
-        <script type="text/javascript" src="js/cpv-codes.js"></script>
+        <script src="js/locations.js"></script> 
+        <script src="js/cpv-codes-${pageContext.request.locale}.js"></script>
         <script src="js/application.js"></script>
         <script type="text/javascript">
-
             function searchStringInArray(str, strArray) {
                 for (var j = 0; j < strArray.length; j++) {
                     if (strArray[j].match(str))
@@ -141,12 +140,18 @@
                 return -1;
             }
 
+            var cpvAutocompleteOpts = {
+              source: cpvCollection,
+              sorter: APP.autocomplete.cpvSorter
+            };
+
             $(window).ready(function() {
                 APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
 
-                $("#cpv1").typeahead({source: collection});
-                $("#cpv2").typeahead({source: collection});
-                $("#cpv3").typeahead({source: collection});
+                $("#cpv1").typeahead(cpvAutocompleteOpts);
+                $("#cpv2").typeahead(cpvAutocompleteOpts);
+                $("#cpv3").typeahead(cpvAutocompleteOpts);
+
                 $("#businessPlace").typeahead({source: locations});
 
                 $.getJSON("SystemManager?action=getUserPreferences", function(data) {

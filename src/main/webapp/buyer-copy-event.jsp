@@ -250,7 +250,7 @@
             </div>
         </div>
         <%@include file="WEB-INF/jspf/footer.jspf" %>
-        <script src="js/cpv-codes.js"></script>
+        <script src="js/cpv-codes-${pageContext.request.locale}.js"></script>
         <script src="js/locations.js"></script>
         <script src="js/functions.js"></script>
         <script src="js/sessionstorage.1.4.js"></script>
@@ -261,7 +261,7 @@
 
         <script>
           var cpvAutocompleteOpts = {
-            source: collection,
+            source: cpvCollection,
             sorter: APP.autocomplete.cpvSorter
           };
 

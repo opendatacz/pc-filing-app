@@ -61,8 +61,10 @@
                 <div class="span4">
                     <h2><fmt:message key="body.acknowledgements.title" /></h2>
                     <p>
-                      <img src="${pageContext.request.contextPath}/images/LOD2_logo.png"
-                           alt="<fmt:message key="body.acknowledgements.logo" />"/>
+                      <a href="http://lod2.eu" target="_blank">
+                        <img src="${pageContext.request.contextPath}/images/LOD2_logo.png"
+                             alt="<fmt:message key="body.acknowledgements.logo" />"/>
+                      </a>
                     </p>
                     <p><fmt:message key="body.acknowledgements.desc" /></p>
                     <%--

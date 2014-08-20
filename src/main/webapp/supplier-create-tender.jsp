@@ -126,7 +126,7 @@
         <%@include file="WEB-INF/jspf/footer.jspf" %> 
         <script src="js/functions.js"></script>    
         <script src="js/sessionstorage.1.4.js"></script>
-        <script src="js/cpv-codes.js"></script>  
+        <script src="js/cpv-codes-${pageContext.request.locale}.js"></script>  
         <script src="js/jquery-ui.js"></script>
         <script src="js/main.js"></script>
         <script src="js/toolsSupplier.js"></script>        
@@ -145,7 +145,7 @@
                                 var buyerURL = sessionStorage.buyerURL;
 
                                 $(window).ready(function() {
-                        APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
+                                    APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
                                     $('#contractTitle').append(title);
                                     $('#buyerURL').attr('value', buyerURL);
                                     $('#contractURL').attr('value', contractURL);

@@ -149,20 +149,17 @@
                     </div>
                 </div>	  
             </form>
-
-
-
         </div> <!-- /container -->
 
         <%@include file="WEB-INF/jspf/footer.jspf" %>
 
-        <script type="text/javascript" src="js/cpv-codes.js"></script>
+        <script type="text/javascript" src="js/cpv-codes-${pageContext.request.locale}.js"></script>
         <script type="text/javascript" src="js/locations.js"></script>    
         <script src="js/application.js"></script>
 
         <script>
           var cpvAutocompleteOpts = {
-            source: collection,
+            source: cpvCollection,
             sorter: APP.autocomplete.cpvSorter
           };
 
