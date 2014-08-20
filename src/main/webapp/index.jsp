@@ -30,7 +30,11 @@
                 <h1><fmt:message key="body.title.welcome" /> <sup><i>BETA</i></sup> !</h1>
                 <p><fmt:message key="body.title.description" /></p>
                 <%--
-                <p><a class="btn btn-primary btn-large"><fmt:message key="body.title.learnmore" /> &raquo;</a></p>
+                <p>
+                  <a class="btn btn-primary btn-large">
+                    <fmt:message key="body.title.learnmore" /> &raquo;
+                  </a>
+                </p>
                 --%>
             </div>
 

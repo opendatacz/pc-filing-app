@@ -31,9 +31,11 @@
                             <input name="forward" type="hidden" value="buyer-edit-event.jsp">
                             <input id="editContractURL" name="editContractURL" type="hidden" value="">
 
-                            <div class="control-group">
+                            <div class="control-group required">
                                 <h4><fmt:message key="createevent.basicinfo" /></h4>
-                                <label class="control-label" for="inputTitle"><fmt:message key="title" bundle="${cons}" /> <font color="red">*</font></label>
+                                <label class="control-label" for="inputTitle">
+                                  <fmt:message key="title" bundle="${cons}" />
+                                </label>
                                 <div class="controls">
                                     <input required type="text" name="title" id="inputTitle" placeholder="<fmt:message key="createevent.eventtitle" />">
                                 </div>
@@ -44,8 +46,10 @@
                                     <textarea name="description" id="inputDescription"></textarea>
                                 </div>
                             </div>
-                            <div class="control-group">
-                                <label class="control-label" for="inputDescription"><fmt:message key="cpvcodes" bundle="${cons}" /> <font color="red">*</font></label>
+                            <div class="control-group required">
+                              <label class="control-label" for="inputDescription">
+                                <fmt:message key="cpvcodes" bundle="${cons}" />
+                              </label>
                                 <div class="controls">
                                     <input required id="cpv1" type="text" name="cpv1" placeholder="<fmt:message key="maincpvcode" bundle="${cons}" />" autocomplete="off">&nbsp;&nbsp;&nbsp;
                                 </div>
@@ -92,8 +96,17 @@
                                 </div>
                             </div>
 
-                            <div class="control-group">
-                                <label class="control-label" for="eventType"><fmt:message key="eventtype" bundle="${cons}" /> <font color="red">*</font></label>
+                            <div class="control-group required">
+                              <label class="control-label" for="eventType">
+                                <fmt:message key="eventtype" bundle="${cons}" />
+                                <a class="help-msg"
+                                  href="javascript:void(0);"
+                                  data-content="<fmt:message key="createevent.eventtype.help" />"
+                                  data-placement="bottom"
+                                  data-toggle="popover">
+                                  <i class="icon-question-sign"></i>
+                                </a>
+                              </label>
                                 <div class="controls">
                                     <div class="btn-group" data-toggle="buttons-radio" id="eventType">
                                         <button onclick="$('#eventType button').removeClass('btn-primary');
@@ -128,9 +141,11 @@
                             </div>
 
                             <div class="in hide" id="eventRest">
-                                <div class="control-group">
+                                <div class="control-group required">
                                     <h4><fmt:message key="createevent.constraints" /></h4>
-                                    <label class="control-label" for="inputDeadline"><fmt:message key="createevent.tenders.deadline" /> <font color="red">*</font></label>
+                                    <label class="control-label" for="inputDeadline">
+                                      <fmt:message key="createevent.tenders.deadline" />
+                                    </label>
                                     <div class="controls">
                                         <input required type="text" name="deadline" id="inputDeadline">
                                     </div>
@@ -149,16 +164,20 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="control-group">
-                                    <label title="Contract duration" class="control-label" for="inputStartDate"><fmt:message key="createevent.startend" /> <font color="red">*</font></label>
+                                <div class="control-group required">
+                                  <label class="control-label" for="inputStartDate">
+                                    <fmt:message key="createevent.startend" />
+                                  </label>
                                     <div class="controls">
                                         <input required name="estimatedStartDate" type="text" id="inputStartDate"> - <input required id="inputEndDate" name="estimatedEndDate" type="text">
                                     </div>
                                 </div>
 
-                                <div class="control-group">
+                                <div class="control-group required">
                                     <h5><fmt:message key="createevent.locationrealization" /></h5>
-                                    <label class="control-label" for="inputLocation"><fmt:message key="location" bundle="${cons}" /> <font color="red">*</font></label>
+                                    <label class="control-label" for="inputLocation">
+                                      <fmt:message key="location" bundle="${cons}" />
+                                    </label>
                                     <div class="controls">
                                         <input required name="location" type="text" id="inputLocation" placeholder="Ex: Prague or FCA Prague">
                                     </div>
@@ -357,7 +376,8 @@
                                             $("#inputEndDate").datepicker({dateFormat: 'yy-mm-dd'});
 
                                             $(window).ready(function() {
-                        APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
+                                                APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
+                                                $(".help-msg").popover();
                                                 fillEvent();
 
                                                 function newDoc(inputName, name) {
