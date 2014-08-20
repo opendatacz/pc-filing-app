@@ -126,13 +126,17 @@
         <script src="js/application.js"></script>
 
         <script>
+          var cpvAutocompleteOpts = {
+            source: collection,
+            sorter: APP.autocomplete.cpvSorter
+          };
+
                     $("a").tooltip();
-                    $("#cpv1").typeahead({source: collection});
-                    $("#cpv2").typeahead({source: collection});
-                    $("#cpv3").typeahead({source: collection});
+                    $("#cpv1").typeahead(cpvAutocompleteOpts);
+                    $("#cpv2").typeahead(cpvAutocompleteOpts);
+                    $("#cpv3").typeahead(cpvAutocompleteOpts);
                     $("#businessPlace").typeahead({source: locations});
 
-                    // ?m=lorem ipsum&t=info
                     $(window).ready(function() {
                         APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
 

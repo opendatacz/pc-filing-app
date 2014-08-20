@@ -15,244 +15,560 @@
             <div class="row-fluid">
                 <%@include file="WEB-INF/jspf/menu-buyer.jspf" %>
                 <div class="span8">
-                    <a class="btn pull-right" onclick="/*history.back();*/" href="buyer-similar-events.jsp" data-original-title="Click to get back to the previous screen.">Back</a><br>		
-
-                    <h3 style="margin-bottom: 20px;"><fmt:message key="comparecontracts.title" /></h3>
-
-                    <!--
-                    <div class="btn-group btn-group">
-               <a href="mycontracts-step-05.html" class="btn btn-small" title="Click to compare your contract with this one.">compare</a>
-            </div>
-                    -->
-
-                    <div style="text-align: center;" id="progressbar">
-                        <br> <img src="images/progressbar.gif" />
+                    <div class="alert hide" id="userHelper">
+                      <button class="close"
+                        onclick="userHelper('off')"
+                        title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>
+                        <fmt:message key="comparecontracts.help" />
                     </div>
 
-                    <table class="table table-striped table-bordered" id="contractTable" style="display: none;">
-                        <thead>
-                            <tr>
-                                <th><fmt:message key="property" bundle="${cons}" /></th>
-                                <th id="title1"></th>
-                                <th id="title2"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><fmt:message key="estimatedprice" bundle="${cons}" /></td>
-                                <td id="price1"></td>
-                                <td id="price2"></td>
-                            </tr>
-                            <!-- <tr>
-                              <td>Best offered price</td>
-                              <td></td>
-                              <td></td>
-                            </tr>
-                            <tr>
-                              <td>Actual price</td>
-                              <td></td>
-                              <td></td>
-                            </tr> -->
-                            <tr>
-                                <td><fmt:message key="maincpvcode" bundle="${cons}" /></td>
-                                <td id="cpv1"></td>
-                                <td id="cpv2"></td>
-                            </tr>
-                            <tr>
-                                <td><fmt:message key="additionalcpvcode" bundle="${cons}" /></td>
-                                <td id="cpva1"></td>
-                                <td id="cpva2"></td>
-                            </tr>
-                            <tr>
-                                <td><fmt:message key="description" bundle="${cons}" /></td>
-                                <td id="description1"></td>
-                                <td id="description2"></td>
-                            </tr>
-                            <tr>
-                                <td><fmt:message key="location" bundle="${cons}" /></td>
-                                <td id="place1"></td>
-                                <td id="place2"></td>
-                            </tr>
-                            <tr>
-                                <td><fmt:message key="contractingauthority" bundle="${cons}" /></td>
-                                <td id="cauth1"></td>
-                                <td id="cauth2"></td>
-                            </tr>
-                            <tr>
-                                <td><fmt:message key="proceduretype" bundle="${cons}" /></td>
-                                <td id="ptype1"></td>
-                                <td id="ptype2"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div id="progressbar"></div>
+                    <div id="view" style="display: none">
+                        <h3><fmt:message key="viewevent.title" /> '<span style="display: inline;" id="eventTitle"></span>'</h3>
+                        <hr>
+                        <div class="control-group">
+                            <h4><fmt:message key="createevent.basicinfo" /></h4>
+                            <label class="control-label" for="inputTitle">
+                              <strong><fmt:message key="title" bundle="${cons}" /></strong>
+                            </label>
+                            <div class="controls">
+                                <span id="inputTitle"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">							
+                            <label class="control-label" for="contractor">
+                              <strong><fmt:message key="contractingauthority" bundle="${cons}" /></strong>
+                            </label>
+                            <div class="controls">
+                                <span id="contractor"></span>
+                            </div>
+                        </div>
+                        <div class="control-group hide">							
+                          <label class="control-label" for="tendersOpened">
+                            <strong><fmt:message key="tendersopened" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <span id="tendersOpened"></span>
+                            </div>
+                        </div>      
+                        <div class="control-group">
+                          <label class="control-label" for="inputDescription">
+                            <strong><fmt:message key="description" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <div id="inputDescription"></div>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="inputDescription">
+                            <strong><fmt:message key="cpvcodes" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <span id="cpv1"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <span id="cpv2"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <span id="cpv3"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="inputProjectID">
+                            <strong><fmt:message key="projectid" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <span id="inputProjectID"></span>
+                            </div>
+                        </div>
 
-                    <div id="triples2" style="color:grey;">
+                        <div class="control-group">
+                          <label class="control-label" for="inputEventReference">
+                            <strong><fmt:message key="eventreference" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <span id="inputEventReference"></span>
+                            </div>
+                        </div>
 
+                        <div class="control-group">
+                          <label class="control-label" for="procurementMethod">
+                            <strong><fmt:message key="procurementmethod" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <span class="hide" id="pMOpen"><fmt:message key="open" bundle="${cons}" /></span>
+                                <span class="hide" id="pMRestricted"><fmt:message key="restricted" bundle="${cons}" /></span>
+                                <span class="hide" id="pMAcceleratedRestricted"><fmt:message key="restrictedaccelerated" bundle="${cons}" /></span>
+                                <span class="hide" id="pMNegotiated"><fmt:message key="negotiated" bundle="${cons}" /></span>
+                                <span class="hide" id="pMAcceleratedNegotiated"><fmt:message key="negotiatedaccelerated" bundle="${cons}" /></span>
+                                <span class="hide" id="pMCompetitiveDialogue"><fmt:message key="competitivedialogue" bundle="${cons}" /></span>								
+                            </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="eventType">
+                            <strong><fmt:message key="eventtype" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <span class="hide" id="<fmt:message key="RFQ" bundle="${cons}" />"><fmt:message key="requestforquotation" bundle="${cons}" /></span>
+                                <span class="hide" id="<fmt:message key="ITT" bundle="${cons}" />"><fmt:message key="invitationtotender" bundle="${cons}" /></span>
+                                <span class="hide" id="<fmt:message key="RFP" bundle="${cons}" />"><fmt:message key="requestforproposal" bundle="${cons}" /></span>								
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="control-group">
+                            <h4><fmt:message key="createevent.constraints" /></h4>
+                            <label class="control-label" for="inputDeadline">
+                              <strong><fmt:message key="createevent.tenders.deadline" /></strong>
+                            </label>
+                            <div class="controls">
+                                <span id="inputDeadline"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="inputExactPrice">
+                            <strong><fmt:message key="estimatedprice" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <span id="inputExactPrice"></span> <span id="estimatedPriceCurrency"></span> <span class="hide" id="priceConfidential" style="font-style: italic;">(<fmt:message key="createevent.priceisconfidential" />)</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="inputStartDate">
+                            <strong><fmt:message key="createevent.startend" /></strong>
+                          </label>
+                            <div class="controls">
+                                <span id="inputStartDate"></span> - <span id="inputEndDate"></span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h5><fmt:message key="createevent.locationrealization" /></h5>
+                            <label class="control-label" for="inputLocation">
+                              <strong><fmt:message key="location" bundle="${cons}" /></strong>
+                            </label>
+                            <div class="controls">
+                                <span id="inputLocation"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="inputLocationNUTS">
+                            <strong>NUTS</strong>
+                          </label>
+                            <div class="controls">
+                                <span id="inputLocationNUTS"></span>
+                            </div>
+                        </div>
+                        <div class="control-group"></div>
+
+                        <div class="in hide" id="evaluationCriteria">
+                            <div class="control-group">
+                                <h5><fmt:message key="createevent.evaluationcriteria" /></h5>
+                                <label class="control-label" for="inputECPrice">
+                                  <strong><fmt:message key="price" bundle="${cons}" /></strong>
+                                </label>
+                                <div class="controls">
+                                  <span id="controls"></span><span> %</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                              <label class="control-label" for="inputECTech">
+                                <strong><fmt:message key="technicalspecification" bundle="${cons}" /></strong>
+                              </label>
+                                <div class="controls">
+                                    <span id="inputECTech"></span><span> %</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                              <label class="control-label" for="inputECDate">
+                                <strong><fmt:message key="deliverydate" bundle="${cons}" /></strong>
+                              </label>
+                                <div class="controls">
+                                    <span id="inputECDate"></span><span> %</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <h4 id="documents"><fmt:message key="documents" bundle="${cons}" /></h4>
+
+                        <div class="control-group hide">							
+                          <label class="control-label" for="inputFileGenTerms">
+                            <strong><fmt:message key="createevent.doc.general" /></strong>
+                          </label>
+                            <div class="controls">
+                                <ul id="fileGenTerms" class="docList"></ul>
+                            </div>
+                        </div>
+
+                        <div class="control-group hide">
+                          <label class="control-label" for="inputFileCallDoc">
+                            <strong><fmt:message key="createevent.doc.call" /></strong>
+                          </label>
+                            <div class="controls">
+                                <ul id="fileCallDoc" class="docList"></ul>
+                            </div>
+                        </div>
+
+                        <div class="control-group hide">
+                          <label class="control-label" for="inputFileAmendment">
+                            <strong><fmt:message key="createevent.doc.revisions" /></strong>
+                          </label>
+                            <div class="controls">
+                                <ul id="fileAmendment" class="docList"></ul>
+                            </div>
+                        </div>
+
+                        <div class="control-group hide">
+                          <label class="control-label" for="inputFileResponses">
+                            <strong><fmt:message key="createevent.doc.responses" /></strong>
+                          </label>
+                            <div class="controls">
+                                <ul id="fileResponses" class="docList"></ul>
+                            </div>
+                        </div>
+
+                        <div class="control-group hide">
+                          <label class="control-label" for="inputFileTechSpec">
+                            <strong><fmt:message key="createevent.doc.detail" /></strong>
+                          </label>
+                            <div class="controls">
+                                <ul id="fileTechSpec" class="docList"></ul>
+                            </div>
+                        </div>
+
+                        <div class="control-group hide">
+                          <label class="control-label" for="inputFilePriceDelivery">
+                            <strong><fmt:message key="createevent.doc.price" /></strong>
+                          </label>
+                            <div class="controls">
+                                <ul id="filePriceDelivery" class="docList"></ul>
+                            </div>
+                        </div>
+
+                        <div class="control-group hide">
+                          <label class="control-label" for="inputFileBidSec">
+                            <strong><fmt:message key="createevent.doc.bidsecurity" /></strong>
+                          </label>
+                            <div class="controls">
+                                <ul id="fileBidSec" class="docList"></ul>
+                            </div>
+                        </div>
+
+                        <div class="control-group hide">
+                          <label class="control-label" for="inputFilePerfSec">
+                            <strong><fmt:message key="createevent.doc.persecurity" /></strong>
+                          </label>
+                            <div class="controls">
+                                <ul id="filePerfSec" class="docList"></ul>
+                            </div>
+                        </div>
+
+                        <div class="control-group hide">
+                          <label class="control-label" for="inputFileBidSubForm">
+                            <strong><fmt:message key="createevent.doc.submission" /></strong>
+                          </label>
+                            <div class="controls">
+                                <ul id="fileBidSubForm" class="docList"></ul>
+                            </div>
+                        </div>
+
+                        <hr>						
+                        <h4><fmt:message key="createevent.contactpoint" /></h4>
+
+                        <div class="control-group">
+
+                          <label class="control-label" for="inputFn">
+                            <strong><fmt:message key="contactperson" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <span id="inputFn"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="inputEmail">
+                            <strong><fmt:message key="email" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <span id="inputEmail"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="inputPhone">
+                            <strong><fmt:message key="phone" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <span id="inputPhone"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="inputPoint">
+                            <strong><fmt:message key="otherdescription" bundle="${cons}" /></strong>
+                          </label>
+                            <div class="controls">
+                                <div id="inputPoint"></div>
+                            </div>
+                        </div>
                     </div>
-
-                    <br>
-
-                    <div id="comparerMessages">
-                        <a id="seeMm" onclick="$('#comparerMessagesTable').fadeIn('slow')" href="#"><fmt:message key="comparecontracts.seematchmaker" /></a><br>
-                        <table id="comparerMessagesTable" class="table table-striped table-bordered" style="display:none;">
-                            <thead>
-                                <tr>
-                                    <th><fmt:message key="comparecontracts.module.name" /></th>
-                                    <th><fmt:message key="comparecontracts.module.weight" /></th>
-                                    <th><fmt:message key="comparecontracts.module.score" /></th>
-                                    <th class="matchmakerAttr2"><fmt:message key="details" bundle="${cons}" /></th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-
                 </div>
+                <%@include file="WEB-INF/jspf/stats-buyer.jspf" %>
             </div>
         </div>
 
         <%@include file="WEB-INF/jspf/footer.jspf" %>
 
+        <script src="js/cpv-codes.js"></script>
+        <script src="js/locations.js"></script>
+        <script src="js/functions.js"></script>
+        <script src="js/sessionstorage.1.4.js"></script>
+        <script src="js/toolsBuyer.js"></script>
+        <script src="js/script.js"></script>	
+        <script src="js/table.js"></script>
+        <script src="js/application.js"></script>
+        <script src="js/matchmaker.js"></script>
+
         <script type="text/javascript">
+          // Testing link:
+          // http://localhost:8080/compare-contracts.jsp?target=http://linked.opendata.cz/resource/vestnikverejnychzakazek.cz/public-contract/211221-7202011011221&source=http://linked.opendata.cz/resource/pc-filing-app/public-contract/1d66f81d-fb15-48f9-9f38-a05d3507a7ee
+          (function ($) {
+            $(document).ready(function () {
+              var getContract = function () {
+                var opts = {
+                  action: "getContractJson",
+                  public: true
+                };
 
-            var contractURL = sessionStorage.contractURL;
-            var title = sessionStorage.contractTitle;
-            var description = sessionStorage.contractDescription;
-            //var cpvString = sessionStorage.contractCpvString;
-            var price = sessionStorage.contractPrice;
-            var currency = sessionStorage.contractCurrency;
-            var place = sessionStorage.contractPlace;
+                var _getContract = function (contractUri, type) {
+                  $.getJSON("PCFilingApp",
+                    $.extend(opts, {copyContractURL: contractUri}),
+                    function (data) {
+                      return data;  
+                    });
+                }
+                return _getContract;
+              }();
 
-            var contractURL2 = sessionStorage.contractURL2;
-            var title2 = sessionStorage.contractTitle2;
-            var description2 = sessionStorage.contractDescription2;
-            //var cpvString2 = sessionStorage.contractCpvString2;
-            var price2 = sessionStorage.contractPrice2;
-            var currency2 = sessionStorage.contractCurrency2;
-            var place2 = sessionStorage.contractPlace2;
-            var triplesURL2 = sessionStorage.contractTriplesURL2;
+              var sourceUri = APP.util.getParameterByName("source"),
+                targetUri = APP.util.getParameterByName("target");
+              if (sourceUri && targetUri) {
+                $.when(
+                  getContract(sourceUri, "source"),
+                  getContract(targetUri, "target")
+                ).then(function (sourceData, targetData) {
+                  console.log(sourceData);
+                }); 
+              } else {
+                console.log("Missing URIs to compare.");
+              }
+            });
+          })(jQuery);
+        </script>
 
-            var comparerMessages = JSON.parse(sessionStorage.comparerMessages);
+        <%--
+        <script type="text/javascript">
+            var buyerURL = sessionStorage.buyerURL;
 
             $(window).ready(function() {
-
-                //$('#contractTitle').append(title);
-
-                $('#title1').append(title);
-                $('#title2').append(title2);
-
-
-                if (price == "undefined" && currency == "undefined")
-                {
-                    $('#price1').append("undefined");
-                }
-                else
-                    $('#price1').append(price + " " + currency);
-                if (price2 == "undefined" && currency2 == "undefined")
-                {
-                    $('#price2').append("undefined");
-                }
-                else
-                    $('#price2').append(price2 + " " + currency2);
-
-
-                $('#place1').append(place);
-                $('#place2').append(place2);
-
-                //$('#cpv1').append(cpvString);
-                //$('#cpv2').append(cpvString2);
-
-                $('#description1').append(description);
-                $('#description2').append(description2);
-
-                $('#triples2').append('<a href="' + htmlEncode(triplesURL2) + '" target="_blank">RDF (N3)</a>');
-                //$('#comparerMessages').append('<pre id="messagePre" style="display:none;">' + comparerMessages + '</pre>');
-
-                $.each(comparerMessages, function(key, value) {
-                    newRow = $('<tr>');
-                    newRow.append($('<td>').append(key.replace("Comparer", "")));
-                    newRow.append($('<td>').addClass('matchmakerAttr0').append(value[0]));
-                    newRow.append($('<td>').addClass('matchmakerAttr1').append($('<meter>').val(value[1] / 100)).append("&nbsp;&nbsp;&nbsp;" + value[1] + "%"));
-                    newRow.append($('<td>').addClass('matchmakerAttr2').append(value[2]));
-                    /*for (var col = 0; col < value.length; col++ ) {
-                     newRow.append($('<td>').addClass('matchmakerAttr' + col).append(value[col]));	
-                     }*/
-                    newRow.appendTo("#comparerMessagesTable");
-                });
-
-                populateContractDetails();
+                fillEvent();
             });
 
-            $(window).ready(function() {
-                checkUser();
-            });
-
-            function populateContractDetails()
-            {
-                // for both contracts
-                $.getJSON("ContractsComponent?action=getPrivateContract&contractURI=" + encodeURIComponent(contractURL), function(data)
-                {
-                    $.each(data, function(i, data) {
-
-                        $('#cpv1').append(htmlEncode(data.mainCPV));
-                        $('#cpva1').append(htmlEncode(data.additionalCPV));
-                        try {
-                            $('#cauth1').append(htmlEncode(data.contractingAuthority.name));
-                        } catch (e) {
-                        }
-                        $('#ptype1').append(htmlEncode(data.procedureType));
-
-                    });
-                    $('td').tooltip();
-                });
-
-                $.getJSON("ContractsComponent?action=getPublicContract&contractURI=" + encodeURIComponent(contractURL2), function(data)
-                {
-                    $.each(data, function(i, data) {
-
-                        $('#cpv2').append(htmlEncode(data.mainCPV));
-                        $('#cpva2').append(htmlEncode(data.additionalCPV));
-                        try {
-                            $('#cauth2').append(htmlEncode(data.contractingAuthority.name));
-                        } catch (e) {
-                        }
-                        $('#ptype2').append(htmlEncode(data.procedureType));
-
-                    });
-                    $('td').tooltip();
-
-                    $('#progressbar').hide();
-                    $('#contractTable').fadeIn('slow');
-                    if ($_GET('mm')) {
-                        $('#seeMm').hide();
-                        $('#comparerMessagesTable').show();
-                    }
-
-                });
-
-                // todo 2nd
-            }
-
-            function checkUser() {
-                if (sessionStorage.username != undefined) {
-                    $("#username").append(sessionStorage.username);
+            function fillEvent() {
+                var opts = {
+                  action: "getContractJson",
+                  copyContractURL: sessionStorage.contractURL,
+                };
+                if (!buyerURL) {
+                  opts["public"] = true;
                 }
-                $.getJSON("SystemManager?action=getuser", function(data)
+                $.getJSON("PCFilingApp", opts, function (data)
                 {
                     if (data == null || data.length == 0) {
                         sessionStorage.clear();
                         window.location.href = "./";
                     } else {
-                        $("#username").html(data);
-                        sessionStorage.username = data;
+                        var field;
+                        $("#contractName").html(data.title);
+                        $("#inputTitle").html(data.title);
+                        $('#eventTitle').append(data.title);
+                        var contr = $('<a>').attr('href', 'entity-buyer.jsp');
+                        contr.on('click', function() {
+                            showEntity(data.contractingAuthority.entity);
+                        });
+                        if (typeof data.contractingAuthority !== "undefined") {
+                          contr.append(data.contractingAuthority.name);
+                        }
+                        $("#contractor").append(contr);
+
+                        field = $("#inputDescription")
+                        if (data.description) {
+                            field.html(data.description);
+                        } else {
+                            field.closest(".control-group").addClass('hide');
+                        }
+
+                        $.each(collection, function(key, value) {
+                            if (value.indexOf(data.mainCPV) > -1)
+                                $("#cpv1").html(value);
+                            if (data.additionalCPV)
+                                $.each(data.additionalCPV, function(k, v) {
+                                    if (value.indexOf(v) > -1) {
+                                        $("#cpv" + (Number(k) + 2)).html(value);
+                                    }
+                                });
+                        });
+
+                        if (data.tendersOpening) {
+                            $("#tendersOpened").html((new Date(data.tendersOpening)).toUTCString());
+                            $("#tendersOpened").closest('.control-group').show();
+                        }
+
+                        if (data.procedureType) {
+                            $("#pM" + data.procedureType).removeClass("hide");
+                        }
+                        if (data.eventType) {
+                            $("#" + data.eventType).removeClass("hide");
+                        }
+
+                        field = $("#inputDeadline");
+                        if (data.deadline) {
+                            field.html(data.deadline);
+                        } else {
+                            field.closest(".control-group").addClass('hide');
+                        }
+
+                        field = $("#inputExactPrice");
+                        if (data.price) {
+                            field.html(data.price);
+                        } else {
+                            field.closest(".control-group").addClass('hide');
+                        }
+
+                        $("#estimatedPriceCurrency").html(data.currency);
+                        if (data.confidential == true) {
+                            $("#priceConfidential").removeClass("hide");
+                        }
+
+                        $("#inputStartDate").html(data.startDate);
+                        $("#inputEndDate").html(data.estimatedEndDate);
+
+                        $("#inputLocation").html(data.locationLabel);
+
+                        var NUTSe = false;
+                        $.each(locations, function(key, value) {
+                            if (value.indexOf(data.locationNUTS + "#") > -1) {
+                                $("#inputLocationNUTS").html(value);
+                                NUTSe = true;
+                                return false;
+                            }
+                        });
+                        if (!NUTSe) {
+                            $("#inputLocationNUTS").closest(".control-group").addClass('hide');
+                        }
+
+                        field = $("#inputEventReference");
+                        if (data.eventReference) {
+                            field.html(data.eventReference);
+                        } else {
+                            field.closest(".control-group").addClass('hide');
+                        }
+                        field = $("#inputProjectID");
+                        if (data.projectID) {
+                            field.html(data.projectID);
+                        } else {
+                            field.closest(".control-group").addClass('hide');
+                        }
+
+                        field = $("#inputFn");
+                        if (data.vcFN) {
+                            field.html(data.vcFN);
+                        } else {
+                            field.closest(".control-group").addClass('hide');
+                        }
+                        field = $("#inputEmail");
+                        if (data.vcEmail) {
+                            field.html(data.vcEmail);
+                        } else {
+                            field.closest(".control-group").addClass('hide');
+                        }
+                        field = $("#inputPhone");
+                        if (data.vcPhone) {
+                            field.html(data.vcPhone);
+                        } else {
+                            field.closest(".control-group").addClass('hide');
+                        }
+                        field = $("#inputPoint");
+                        if (data.vcNote) {
+                            field.html(data.vcNote);
+                        } else {
+                            field.closest(".control-group").addClass('hide');
+                        }
+
+                        if (data.criteria.LowestPrice)
+                            $("#inputECPrice").html(data.criteria.LowestPrice);
+                        if (data.criteria.TechnicalQuality)
+                            $("#inputECTech").html(data.criteria.TechnicalQuality);
+                        if (data.criteria.BestDate)
+                            $("#inputECDate").html(data.criteria.BestDate);
+
+                        //$("#btn"+data.eventType).click();
+
+                        $.each(data.documents, function() {
+                            var appendObj;
+                            switch (this.docType) {
+                                case "GeneralTerms":
+                                    appendObj = $("#fileGenTerms");
+                                    break;
+
+                                case "CallDocument":
+                                    appendObj = $("#fileCallDoc");
+                                    break;
+
+                                case "Amendment":
+                                    appendObj = $("#fileAmendment");
+                                    break;
+
+                                case "Responses":
+                                    appendObj = $("#fileResponses");
+                                    break;
+
+                                case "TechnicalSpecifications":
+                                    appendObj = $("#fileTechSpec");
+                                    break;
+
+                                case "PriceDelivery":
+                                    appendObj = $("#filePriceDelivery");
+                                    break;
+
+                                case "BidSecurity":
+                                    appendObj = $("#fileBidSec");
+                                    break;
+
+                                case "PerformanceSecurity":
+                                    appendObj = $("#filePerfSec");
+                                    break;
+
+                                case "BidSubmissionForm":
+                                    appendObj = $("#fileBidSubForm");
+                                    break;
+                            }
+                            appendObj.closest(".control-group").removeClass('hide');
+                            appendObj.append('<li id="doc-' + this.token + '"><a href="PCFilingApp?action=document&token=' + this.token + '"><i class="icon-download"></i> <a href="PCFilingApp?action=document&token=' + this.token + '">' + this.fileName + '</a></li>');
+
+                        });
                     }
+
+                    $("#progressbar").hide();
+                    $("#view").fadeIn();
                 });
             }
 
-        </script>
 
-        <script>
-            $("a").tooltip();
+
         </script>
+        --%>
     </body>
 </html>

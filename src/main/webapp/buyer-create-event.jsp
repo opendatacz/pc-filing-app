@@ -375,14 +375,19 @@
         </script>
 
         <script>
+          var cpvAutocompleteOpts = {
+            source: collection,
+            sorter: APP.autocomplete.cpvSorter
+          };
+
                                         $("#enableGuide").tooltip({placement: 'bottom'});
                                         $("a").tooltip();
                                         $("button").tooltip();
                                         $("label").tooltip();
                                         //$('#eventType button').button();  
-                                        $("#cpv1").typeahead({source: collection});
-                                        $("#cpv2").typeahead({source: collection});
-                                        $("#cpv3").typeahead({source: collection});
+                                        $("#cpv1").typeahead(cpvAutocompleteOpts);
+                                        $("#cpv2").typeahead(cpvAutocompleteOpts);
+                                        $("#cpv3").typeahead(cpvAutocompleteOpts);
                                         $("#inputLocationNUTS").typeahead({source: locations});
                                         $("#inputDeadline").datepicker({dateFormat: 'yy-mm-dd'});
                                         $("#inputStartDate").datepicker({dateFormat: 'yy-mm-dd'});

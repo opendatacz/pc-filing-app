@@ -1,4 +1,33 @@
 var APP = {
+  autocomplete: {
+    cpvSorter: function (items) {
+      var countZeros = function (cpv) {
+        var zeros = cpv.match(/^\d+/)[0].match(/0/g);
+        return zeros ? zeros.length : 0;
+      };
+      var cpvCompare = function (cpv1, cpv2) {
+        return countZeros(cpv2) - countZeros(cpv1); 
+      };
+
+      var beginsWith = [],
+        caseInsensitive = [],
+        queryLowerCase = this.query.toLowerCase(),
+        item;
+
+      while (item = items.shift()) {
+        var trimmed = item.toLowerCase().replace(/^[\d\-#]+/, "");
+        if (trimmed.indexOf(queryLowerCase) === 0) {
+          beginsWith.push(item);
+        } else {
+          caseInsensitive.push(item);
+        }
+      }
+
+      beginsWith.sort(cpvCompare);
+      caseInsensitive.sort(cpvCompare);
+      return beginsWith.concat(caseInsensitive);
+    }
+  },
   dom: {
     normalizeInputValidity: function (invalidMsg) {
       $("input").on("invalid", function (e) {
