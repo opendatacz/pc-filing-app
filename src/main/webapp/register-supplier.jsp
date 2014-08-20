@@ -82,7 +82,16 @@
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label"><fmt:message key="identifier" bundle="${cons}" /></label>
+                  <label class="control-label">
+                    <fmt:message key="identifier" bundle="${cons}" />
+                    <a class="help-msg"
+                       href="javascript:void(0);"
+                       data-content="<fmt:message key="body.form.identifierhelp" />"
+                       data-placement="bottom"
+                       data-toggle="popover">
+                      <i class="icon-question-sign"></i>
+                    </a>
+                  </label>
                     <div class="controls">
                       <input name="businessIC"
                              placeholder="<fmt:message key="body.form.identifier" />"
@@ -96,11 +105,11 @@
                 <div class="control-group required">
                   <label class="control-label" for="inputDescription">
                     <fmt:message key="supplier.body.cpv" />
-                    <a href="javascript:void(0);"
-                       data-content="<fmt:message key="body.form.cpvhelp.content" />"
+                    <a class="help-msg"
+                       href="javascript:void(0);"
+                       data-content="<fmt:message key="body.form.cpvhelp" />"
                        data-placement="bottom"
-                       data-toggle="popover"
-                       id="cpv-popover">
+                       data-toggle="popover">
                       <i class="icon-question-sign"></i>
                     </a>
                   </label>
@@ -165,7 +174,7 @@
 
                     $(window).ready(function() {
                       APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
-                      $("#cpv-popover").popover();
+                      $(".help-msg").popover();
 
                         var mtype = '${mt}';
                         if (mtype != null && mtype.length > 0) {

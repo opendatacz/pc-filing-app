@@ -71,7 +71,16 @@
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label"><fmt:message key="identifier" bundle="${cons}" /></label>
+                  <label class="control-label">
+                    <fmt:message key="identifier" bundle="${cons}" />
+                    <a class="help-msg"
+                       href="javascript:void(0);"
+                       data-content="<fmt:message key="body.form.identifierhelp" />"
+                       data-placement="bottom"
+                       data-toggle="popover">
+                      <i class="icon-question-sign"></i>
+                    </a>
+                  </label>
                     <div class="controls">
                       <input name="businessIC"
                              placeholder="<fmt:message key="body.form.identifier" />"
@@ -120,6 +129,7 @@
                             // ?m=lorem ipsum&t=info
                             $(window).ready(function() {
                                 APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
+                                $(".help-msg").popover();
 
                                 var mtype = '${mt}';
                                 if (mtype != null && mtype.length > 0) {
