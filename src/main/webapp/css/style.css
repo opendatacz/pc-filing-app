@@ -117,3 +117,12 @@ input::-webkit-inner-spin-button {
   min-width: 210px;
   max-width: 210px;
 }
+
+.control-group.required .control-label:after { 
+  color: #d00;
+  content: "*";
+  margin-left: 4px;
+  top: 7px;
+}
+
+.popover-title { display: none; }

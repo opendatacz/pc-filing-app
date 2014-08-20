@@ -39,45 +39,71 @@
 
                 <h4><fmt:message key="supplier.body.setting.account" />:</h4>
                 <br>
-                <div class="control-group">
-                    <label class="control-label" for="inputFn"><fmt:message key="email" bundle="${cons}" /> <font color="red">*</font></label>
+                <div class="control-group required">
+                    <label class="control-label" for="inputFn"><fmt:message key="email" bundle="${cons}" /></label>
                     <div class="controls">
-                        <input required name="username" type="text" id="inputFn">
+                      <input required
+                             name="username"
+                             placeholder="<fmt:message key="body.form.email" />"
+                             type="text"
+                             id="inputFn">
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label"><fmt:message key="password" bundle="${cons}" /> <font color="red">*</font></label>
+                <div class="control-group required">
+                    <label class="control-label"><fmt:message key="password" bundle="${cons}" /></label>
                     <div class="controls">
-                        <input required name="password" type="password">
+                      <input required
+                             name="password"
+                             placeholder="<fmt:message key="body.form.password" />"
+                             type="password">
                     </div>
                 </div>
                 <hr>
                 <h4><fmt:message key="supplier.body.setting.entity" />:</h4>
                 <br>
-                <div class="control-group">
-                    <label class="control-label"><fmt:message key="name" bundle="${cons}" /> <font color="red">*</font></label>
+                <div class="control-group required">
+                    <label class="control-label"><fmt:message key="name" bundle="${cons}" /></label>
                     <div class="controls">
-                        <input required name="businessName" type="text">
+                      <input required
+                             name="businessName"
+                             placeholder="<fmt:message key="body.form.name" />"
+                             type="text">
+                    </div>
+                </div>
+                <div class="control-group required">
+                    <label class="control-label"><fmt:message key="supplier.body.place" /></label>
+                    <div class="controls">
+                      <input required
+                             name="businessPlace"
+                             id="businessPlace"
+                             placeholder="<fmt:message key="body.form.place" />"
+                             type="text"
+                             autocomplete="off">
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label"><fmt:message key="supplier.body.place" /> <font color="red">*</font></label>
+                    <label class="control-label"><fmt:message key="identifier" bundle="${cons}" /></label>
                     <div class="controls">
-                        <input required name="businessPlace" id="businessPlace" type="text" autocomplete="off">
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label">IC</label>
-                    <div class="controls">
-                        <input name="businessIC" type="text">
+                      <input name="businessIC"
+                             placeholder="<fmt:message key="body.form.identifier" />"
+                             type="text">
                     </div>
                 </div>
                 <hr>
 
                 <h4><fmt:message key="supplier.body.interest" />: </h4>
                 <br>
-                <div class="control-group">
-                    <label class="control-label" for="inputDescription"><fmt:message key="supplier.body.cpv" /> <font color="red">*</font></label>
+                <div class="control-group required">
+                  <label class="control-label" for="inputDescription">
+                    <fmt:message key="supplier.body.cpv" />
+                    <a href="javascript:void(0);"
+                       data-content="<fmt:message key="body.form.cpvhelp.content" />"
+                       data-placement="bottom"
+                       data-toggle="popover"
+                       id="cpv-popover">
+                      <i class="icon-question-sign"></i>
+                    </a>
+                  </label>
                     <div class="controls">
                         <input required id="cpv1" type="text" name="cpv1" placeholder="<fmt:message key="supplier.body.cpv1" />" autocomplete="off">&nbsp;&nbsp;&nbsp;
                         <input id="cpv2" type="text" name="cpv2" placeholder="<fmt:message key="supplier.body.cpv2" />" autocomplete="off">&nbsp;&nbsp;&nbsp;
@@ -138,7 +164,8 @@
                     $("#businessPlace").typeahead({source: locations});
 
                     $(window).ready(function() {
-                        APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
+                      APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
+                      $("#cpv-popover").popover();
 
                         var mtype = '${mt}';
                         if (mtype != null && mtype.length > 0) {

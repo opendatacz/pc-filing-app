@@ -39,31 +39,43 @@
 
                 <h4><fmt:message key="buyer.body.setting.account" />:</h4>
                 <br>
-                <div class="control-group">
-                    <label class="control-label" for="inputFn"><fmt:message key="email" bundle="${cons}" /> <font color="red">*</font></label>
+                <div class="control-group required">
+                    <label class="control-label" for="inputFn"><fmt:message key="email" bundle="${cons}" /></label>
                     <div class="controls">
-                        <input required name="username" type="text" id="inputFn">
+                      <input required
+                             name="username"
+                             placeholder="<fmt:message key="body.form.email" />"
+                             type="text"
+                             id="inputFn">
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label"><fmt:message key="password" bundle="${cons}" /> <font color="red">*</font></label>
+                <div class="control-group required">
+                    <label class="control-label"><fmt:message key="password" bundle="${cons}" /></label>
                     <div class="controls">
-                        <input required name="password" type="password">
+                      <input required
+                             name="password"
+                             placeholder="<fmt:message key="body.form.password" />"
+                             type="password">
                     </div>
                 </div>
                 <hr>
                 <h4><fmt:message key="buyer.body.setting.entity" />:</h4>
                 <br>
-                <div class="control-group">
-                    <label class="control-label"><fmt:message key="name" bundle="${cons}" /> <font color="red">*</font></label>
+                <div class="control-group required">
+                    <label class="control-label"><fmt:message key="name" bundle="${cons}" /></label>
                     <div class="controls">
-                        <input required name="businessName" type="text">
+                      <input required
+                             name="businessName"
+                             placeholder="<fmt:message key="body.form.name" />"
+                             type="text">
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label">IC</label>
+                    <label class="control-label"><fmt:message key="identifier" bundle="${cons}" /></label>
                     <div class="controls">
-                        <input name="businessIC" type="text">
+                      <input name="businessIC"
+                             placeholder="<fmt:message key="body.form.identifier" />"
+                             type="text">
                     </div>
                 </div>
                 <hr>
