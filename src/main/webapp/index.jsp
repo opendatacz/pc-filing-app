@@ -61,7 +61,8 @@
                 <div class="span4">
                     <h2><fmt:message key="body.acknowledgements.title" /></h2>
                     <p>
-                      <img src="/images/LOD2_logo.png" alt="<fmt:message key="body.acknowledgements.logo" />"/>
+                      <img src="${pageContext.request.contextPath}/images/LOD2_logo.png"
+                           alt="<fmt:message key="body.acknowledgements.logo" />"/>
                     </p>
                     <p><fmt:message key="body.acknowledgements.desc" /></p>
                     <%--
