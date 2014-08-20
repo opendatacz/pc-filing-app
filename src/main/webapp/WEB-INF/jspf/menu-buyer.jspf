@@ -16,11 +16,6 @@
             <li><a href="buyer-awarded.jsp"><fmt:message key="menu.contracts.awarded" /></a></li>
             <li><a href="buyer-completed.jsp"><fmt:message key="menu.contracts.completed" /></a></li>
             <li><a href="buyer-withdrawn.jsp"><fmt:message key="menu.contracts.withdrawn" /></a></li>
-            <li class="divider"></li>
-            <li class="nav-header"><fmt:message key="menu.search.title" /></li>
-            <li class="disabled"><a href="#"><fmt:message key="menu.search.calls" /></a></li>
-            <li class="disabled"><a href="#"><fmt:message key="menu.search.contracts" /></a></li>
-            <li class="disabled"><a href="#"><fmt:message key="menu.search.suppliers" /></a></li>
         </ul>
     </div>
 </div>

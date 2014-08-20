@@ -23,11 +23,6 @@
             <li class="divider"></li>
             <li class="nav-header"><fmt:message key="menu.calls.title" /></li>
             <li class=""><a href="supplier-calls.jsp"><fmt:message key="menu.calls.open" /></a></li>
-            <li class="divider"></li>
-            <li class="nav-header"><fmt:message key="menu.analytics.title" /></li>
-            <li class="disabled"> <a href="#"><fmt:message key="menu.analytics.pricing" /></a></li>
-            <li class="disabled"> <a href="#"><fmt:message key="menu.analytics.saving" /></a></li>              			
-            <li class="disabled"><a href="#" class="btn" style="margin: 10px;"><fmt:message key="menu.analytics.create" /></a></li>             			
         </ul>
     </div>
 </div>
