@@ -9,7 +9,14 @@
             </a> <a class="brand" href="${pageContext.request.contextPath}/${homepage}"><fmt:message key="pcfilingapp" bundle="${cons}" /></a>
             <div class="nav-collapse collapse">
                 <p class="navbar-text pull-right">
-                    <fmt:message key="loggedin" bundle="${cons}" /> <span id="username" href="#"></span> <a href="SystemManager?action=logout&forward-message=<fmt:message key="logoutmessage" bundle="${cons}" />&forward=./" class="navbar-link" title="<fmt:message key="logout" bundle="${cons}" />" style="margin-left: 1em "><i class="icon-off icon-white"></i></a> 						
+                    <fmt:message key="loggedin" bundle="${cons}" />
+                    <span id="username" href="#"></span>
+                    <a href="SystemManager?action=logout&forward-message=<fmt:message key="logoutmessage" bundle="${cons}" />&forward=./"
+                       class="navbar-link"
+                       title="<fmt:message key="logout" bundle="${cons}" />"
+                       style="margin-left: 1em;">
+                      <i class="icon-off icon-white"></i>
+                    </a> 						
                 </p>
                 <ul class="nav">
                     <li><a href="#" id="enableGuide" onclick="userHelper('on')">Help</a></li>

@@ -143,6 +143,7 @@
           (function ($) {
             $(document).ready(function () {
               var tableName = "PrivateContracts";
+              sessionStorage.public = false;
               TABLE.init(tableName);
             });
           })(jQuery);

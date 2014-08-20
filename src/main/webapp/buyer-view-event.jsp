@@ -341,14 +341,12 @@
                 fillEvent();
             });
 
-            function fillEvent() {
+              function fillEvent() {
                 var opts = {
                   action: "getContractJson",
                   copyContractURL: sessionStorage.contractURL,
+                  public: sessionStorage.public 
                 };
-                if (!buyerURL) {
-                  opts["public"] = true;
-                }
                 $.getJSON("PCFilingApp", opts, function (data)
                 {
                     if (data == null || data.length == 0) {

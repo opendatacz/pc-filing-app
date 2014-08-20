@@ -24,6 +24,7 @@ var MATCHMAKER = {
       template = $(config.dom.templateId).html();
     matchResultsBody.delegate(".contract-link", "click", function (e) {
       sessionStorage.contractURL = $(e.target).data("contract-uri");
+      sessionStorage.public = true;
     });
 
     Mustache.parse(template);

@@ -272,7 +272,6 @@
                                         function fillEvent() {
                                             $.getJSON("PCFilingApp?action=getContractJson&copyContractURL=" + encodeURIComponent(sessionStorage.copyContractURL), function(data)
                                             {
-                                                console.log(data);
                                                 if (data == null || data.length == 0) {
                                                     sessionStorage.clear();
                                                     window.location.href = "./";
