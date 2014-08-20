@@ -151,6 +151,13 @@
                             <div class="control-group required">
                               <label class="control-label" for="inputStartDate">
                                 <fmt:message key="createevent.startend" />
+                                <a class="help-msg"
+                                  href="javascript:void(0);"
+                                  data-content="<fmt:message key="createevent.startend.help" />"
+                                  data-placement="bottom"
+                                  data-toggle="popover">
+                                  <i class="icon-question-sign"></i>
+                                </a>
                               </label>
                                 <div class="controls">
                                     <input required name="estimatedStartDate" type="text" id="inputStartDate"> - <input required id="inputEndDate" name="estimatedEndDate" type="text">
