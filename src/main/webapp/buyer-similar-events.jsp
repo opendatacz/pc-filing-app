@@ -22,6 +22,11 @@
               <fmt:message key="similarevents.help" />
           </div>
 
+          <button class="btn btn-small" href="#" id="back">
+            <i class="icon-backward"></i>
+            <fmt:message key="goback" bundle="${cons}" /> 
+          </button>
+
           <h3 class="matchmakerResultsTitle">
             <fmt:message key="similarevents.title" /> '<span id="contractTitle"></span>'.
           </h3>
@@ -163,6 +168,9 @@
           //$("#addedboxes .box").appendTo($("#statsbuyer"));
           checkUser();
           $("#contractTitle").text(sessionStorage.contractTitle); 
+          $("#back").click(function (e) {
+            window.history.back();
+          });
 
           var config = {
             dom: {

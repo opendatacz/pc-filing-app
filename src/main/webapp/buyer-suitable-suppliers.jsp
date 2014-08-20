@@ -22,6 +22,11 @@
                       <fmt:message key="suitablesuppliers.help" />
                   </div>
 
+                  <button class="btn btn-small" href="#" id="back">
+                    <i class="icon-backward"></i>
+                    <fmt:message key="goback" bundle="${cons}" /> 
+                  </button>
+
                   <h3 class="matchmakerResultsTitle">
                     <fmt:message key="suitablesuppliers.title" /> '<span id="contractTitle"></span>'.
                   </h3>
@@ -111,6 +116,9 @@
               // Boilerplate
               checkUser();
               $("#contractTitle").text(sessionStorage.contractTitle); 
+              $("#back").click(function (e) {
+                window.history.back();
+              });
 
               var config = {
                 dom: {
