@@ -137,12 +137,11 @@
             </div>
 
             <%@include file="WEB-INF/jspf/footer.jspf" %>
-            <script src="js/cpv-codes-${pageContext.request.locale}.js"></script>  
+            <script src="js/cpv-codes-<c:out value="${pageContext.request.locale.language}" />.js"></script>  
             <script src="js/jquery-ui.js"></script>
             <script src="js/main.js"></script>    
 
             <script>
-
                                 var tenderURL = sessionStorage.tenderURL;
                                 var title = sessionStorage.contractTitle;
                                 var buyerURL = sessionStorage.buyerURL;

@@ -77,7 +77,6 @@
 
             <hr>
 
-
             <!-- Modal -->
             <div id="login-buyer" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="buyer-label" aria-hidden="true">
                 <form class="form-horizontal" id="login-buyer-form" style="margin-bottom: 0px;" action="SystemManager" method="post">

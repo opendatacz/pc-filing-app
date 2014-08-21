@@ -153,8 +153,8 @@
 
         <%@include file="WEB-INF/jspf/footer.jspf" %>
 
-        <script type="text/javascript" src="js/cpv-codes-${pageContext.request.locale}.js"></script>
-        <script type="text/javascript" src="js/locations.js"></script>    
+        <script src="js/cpv-codes-<c:out value="${pageContext.request.locale.language}" />.js"></script>
+        <script src="js/locations.js"></script>    
         <script src="js/application.js"></script>
 
         <script>

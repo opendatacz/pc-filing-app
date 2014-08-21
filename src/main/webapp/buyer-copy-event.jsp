@@ -250,7 +250,7 @@
             </div>
         </div>
         <%@include file="WEB-INF/jspf/footer.jspf" %>
-        <script src="js/cpv-codes-${pageContext.request.locale}.js"></script>
+        <script src="js/cpv-codes-<c:out value="${pageContext.request.locale.language}" />.js"></script>
         <script src="js/locations.js"></script>
         <script src="js/functions.js"></script>
         <script src="js/sessionstorage.1.4.js"></script>

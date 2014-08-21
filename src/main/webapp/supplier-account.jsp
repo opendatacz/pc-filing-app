@@ -35,26 +35,34 @@
                             <input name="action" type="hidden" value="updateAccount">
                             <input name="forward" id="fwd" type="hidden" value="supplier-account.jsp">
                             <input name="forward-if-fail" type="hidden" value="supplier-account.jsp?t=error&m=<fmt:message key="account.error" />">
-                            <div class="control-group">
-                                <label class="control-label"><fmt:message key="name" bundle="${cons}" /> <font color="red">*</font></label>
+                            <div class="control-group required">
+                              <label class="control-label">
+                                <fmt:message key="name" bundle="${cons}" />
+                              </label>
                                 <div class="controls">
                                     <input required id="businessName" type="text" name="businessName">
                                 </div>
                             </div>
-                            <div class="control-group">
-                                <label class="control-label"><fmt:message key="supplier.body.place" bundle="${reg}" /> <font color="red">*</font></label>
+                            <div class="control-group required">
+                              <label class="control-label">
+                                <fmt:message key="supplier.body.place" bundle="${reg}" />
+                              </label>
                                 <div class="controls">
                                     <input required name="businessPlace" id="businessPlace" type="text" autocomplete="off">
                                 </div>
                             </div>
                             <div class="control-group">
-                                <label class="control-label">IC (<fmt:message key="optional" bundle="${cons}" />)</label>
+                              <label class="control-label">
+                                <fmt:message key="identifier" bundle="${cons}" />
+                              </label>
                                 <div class="controls">
                                     <input name="businessIC" id="businessIC" type="text">
                                 </div>
                             </div>
-                            <div class="control-group">
-                                <label class="control-label" for="inputDescription"><fmt:message key="cpvcodes" bundle="${cons}" /> <font color="red">*</font></label>
+                            <div class="control-group required">
+                              <label class="control-label" for="inputDescription">
+                                <fmt:message key="cpvcodes" bundle="${cons}" />
+                              </label>
                                 <div class="controls">
                                     <input required id="cpv1" type="text" name="cpv1" placeholder="<fmt:message key="account.cpv.first" />" autocomplete="off">&nbsp;&nbsp;&nbsp;
                                     <input id="cpv2" type="text" name="cpv2" placeholder="<fmt:message key="account.cpv.second" />" autocomplete="off">&nbsp;&nbsp;&nbsp;
@@ -129,7 +137,7 @@
         <script src="js/toolsSupplier.js"></script>
         <script src="js/main.js"></script>
         <script src="js/locations.js"></script> 
-        <script src="js/cpv-codes-${pageContext.request.locale}.js"></script>
+        <script src="js/cpv-codes-<c:out value="${pageContext.request.locale.language}" />.js"></script>
         <script src="js/application.js"></script>
         <script type="text/javascript">
             function searchStringInArray(str, strArray) {

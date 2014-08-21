@@ -132,7 +132,7 @@
         
         <script src="js/functions.js"></script>
         <script src="js/sessionstorage.1.4.js"></script>
-        <script src="js/cpv-codes-${pageContext.request.locale}.js"></script>
+        <script src="js/cpv-codes-<c:out value="${pageContext.request.locale.language}" />.js"></script>
         <script src="js/script.js"></script>
         <script src="js/toolsBuyer.js"></script>
         <script src="js/table.js"></script>

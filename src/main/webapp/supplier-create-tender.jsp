@@ -7,7 +7,7 @@
         <%@include file="WEB-INF/jspf/header-supplier.jspf" %>
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Supplier" />
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
-        <link href="./bootstrap/css/won.css" rel="stylesheet" />
+        <link href="bootstrap/css/won.css" rel="stylesheet" />
     </head>
     <body>
         <%@include file="WEB-INF/jspf/header-private.jspf" %>
@@ -126,7 +126,7 @@
         <%@include file="WEB-INF/jspf/footer.jspf" %> 
         <script src="js/functions.js"></script>    
         <script src="js/sessionstorage.1.4.js"></script>
-        <script src="js/cpv-codes-${pageContext.request.locale}.js"></script>  
+        <script src="js/cpv-codes-<c:out value="${pageContext.request.locale.language}" />.js"></script>  
         <script src="js/jquery-ui.js"></script>
         <script src="js/main.js"></script>
         <script src="js/toolsSupplier.js"></script>        
