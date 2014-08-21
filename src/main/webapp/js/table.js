@@ -225,7 +225,11 @@ function CPVs(cpv1, cpvAll) {
         
 	var list = $("<ul>");	
 	$.each(cpv, function (index) {
-		list.append( $('<li>').append(cpvs["cpv"+cpv[index]]));
+		list.append(
+      $('<li>').append($.grep(cpvCollection, function (item) {
+        return item.indexOf(cpv[index]) === 0;
+      }))
+    );
 	});
 	
 	list.addClass("table_cpvs");
