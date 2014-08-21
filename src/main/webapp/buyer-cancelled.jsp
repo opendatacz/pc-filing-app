@@ -49,7 +49,7 @@
 					</ul>
 				</div>
 			</div>
-                        <%@include file="WEB-INF/jspf/stats-buyer.jspf" %>
+      <%@include file="WEB-INF/jspf/stats-buyer.jspf" %>
 		</div>
 	</div>
 	<%@include file="WEB-INF/jspf/footer.jspf" %>
@@ -108,26 +108,23 @@
 						newActions = $('<div>');
 						newActions.addClass('btn-group');
 							
-							// Withdraw
-							newWithdraw = $('<a>');
-							newWithdraw.attr('href', 'buyer-copy-event.jsp');
-							newWithdraw.click(function() { copyEvent(data.contractURI); });
-							newWithdraw.append('copy as new').appendTo(newActions);
+            // Withdraw
+            newWithdraw = $('<a>');
+            newWithdraw.attr('href', 'buyer-copy-event.jsp');
+            newWithdraw.click(function() { copyEvent(data.contractURI); });
+            newWithdraw.append('<fmt:message key="cancelled.copyasnew" />').appendTo(newActions);
 
 						newActions.children('a').addClass('btn');
 						newRow.append($('<td>').append(newActions));
 						
 						newRow.appendTo("#contractTable");
-
 					}
 				);
-
 		}
 		
 		function copyEvent(contractURL) {
 			sessionStorage.copyContractURL = contractURL;
 			return;
-			
 		}
 		
 		$(window).ready(function() {
@@ -135,6 +132,6 @@
 		});
 
 		$('a').tooltip();
-	</script>
-    </body>
+	  </script>
+  </body>
 </html>
