@@ -631,9 +631,9 @@ public class PCFappModelContract implements Serializable {
 
         String procedureURL = config.getPrefix("proctypes") + procType;
 
-        String cpv1URL = config.getPrefix("cpv") + (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-'));
-        String cpv2URL = config.getPrefix("cpv") + (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-'));
-        String cpv3URL = config.getPrefix("cpv") + (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-'));
+        String cpv1URL = !cpv1.isEmpty() ? config.getPrefix("cpv") + cpv1.substring(0, cpv1.indexOf('#')) : "";
+        String cpv2URL = !cpv2.isEmpty() ? config.getPrefix("cpv") + cpv2.substring(0, cpv2.indexOf('#')) : "";
+        String cpv3URL = !cpv3.isEmpty() ? config.getPrefix("cpv") + cpv3.substring(0, cpv3.indexOf('#')) : "";
 
         String locationURL = contractURL + "/place/1";
         String nutsURL = config.getPrefix("nuts") + nuts.substring(0, (nuts + "#").indexOf('#'));
