@@ -385,6 +385,7 @@
                                             $(window).ready(function() {
                                                 APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
                                                 $(".help-msg").popover();
+                                                $("body").on("click", APP.dom.dismissablePopover); 
                                                 fillEvent();
 
                                                 function newDoc(inputName, name) {

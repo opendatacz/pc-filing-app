@@ -130,6 +130,7 @@
                             $(window).ready(function() {
                                 APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
                                 $(".help-msg").popover();
+                                $("body").on("click", APP.dom.dismissablePopover); 
 
                                 var mtype = '${mt}';
                                 if (mtype != null && mtype.length > 0) {
