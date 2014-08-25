@@ -339,6 +339,7 @@
           (function ($) {
             $(document).ready(function () {
               $(".help-msg").popover();
+	      $("body").on("click", APP.dom.dismissablePopover);
 
               var $predictButton = $("#predict-price"),
                 $predictPriceModal = $("#predict-price-modal"),
