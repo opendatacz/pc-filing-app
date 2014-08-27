@@ -17,6 +17,13 @@
 
                 <div class="span10">
 
+                    <div class="alert hide" id="userHelper">
+                      <button class="close"
+                        onclick="userHelper('off')"
+                        title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>
+                        <fmt:message key="viewevent.help" />
+                    </div>
+
                     <div id="progressbar"></div>
 
                     <div class="hide view">
