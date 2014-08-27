@@ -468,12 +468,14 @@
                             field.closest(".control-group").addClass('hide');
                         }
 
-                        if (data.criteria.LowestPrice)
-                            $("#inputECPrice").html(data.criteria.LowestPrice);
-                        if (data.criteria.TechnicalQuality)
-                            $("#inputECTech").html(data.criteria.TechnicalQuality);
-                        if (data.criteria.BestDate)
+                        if (typeof data.criteria !== "undefined") {
+                          if (data.criteria.LowestPrice)
+                              $("#inputECPrice").html(data.criteria.LowestPrice);
+                          if (data.criteria.TechnicalQuality)
+                              $("#inputECTech").html(data.criteria.TechnicalQuality);
+                          if (data.criteria.BestDate)
                             $("#inputECDate").html(data.criteria.BestDate);
+                        }
 
                         //$("#btn"+data.eventType).click();
 
