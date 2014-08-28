@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PC Filing App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      footer {
+        padding-top: 60px;
+      }
+    </style>
+    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="bootstrap/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="bootstrap/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="bootstrap/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="bootstrap/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="bootstrap/ico/apple-touch-icon-57-precomposed.png">
+
+	<script src="bootstrap/js/jquery.js"></script>
+	<script src="js/functions.js"></script>    
+	<script src="js/sessionstorage.1.4.js"></script>
+
+  </head>
+
+  <body>
+
+     <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="./">TenderStats <sup><i>BETA</i></sup></a>
+          <div class="nav-collapse collapse">
+            <ul class="nav pull-right">
+              <li><a href="#"><i class="icon-search icon-white"></i></a></li>
+              <li><a href="#" onclick="showHint()" ><i class="icon-question-sign icon-white"></i></a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+	
+		<div class="alert hide" id="userHelper">
+		<button class="close" onclick="hideHint()" title="Disable guide" >×</button>		
+			Welcome to Tenderstats.<br/>
+			On this page, you can register to the application as a buyer.<br/>
+			You will be able to manage your events through their whole lifecycle.<br/>
+			Enter your email, password and name of your company. 
+		</div>
+	
+	<!-- Message from query string -->
+	  <div id="message" class="alert fade in hide">
+         <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+
+      <h1>New buyer registration</h1>
+      <hr>
+
+     <form action="SystemManager" class="form-horizontal" method="post">
+      <input name="action" type="hidden" value="register">
+	  <input name="forward" type="hidden" value="./?t=success&m=<strong>Registration successfull.</strong><br> You can log in now with your e-mail and password.">
+	  <input name="forward-if-fail" type="hidden" value="register-buyer.html?t=error&m=<strong>We are sorry, but a user with that email already exists.</strong><br> Please try with another one.">
+      <input name="role" type="hidden" value="1">
+      <input name="active" type="hidden" value="1">
+
+	   <h4>Account settings:</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">E-mail <font color="red">*</font></label>
+		  <div class="controls">
+			<input required name="username" type="text" id="inputFn">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">Password <font color="red">*</font></label>
+		  <div class="controls">
+			<input required name="password" type="password">
+		  </div>
+		</div>
+		<hr>
+	   <h4>Business entity settings:</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label">Name <font color="red">*</font></label>
+		  <div class="controls">
+			<input required name="businessName" type="text">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">IC (optional)</label>
+		  <div class="controls">
+			<input name="businessIC" type="text">
+		  </div>
+		</div>
+		<hr>
+	   <!--
+	   <h4>Linked data settings  for your private contracts (optional):</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label">Private graph URI</label>
+		  <div class="controls">
+			<input name="privateGraphURI" type="text" disabled>
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">SPARQL URI (query)</label>
+		  <div class="controls">
+			<input name="sparqlQueryURI" type="text" disabled>
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label">SPARQL URI (update)</label>
+		  <div class="controls">
+			<input name="sparqlUpdateURI" type="text" disabled>
+		  </div>
+		</div>		
+		-->
+		<div class="control-group">
+		  <div class="form-actions">
+			<input type="submit" id="submit" value="Register" class="btn btn-large btn-primary">
+		  </div>
+		</div>	  
+	  </form>
+
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="bootstrap/js/jquery.js"></script>
+    <script src="bootstrap/js/bootstrap-transition.js"></script>
+    <script src="bootstrap/js/bootstrap-alert.js"></script>
+    <script src="bootstrap/js/bootstrap-modal.js"></script>
+    <script src="bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="bootstrap/js/bootstrap-tab.js"></script>
+    <script src="bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="bootstrap/js/bootstrap-popover.js"></script>
+    <script src="bootstrap/js/bootstrap-button.js"></script>
+    <script src="bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="bootstrap/js/bootstrap-carousel.js"></script>
+    <script src="bootstrap/js/bootstrap-typeahead.js"></script>
+
+    <script>
+      $("a").tooltip();
+	
+	function $_GET(variable) {
+	  var query = window.location.search.substring(1);
+	  var vars = query.split("&");
+	  for (var i=0;i<vars.length;i++) {
+		var pair = vars[i].split("=");
+		if (pair[0] == variable) {
+		  return decodeURIComponent(pair[1]);
+		}
+	  }
+	}
+	
+	// ?m=lorem ipsum&t=info
+	$(window).ready(function() {
+		var mtype = $_GET("t");
+		if (mtype != null) {
+			$('#message').addClass('alert-' + mtype);
+		}
+		var mtext = $_GET("m");
+		if (mtext != null) {
+			$('#message').append(mtext).fadeIn('slow');
+		}
+	});
+	
+	function hideHint() {
+		$("#userHelper").slideUp();
+	}
+	
+	function showHint() {
+		$("#userHelper").slideDown();
+	}
+	
+	</script>
+  </body>
+</html>

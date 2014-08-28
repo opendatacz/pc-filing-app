@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PC Filing App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<!-- Le styles -->
+<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<style type="text/css">
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+
+footer {
+	padding-top: 60px;
+}
+</style>
+<link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+<!-- Le fav and touch icons -->
+<link rel="shortcut icon" href="http://www.opendata.cz/mockup/pcfiler2/bootstrap/ico/favicon.ico">
+<link rel="apple-touch-icon-precomposed" sizes="144x144"
+	href="http://www.opendata.cz/mockup/pcfiler2/bootstrap/ico/apple-touch-icon-144-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114"
+	href="http://www.opendata.cz/mockup/pcfiler2/bootstrap/ico/apple-touch-icon-114-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72"
+	href="http://www.opendata.cz/mockup/pcfiler2/bootstrap/ico/apple-touch-icon-72-precomposed.png">
+<link rel="apple-touch-icon-precomposed"
+	href="http://www.opendata.cz/mockup/pcfiler2/bootstrap/ico/apple-touch-icon-57-precomposed.png">
+</head>
+
+<body>
+
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span
+					class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="./">TenderStats <sup><i>BETA</i></sup></a>
+				<div class="nav-collapse collapse">
+					<ul class="nav pull-right">
+						<li><a href="#"><i class="icon-search icon-white"></i></a></li>
+						<li><a href="#"><i class="icon-question-sign icon-white"></i></a></li>
+					</ul>
+				</div>
+				<!--/.nav-collapse -->
+			</div>
+		</div>
+	</div>
+
+
+	<div class="container">
+		<div class="row">
+			<div class="span12">
+
+				<div style="text-align: center;" id="progressbar">
+					<br> <img src="images/progressbar.gif" />
+				</div>
+				
+				<div id="message" class="alert fade in hide">
+						<button type="button" class="close" data-dismiss="alert">&times;</button>
+				</div>
+
+				<div id="view" class="hide">				
+				
+					<h3 style="margin-bottom: 20px;">Supplier</h3>					
+				
+					<h4>Details</h4>
+					<table class="table table-striped table-bordered" id="entityTable">
+					</table>
+					
+					<hr>
+									
+					<h4>Completed contracts</h4>	
+					<table class="table table-striped table-bordered" id="eventsTable">
+					<thead>
+						<tr>
+							<th>Title</th>							
+							<th>Specifications (CPVs)</th>
+							<th>Actual price</th>							
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+					</table>					
+					
+					<div class="pagination pagination-centered">
+					<ul id="pages">
+
+					</ul>
+
+				</div>
+
+				<div id="showAllPages" class="hide pagination pull-right" style="margin: 0; margin-top: -16px;">
+					<ul>
+						<li><a
+							onclick="$('.3dots').remove(); $('#pages li').removeClass('reallyhide'); $('#showAllPages').remove(); "
+							href="#">show all pages</a></li>
+					</ul>
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Le javascript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="bootstrap/js/jquery.js"></script>
+	<script src="js/sessionstorage.1.4.js"></script>
+	<script src="js/script.js"></script>
+	<script src="bootstrap/js/bootstrap-transition.js"></script>
+	<script src="bootstrap/js/bootstrap-alert.js"></script>
+	<script src="bootstrap/js/bootstrap-modal.js"></script>
+	<script src="bootstrap/js/bootstrap-dropdown.js"></script>
+	<script src="bootstrap/js/bootstrap-scrollspy.js"></script>
+	<script src="bootstrap/js/bootstrap-tab.js"></script>
+	<script src="bootstrap/js/bootstrap-tooltip.js"></script>
+	<script src="bootstrap/js/bootstrap-popover.js"></script>
+	<script src="bootstrap/js/bootstrap-button.js"></script>
+	<script src="bootstrap/js/bootstrap-collapse.js"></script>
+	<script src="bootstrap/js/bootstrap-carousel.js"></script>
+	<script src="bootstrap/js/bootstrap-typeahead.js"></script>
+
+	<script src="js/cpvs.js"></script>
+	<script src="js/table.js"></script>
+	
+	<script type="text/javascript">
+	
+	var pagesTotal = 1;
+	var currentPage = 1;
+	var windowSize = 3; // in each direction from the current page
+	var tableItemsPerPage = 10;
+	var tableAddress = "PCFilingApp?action=table&tableName=PublicSupplierData&entity="+sessionStorage.entity;
+	var tableData = new Array();
+	
+	function fillTable() {
+
+		$('#progressbar').hide();
+		$('#contractTable').fadeIn('slow');
+		$('#contractTable tbody').remove();
+		$.each(
+				tableData[currentPage],
+				function(i, data) {
+					newRow = $('<tr>');
+					var link = $('<a>');
+					link.attr('href','view-public-event.html');
+					link.on('click',function(){ showEvent(data.contractURI); });
+					link.html(data.title);					
+					newRow.append($('<td>').append(link));
+					newRow.append($('<td>').append(CPVs(data.cpv1URL,data.cpvAdd)));
+					newRow.append($('<td>').append(data.price+" "+data.currency));										
+					newRow.appendTo("#eventsTable");
+
+				}
+			);
+
+	}
+	
+		function initPage() {
+			$.getJSON("PCFilingApp?action=getBusinessEntitySupplier&entity="
+					+ sessionStorage.entity,
+					function(data) {
+						$("#progressbar").hide();	
+						if (data.success == true) {
+							$("#entityTable").append(
+									"<tr><th>Name</th><td>" + data.name
+											+ "</td></tr>");
+								
+							$("#view").fadeIn();
+						} else {
+							
+							$('#message').addClass('alert-error');
+							$('#message').append("Entity not found").fadeIn(
+									'slow');							
+						}
+					
+					});
+		}
+
+		$(window).ready(function() {
+			initPage();
+			loadPage(true);
+		});
+	</script>
+
+	<script>
+		$("a").tooltip();
+	</script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Wealh of Nation</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<!-- Le styles -->
+	<link href="./bootstrap/css/bootstrap.css" rel="stylesheet">	
+	<link href="./bootstrap/css/won.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<style type="text/css">
+	body {
+		padding-top: 60px;
+		padding-bottom: 40px;
+	}
+	
+	.sidebar-nav {
+		padding: 9px 0;
+	}
+	
+	.activities tr td {
+		padding-top: 20px;
+		padding-bottom: 20px;
+	}
+	.activities abbr {
+		color: gray;
+		border-bottom: none;
+	}
+	</style>
+	<link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+      	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+   	<![endif]-->
+</head>
+
+<body>
+
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span
+					class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="#">PC Filing App <sup><i>with Product Ontologies</i></sup></a>
+				<div class="nav-collapse collapse">
+					<p class="navbar-text pull-right">
+						Logged in as <a id="username" href="#" class="navbar-link"></a> <a href="SystemManager?action=logout&forward=.%2F%3Ft%3Dinfo%26m%3D%3Cstrong%3EYou%20have%20been%20successfully%20logged%20out.%3C%2Fstrong%3E" class="navbar-link" style="margin-left: 1em "><i class="icon-off icon-white"></i></a> 						
+					</p>
+					<ul class="nav">
+						<li><a href="#" id="enableGuide" onclick="userHelper('on')">Help</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span2">
+				<div class="well sidebar-nav">
+					<ul class="nav nav-list">
+						<li class="active"><a href="buyer-dashboard.html"><i class="icon-home"></i>&nbsp;&nbsp;&nbsp;Dashboard</a></li>
+						<li class="divider"></li>
+						<li class="nav-header">My calls for tenders</li>
+						<li><a href="buyer-prepared.html">Calls in preparation</a></li>
+						<li><a href="buyer-published.html">Published calls</a></li>
+						<li><a href="buyer-cancelled.html">Cancelled calls</a></li>
+						<li class="divider"></li>
+						<li><a href="buyer-create-event.html" class="btn btn-small" style="margin-left: 10px; margin-right: 10px;">Create call</a></li>
+						<li class="divider"></li>
+						<li class="nav-header">My contracts</li>
+						<li><a href="buyer-awarded.html">Awarded contracts</a></li>
+						<li><a href="buyer-completed.html">Completed contracts</a></li>
+						<li><a href="buyer-withdrawn.html">Withdrawn contracts</a></li>
+						<li class="divider"></li>
+						<li class="nav-header">Search public cloud</li>
+						<li class="disabled"><a href="#">Search calls for tenders</a></li>
+						<li class="disabled"><a href="#">Search contracts</a></li>
+						<li class="disabled"><a href="#">Search suppliers</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="span8">
+			
+				<h4>Activities</h4>
+
+
+				<table class="table activities" style="display: none;" id="activityTable">					
+					<tbody>
+					</tbody>
+				</table>
+				
+				<div style="text-align: center;" id="progressbar">
+					<br> <img src="images/progressbar.gif" />
+				</div>
+
+				<div class="pagination pagination-centered">
+					<ul id="pages">
+
+					</ul>
+
+				</div>
+
+				<div id="showAllPages" class="hide pagination pull-right" style="margin: 0; margin-top: -16px;">
+					<ul>
+						<li><a
+							onclick="$('.3dots').remove(); $('#pages li').removeClass('reallyhide'); $('#showAllPages').remove(); "
+							href="#">show all pages</a></li>
+					</ul>
+				</div>
+
+			</div>
+
+			<div class="span2">				
+				<div class="box">
+					<div class="box-header">
+						<h2>My Stats</h2>
+						<div class="box-icon">
+							<a href="#" id="statsHide" class="btn-close">
+								<i onclick="userStats('true');" class="icon-plus"></i>
+								<i onclick="userStats('false');" class="icon-minus hide"></i>
+							</a> <a href="#" class="btn-close"><i class="icon-remove"></i></a>
+						</div>
+					</div>					
+					<div class="box-content">
+						<table class="table table-condensed hide" id="statsTable">						
+							<tr id="statsPrepared">
+								<td>Calls in preparation</td>
+								<td>0</td>
+							</tr>
+							<tr id="statsPublished">
+								<td>Published calls</td>
+								<td>0</td>
+							</tr>
+							<tr id="statsCancelled">
+								<td>Cancelled calls</td>
+								<td>0</td>
+							</tr>							
+							<tr id="statsAwarded">
+								<td>Awarded contracts</td>
+								<td>0</td>
+							</tr>
+							<tr id="statsCompleted">
+								<td>Completed contracts</td>
+								<td>0</td>
+							</tr>
+							<tr id="statsWithdrawn">
+								<td>Withrawn contracts</td>
+								<td>0</td>
+							</tr>							
+						</table>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- Le javascript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="./bootstrap/js/jquery.js"></script>
+	<script src="./bootstrap/js/bootstrap-transition.js"></script>
+	<script src="./bootstrap/js/bootstrap-alert.js"></script>
+	<script src="./bootstrap/js/bootstrap-modal.js"></script>
+	<script src="./bootstrap/js/bootstrap-dropdown.js"></script>
+	<script src="./bootstrap/js/bootstrap-scrollspy.js"></script>
+	<script src="./bootstrap/js/bootstrap-tab.js"></script>
+	<script src="./bootstrap/js/bootstrap-tooltip.js"></script>
+	<script src="./bootstrap/js/bootstrap-popover.js"></script>
+	<script src="./bootstrap/js/bootstrap-button.js"></script>
+	<script src="./bootstrap/js/bootstrap-collapse.js"></script>
+	<script src="./bootstrap/js/bootstrap-carousel.js"></script>
+	<script src="./bootstrap/js/bootstrap-typeahead.js"></script>
+
+	<script src="js/functions.js"></script>
+	<script src="js/sessionstorage.1.4.js"></script>
+	<script src="js/jquery.timeago.js"></script>
+	<script src="js/toolsBuyer.js"></script>
+	<script src="js/script.js"></script>		
+	<script src="js/table.js"></script>
+
+	<script type="text/javascript">
+		var pagesTotal = 1;
+		var currentPage = 1;
+		var windowSize = 3; // in each direction from the current page
+		var tableItemsPerPage = 8;
+		var tableAddress = "PCFilingApp?action=table&tableName=Dashboard";
+
+		function fillTable() {
+
+			$('#progressbar').hide();
+			
+			$('#activityTable tbody').remove();
+			$.each(
+					tableData[currentPage],
+					function(i, data) {
+						newRow = $('<tr>');
+						dataRow = tableData[currentPage][i];
+						
+						var newAction = $('<td>');
+						switch ( dataRow.type ) {
+						case "created":
+							newAction.append("You created a new call for tenders to ").append(linkEvent(dataRow.subjectTitle,dataRow.subject));
+							break;
+						case "published":
+							newAction.append("You published a call for tenders to ").append(linkEvent(dataRow.subjectTitle,dataRow.subject));
+							break;
+						case "cancelled":
+							newAction.append("You cancelled a call for tenders to ").append(linkEvent(dataRow.subjectTitle,dataRow.subject));
+							break;
+						case "withdrawn":
+							newAction.append("You withdrew from ").append(linkEvent(dataRow.subjectTitle,dataRow.subject));
+							break;							
+						case "awarded":
+							newAction.append("You awarded the contract ").append(linkEvent(dataRow.subjectTitle,dataRow.subject));
+							newAction.append(" to ").append( linkEntity(dataRow.entityName,dataRow.entity) );
+							newAction.append(" on the base of their ").append( linkTender(dataRow.subjectTitle,dataRow.object) );
+							break;
+						case "completed":
+							newAction.append("You finalized the contract ").append(linkEvent(dataRow.subjectTitle,dataRow.subject));							
+							break;
+							
+						case "tenderSubmitted":
+							newAction.append("A new ").append(linkTender(dataRow.objectTitle,dataRow.subject)).append(" to ");
+							newAction.append(linkEvent(dataRow.objectTitle,dataRow.object)).append(' (<strong>'+Number(data.price).toFixed(2)+' '+dataRow.currency+'</strong>)');
+							newAction.append(' was submitted by ').append(linkEntity(dataRow.entityName,dataRow.entity));
+							break;
+							
+						case "tenderWithdrawn":
+							newAction.append(linkEntity(dataRow.entityName,dataRow.entity));
+							newAction.append(" withdrew ").append(linkTender(dataRow.objectTitle,dataRow.subject)).append(" from ");
+							newAction.append(linkEvent(dataRow.objectTitle,dataRow.object));							
+							break;
+							
+						case "tenderRejected":
+							newAction.append("You rejected ").append(linkTender(dataRow.objectTitle,dataRow.subject)).append(" to ");
+							newAction.append(linkEvent(dataRow.objectTitle,dataRow.object)).append(' submitted by ').append(linkEntity(dataRow.entityName,dataRow.entity));
+							break;
+						}
+						newAction.append('<br/><abbr class="timeago" title="'+dataRow.date+'">'+(new Date(dataRow.date))+'</abbr>');
+						newRow.append(newAction);
+						newRow.appendTo("#activityTable");
+
+					}
+				);
+			
+			jQuery("abbr.timeago").timeago();			
+			$('#activityTable').fadeIn('slow');
+
+		}
+		
+		
+		$(window).ready(function() {
+			loadPage(true);
+			
+		});
+
+		$('a').tooltip();
+	</script>
+
+</body>
+</html>

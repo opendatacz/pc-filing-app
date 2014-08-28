@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<!-- Le styles -->
+<link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
+<link href="./bootstrap/css/won.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<style type="text/css">
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+
+.sidebar-nav {
+	padding: 9px 0;
+}
+
+span.label {
+	float: left;
+	margin-top: 3px;
+	cursor: pointer;
+}
+
+hr {
+	margin: 15px 0 12px 0;
+}
+
+a#submitClasses,a#submitProperties {
+	float: right;
+	margin-right: -55px;
+}
+
+input,label,textarea {
+	width: 150px;
+	float: left;
+	font-family: Arial;
+	font-size: 14px;
+	margin: 0 5px;
+}
+
+input {
+	width: 50px;
+}
+
+input.big {
+	width: 150px;
+}
+
+label {
+	margin: 3px 5px 0 0;
+	width: 200px;
+	text-align: right;
+}
+
+label.small {
+	width: 80px;
+}
+</style>
+<link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+      	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+   	<![endif]-->
+</head>
+
+<body>
+
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="#">PC Filing App <sup><i>with Product Ontologies</i></sup></a>
+				<div class="nav-collapse collapse">
+					<p class="navbar-text pull-right">
+						Logged in as <a id="username" href="#" class="navbar-link"></a> <a
+							href="SystemManager?action=logout&forward=.%2F%3Ft%3Dinfo%26m%3D%3Cstrong%3EYou%20have%20been%20successfully%20logged%20out.%3C%2Fstrong%3E"
+							class="navbar-link" style="margin-left: 1em"><i
+							class="icon-off icon-white"></i></a>
+					</p>
+					<ul class="nav">
+						<li><a href="#" id="enableGuide" onclick="userHelper('on')">Help</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span2">
+				<div class="well sidebar-nav">
+					<ul class="nav nav-list">
+						<li><a href="admin.html"><i class="icon-home"></i>&nbsp;&nbsp;&nbsp;Dashboard</a></li>
+						<li class="divider"></li>
+						<li class="nav-header">Ontology management</li>
+						<li><a href="admin.html">Uploaded ontologies</a></li>
+						<li><a href="admin-forms.html">Generated forms</a></li>
+						<li class="divider"></li>
+						<li><a href="admin-upload.html"
+							class="btn btn-small btn-primary"
+							style="margin-left: 10px; margin-right: 10px;">Upload
+								ontology</a></li>
+						<li class="divider"></li>
+					</ul>
+				</div>
+			</div>
+
+			<div id="ontoForm" class="span8">
+
+				<h3>Upload ontology</h3>
+				<hr>
+
+				<form action="AdminApp" method="post" class="form-horizontal"
+					id="ontologyForm">
+					<input name="action" id="action" type="hidden" value="addOntology">
+					<input name="forward" type="hidden" value="admin.html">
+					<div class="control-group">
+						<h4>Ontology Information</h4>
+						<label class="control-label" for="ontoName">Name <font
+							color="red">*</font></label>
+						<div class="controls">
+							<input class="big" required type="text" name="ontoName"
+								id="ontoName" placeholder="Ontology name">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="ontoDescription">Description</label>
+						<div class="controls">
+							<textarea class="big" name="ontoDescription" id="ontoDescription"></textarea>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="ontoURI">URI<font
+							color="red">*</font></label>
+						<div class="controls">
+							<input required class="big" id="ontoURI" type="text"
+								name="ontoURI" placeholder="Ontology URI source"
+								autocomplete="off">
+						</div>
+					</div>
+
+					<div class="control-group">
+						<div class="form-actions">
+							<input type="submit" class="btn btn-primary"
+								title="Click to upload specific ontology. You can manage your ontology afterwards."
+								value="Upload"> <a href="admin.html" class="btn">Cancel</a>
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<div style="text-align: center; display: none;" id="progressbar">
+				<br> <img src="images/progressbar.gif" />
+			</div>
+
+		</div>
+	</div>
+
+	<!-- Le javascript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="./bootstrap/js/jquery.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script src="./bootstrap/js/bootstrap-transition.js"></script>
+	<script src="./bootstrap/js/bootstrap-alert.js"></script>
+	<script src="./bootstrap/js/bootstrap-modal.js"></script>
+	<script src="./bootstrap/js/bootstrap-dropdown.js"></script>
+	<script src="./bootstrap/js/bootstrap-scrollspy.js"></script>
+	<script src="./bootstrap/js/bootstrap-tab.js"></script>
+	<script src="./bootstrap/js/bootstrap-tooltip.js"></script>
+	<script src="./bootstrap/js/bootstrap-popover.js"></script>
+	<script src="./bootstrap/js/bootstrap-button.js"></script>
+	<script src="./bootstrap/js/bootstrap-collapse.js"></script>
+	<script src="./bootstrap/js/bootstrap-carousel.js"></script>
+	<script src="./bootstrap/js/bootstrap-typeahead.js"></script>
+	<script src="js/functions.js"></script>
+	<script src="js/sessionstorage.1.4.js"></script>
+	<script src="js/cpv-codes.js"></script>
+	<script src="js/cpvs.js"></script>
+	<script src="js/script.js"></script>
+</body>
+</html>

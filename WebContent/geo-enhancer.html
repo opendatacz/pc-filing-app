@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PC Filing App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      footer {
+        padding-top: 60px;
+      }
+	  .control-label {
+		width: 300px !important;
+		padding-right: 20px;
+	  }
+	  .controls input, .controls select {
+		width: 300px !important;
+	  }
+    </style>
+    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="bootstrap/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="bootstrap/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="bootstrap/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="bootstrap/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="bootstrap/ico/apple-touch-icon-57-precomposed.png">
+
+	<script src="bootstrap/js/jquery.js"></script>
+	<script src="js/functions.js"></script>    
+	<script src="js/sessionstorage.1.4.js"></script>
+
+  </head>
+
+  <body>
+
+     <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="./">TenderStats <sup><i>BETA</i></sup></a>
+          <div class="nav-collapse collapse">
+            <ul class="nav pull-right">
+              <li><a href="#"><i class="icon-search icon-white"></i></a></li>
+              <li><a href="#"><i class="icon-question-sign icon-white"></i></a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+	
+	<!-- Message from query string -->
+	  <div id="message" class="alert fade in hide">
+         <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+
+      <h1>Geo position data enhancer</h1>
+	  <h3>Utility for enhancing business entities with geocoded street addresses</h3>
+
+     <form action="Utils" class="form-horizontal" method="get">
+      <input name="action" type="hidden" value="geoEnhancer">
+
+	    <div class="control-group">
+		  <div class="form-actions">
+			<input type="submit" name="submit-add" value="Add missing data" class="btn btn-large btn-primary">
+			<input type="submit" name="submit-overwrite" value="Remove existing and add new data" class="btn btn-large" disabled>
+			<input type="submit" name="submit-n3" value="Download triples (N3)" class="btn btn-large">
+			<input type="submit" name="submit-turtle" value="Download triples (Turtle)" class="btn btn-large" disabled>
+		  </div>
+		</div>	    
+	  
+	   <h4>SPARQL settings for reading data</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">SPARQL Endpoint Query URL <font color="red">*</font></label>
+		  <div class="controls">
+			<input required name="queryURL" type="text" value="http://xrg15.projekty.ms.mff.cuni.cz:3030/public/query">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">SPARQL Endpoint username</label>
+		  <div class="controls">
+			<input name="queryUsername" type="text" value="">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">SPARQL Endpoint password</label>
+		  <div class="controls">
+			<input name="queryPassword" type="password" value="">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">SPARQL Query for reading data</label>
+		  <div class="controls">
+			<textarea rows="12" style="width:600px;" name="querySPARQL">PREFIX  s:    <http://schema.org/>
+PREFIX  gr:   <http://purl.org/goodrelations/v1#>
+SELECT DISTINCT
+	?be	# (business entity URL)
+	?url	# (s:PostalAddress URL)
+	?city	# (city part of address, can be blank) 
+	(concat(?street, ", ", ?city, ", ", ?country) AS ?address)
+		# (full address, order of fields isn't important)
+{
+# GRAPH <http://ld.opendata.cz/tenderstats/dataset/ted> {
+        ?be	a gr:BusinessEntity ;
+		s:address ?url .
+        ?url	s:streetAddress ?street ;
+		s:addressLocality ?city ;
+		s:addressCountry ?country .
+        FILTER NOT EXISTS { ?be s:location ?place }
+# }
+}
+LIMIT 100</textarea><br>
+		  </div>
+		</div>
+		
+		<hr>
+		<h4>SPARQL settings for writing geocoded data</h4>
+		<hr>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">SPARQL Endpoint Update URL <font color="red">*</font></label>
+		  <div class="controls">
+			<input required name="updateURL" type="text" value="http://xrg15.projekty.ms.mff.cuni.cz:3030/public/update">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">SPARQL Endpoint username</label>
+		  <div class="controls">
+			<input name="updateUsername" type="text" value="">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">SPARQL Endpoint password</label>
+		  <div class="controls">
+			<input name="updatePassword" type="password" value="">
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Named Graph URL for Update</label>
+		  <div class="controls">
+			<input name="graphURL" type="text" value="http://ld.opendata.cz/tenderstats/dataset/ted"> (leave blank for default graph)
+		  </div>
+		</div>
+		
+	   <h4>Geocoding</h4>
+	   <br>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Geoprovider to use</label>
+		  <div class="controls">
+			  <select name="geoProvider" required>
+				<option value="local mix" selected>Local (city-level) + Local (fulltext) fallback</option>
+				<option value="local">Local (fulltext)</option>
+				<option value="local city">Local (city-level)</option>
+				<option value="nominatim">Nominatim</option>
+				<option value="google maps">Google Maps</option>
+			  </select>
+		  </div>
+		</div>
+		<div class="control-group">
+		  <label class="control-label" for="inputFn">Use cached results if available</label>
+		  <div class="controls">
+			<select name="useCache" required>
+			  <option value="true" selected>Yes</option>
+			  <option value="false">No</option>
+		    </select>
+		  </div>
+		</div>
+		<hr>
+
+	    <div class="control-group">
+		  <div class="form-actions">
+			<input type="submit" name="submit-add" value="Add missing data" class="btn btn-large btn-primary">
+			<input type="submit" name="submit-overwrite" value="Remove existing and add new data" class="btn btn-large" disabled>
+			<input type="submit" name="submit-n3" value="Download triples (N3)" class="btn btn-large">
+			<input type="submit" name="submit-turtle" value="Download triples (Turtle)" class="btn btn-large" disabled>
+		  </div>
+		</div>	 		
+		
+	  </form>
+
+
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="bootstrap/js/bootstrap-transition.js"></script>
+    <script src="bootstrap/js/bootstrap-alert.js"></script>
+    <script src="bootstrap/js/bootstrap-modal.js"></script>
+    <script src="bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="bootstrap/js/bootstrap-tab.js"></script>
+    <script src="bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="bootstrap/js/bootstrap-popover.js"></script>
+    <script src="bootstrap/js/bootstrap-button.js"></script>
+    <script src="bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="bootstrap/js/bootstrap-carousel.js"></script>
+    <script src="bootstrap/js/bootstrap-typeahead.js"></script>
+
+
+  </body>
+</html>

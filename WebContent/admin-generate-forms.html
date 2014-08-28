@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<!-- Le styles -->
+<link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
+<link href="./bootstrap/css/won.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<style type="text/css">
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+
+form {
+	margin-bottom: 45px;
+}
+
+.sidebar-nav {
+	padding: 9px 0;
+}
+
+#classesList,#classesListCopy,#error,#objectPropertiesList,#datatypePropertiesList,#tempForm
+	{
+	display: none;
+}
+
+span.label {
+	float: left;
+	margin-top: 3px;
+	cursor: pointer;
+}
+
+hr {
+	margin: 15px 0 12px 0;
+}
+
+a#submitProperties {
+	display: none;
+}
+
+#editOntologyButton {
+	margin-top: 10px;
+	float: left;
+}
+
+div.classList {
+	width: 100%;
+	float: left;
+}
+
+div.cpvs {
+	width: 100%;
+	float: left;
+}
+
+input.cpv {
+	float: left;
+	height: 10px;
+	font-size: 10px;
+	width: 150px;
+	margin: 5px 4px;
+}
+
+input.plus {
+	float: left;
+	height: 20px;
+	font-size: 10px;
+	width: 20px;
+	margin: 2px 0 0 5px;
+	padding: 0;
+}
+
+.control-group.info .radio,.control-group.info .checkbox {
+	float: left;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
+	margin: 2px 5px 0 0;
+}
+
+input,label,textarea {
+	width: 150px;
+	float: left;
+	font-family: Arial;
+	font-size: 14px;
+	margin: 0 5px;
+}
+
+input {
+	width: 50px;
+	margin: 5px;
+}
+
+input.big {
+	width: 150px;
+}
+
+label {
+	margin: 0px 5px 0 5px;
+	width: 160px;
+	text-align: right;
+	line-height: 40px;
+	overflow: hidden;
+	max-height: 40px;
+	padding: 0 !important;
+}
+
+label.small {
+	width: 25px;
+}
+
+p {
+	float: left;
+	line-height: 40px;
+	margin: 0;
+}
+
+a.confirm {
+	margin: 10px 5px 10px 0px;
+}
+
+.formInfo {
+	margin-left: 10px;
+	font-size: 12px;
+}
+</style>
+<link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+      	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+   	<![endif]-->
+</head>
+
+<body>
+
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="#">PC Filing App <sup><i>with Product Ontologies</i></sup></a>
+				<div class="nav-collapse collapse">
+					<p class="navbar-text pull-right">
+						Logged in as <a id="username" href="#" class="navbar-link"></a> <a
+							href="SystemManager?action=logout&forward=.%2F%3Ft%3Dinfo%26m%3D%3Cstrong%3EYou%20have%20been%20successfully%20logged%20out.%3C%2Fstrong%3E"
+							class="navbar-link" style="margin-left: 1em"><i
+							class="icon-off icon-white"></i></a>
+					</p>
+					<ul class="nav">
+						<li><a href="#" id="enableGuide" onclick="userHelper('on')">Help</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span2">
+				<div class="well sidebar-nav">
+					<ul class="nav nav-list">
+						<li><a href="admin.html"><i class="icon-home"></i>&nbsp;&nbsp;&nbsp;Dashboard</a></li>
+						<li class="divider"></li>
+						<li class="nav-header">Ontology management</li>
+						<li><a href="admin.html">Uploaded ontologies</a></li>
+						<li><a href="admin-forms.html">Generated forms</a></li>
+						<li class="divider"></li>
+						<li><a href="admin-upload-ontology.html"
+							class="btn btn-small btn-primary"
+							style="margin-left: 10px; margin-right: 10px;">Upload
+								ontology</a></li>
+						<li class="divider"></li>
+					</ul>
+				</div>
+			</div>
+			<div style="text-align: center; display: none;" id="progressbar">
+				<br> <img src="images/progressbar.gif" />
+			</div>
+			<div id="classesList" class="span8">
+				<h3>Generate forms from</h3>
+				<h4 id="nameLabel"></h4>
+				<hr>
+
+				<h5>Please select class to register</h5>
+
+				<div id="error"></div>
+				<div id="editOntology"></div>
+
+				<form id="classesSelect"
+					class="form-search checkbox control-group info"></form>
+				<a id="submitClasses" name="submitclasses"
+					class="btn btn-small btn-primary confirm"
+					onclick="getObjectProperties();">Generate new form</a> <a
+					id="submitClassesCopy" name="submitclassescopy"
+					class="btn btn-small btn-primary confirm"
+					onclick="getCopyClasses();" style="display: none;">Copy
+					existing form</a>
+
+			</div>
+
+			<div id="classesListCopy" class="span8">
+				<h4 id="nameLabel3"></h4>
+				<hr>
+
+				<h5>Please select class to copy from</h5>
+
+				<form id="classesSelectCopy"
+					class="form-search checkbox control-group info"></form>
+								<a id="submitClassesBack2" name="submitclassesback"
+					class="btn btn-small btn-primary" onclick="getClassesBack();">Back</a>
+				<a id="submitCopy" name="submitclassescopy"
+					class="btn btn-small btn-primary confirm"
+					onclick="copyFromClass();">Select</a>
+
+			</div>
+
+			<div id="objectPropertiesList" class="span8">
+
+				<h4 id="classLabel"></h4>
+				<hr>
+
+				<h5>Please select main properties for selected class:</h5>
+
+				<input type="button" id="selectAllOP" class="btn btn-small"
+					value="Select all" onclick="selectAllObjectProperties();" /> <br />
+				<br />
+				<form id="objectPropertiesSelect"
+					class="form-search checkbox control-group info"></form>
+				<a id="submitClassesBack" name="submitclassesback"
+					class="btn btn-small btn-primary" onclick="getClassesBack();">Back</a>
+				<a id="submitObjectProperties" name="submitproperties"
+					class="btn btn-small btn-primary"
+					onclick="getDatatypeProperties();">Select</a>
+
+			</div>
+
+			<div id="datatypePropertiesList" class="span8">
+
+				<h4 id="class2Label"></h4>
+				<h4 id="propertiesLabel"></h4>
+				<hr>
+
+				<h5>Please select additional properties for selected class:</h5>
+
+				<input type="button" id="selectAllDP" class="btn btn-small"
+					value="Select all" onclick="selectAllDatatypeProperties();" /> <br />
+				<br />
+				<form id="datatypePropertiesSelect"
+					class="form-search checkbox control-group info"></form>
+				<a id="submitOPropertiesBack" name="submitopropertiesback"
+					class="btn btn-small btn-primary"
+					onclick="getObjectPropertiesBack();">Back</a> <a
+					id="submitDatatypeProperties" name="submitproperties"
+					class="btn btn-small btn-primary" onclick="getRDFa();">Select</a>
+
+			</div>
+
+			<div id="tempForm" class="span8 control-group"></div>
+
+		</div>
+	</div>
+
+	<!-- Le javascript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="./bootstrap/js/jquery.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script src="./bootstrap/js/bootstrap-transition.js"></script>
+	<script src="./bootstrap/js/bootstrap-alert.js"></script>
+	<script src="./bootstrap/js/bootstrap-modal.js"></script>
+	<script src="./bootstrap/js/bootstrap-dropdown.js"></script>
+	<script src="./bootstrap/js/bootstrap-scrollspy.js"></script>
+	<script src="./bootstrap/js/bootstrap-tab.js"></script>
+	<script src="./bootstrap/js/bootstrap-tooltip.js"></script>
+	<script src="./bootstrap/js/bootstrap-popover.js"></script>
+	<script src="./bootstrap/js/bootstrap-button.js"></script>
+	<script src="./bootstrap/js/bootstrap-collapse.js"></script>
+	<script src="./bootstrap/js/bootstrap-carousel.js"></script>
+	<script src="./bootstrap/js/bootstrap-typeahead.js"></script>
+	<script src="js/functions.js"></script>
+	<script src="js/sessionstorage.1.4.js"></script>
+	<script src="js/cpv-codes.js"></script>
+	<script src="js/cpvs.js"></script>
+	<script src="js/script.js"></script>
+	<script type="text/javascript">
+		function viewForm(i) {
+			sessionStorage.formClass = tData.classes[i].classURI;
+			window.location = "admin-view-form.html";
+		}
+
+		function addCPV(i) {
+			if ($('.cpv-' + i).length < 20) {
+				cnt = $('.cpv-' + i).length + 1;
+				$('#plus-div-' + i)
+						.append(
+								'<input required class="cpv cpv-'+i+'" type="text" autocomplete="off" name="CPV'+ cnt +'-'+i+'" id="CPV'+cnt+'-'+i+'" placeholder="CPV'+ cnt +' code">');
+				$("#CPV" + cnt + "-" + i).typeahead({
+					source : collection
+				});
+			}
+
+		}
+
+		function selectAllObjectProperties() {
+			$('input.op').each(function() {
+				if (!$(this).is(':checked'))
+					$(this).attr("checked", true);
+				else
+					$(this).attr("checked", false);
+			});
+		}
+
+		function selectAllDatatypeProperties() {
+			$('input.dp').each(function() {
+				if (!$(this).is(':checked'))
+					$(this).attr("checked", true);
+				else
+					$(this).attr("checked", false);
+			});
+		}
+
+		function showCPVs(i) {
+			$('.cpvs').each(function() {
+				this.remove();
+			});
+			$('.plus').each(function() {
+				this.remove();
+			})
+			$('#option-' + i).append(
+					'<input type="button" id="plus-' + i
+							+ '" class="btn plus" value="+" onclick="addCPV('
+							+ i + ');">')
+			$('#option-' + i)
+					.after(
+							'<div class="cpvs"><div id="plus-div-' + i + '"><input required class="cpv cpv-'+ i + '" type="text" autocomplete="off" name="CPV-'+i+'" id="CPV-'+i+'" placeholder="CPV code"></div></div>');
+			$("#CPV-" + i).typeahead({
+				source : collection
+			});
+		}
+
+		function getClasses(ontologyURI) {
+			$('#classesList').hide();
+			$('#progressbar').show();
+			$
+					.get(
+							"AdminApp?action=getClasses&ontologyURI="
+									+ ontologyURI,
+							function(data) {
+								$('#progressbar').hide();
+
+								if (data != null && data.success === true) {
+									tmpData = data;
+									$('#classesList').show();
+									$('#submitClasses').show();
+
+									var radios = "";
+									for ( var i = 1; i < data.values.length; i++) {
+										radios += '<div class="classList" id="option-'+i+'">';
+										radios += '<input id="class-'
+												+ i
+												+ '" class="radio" type="radio" name="class" value="'
+												+ data.values[i].className;
+										if (data.values[i].hasForm == false) {
+											radios += '" onclick="showCPVs('
+													+ i
+													+ ');"><span class="label" onclick="$(\'#class-'
+													+ i + '\').click();">'
+													+ data.values[i].className;
+										} else {
+											$('#submitClassesCopy').show();
+											radios += '" disabled ><span class="label">'
+													+ data.values[i].className
+													+ "</span><span class=\"formInfo\">already has a form";
+										}
+										radios += '</span></div><br />';
+									}
+									$('#classesSelect').html(radios);
+								} else {
+									tmpData = data;
+									$('#classesList').show();
+									$('#error').show();
+									$('#error').html(data[0]);
+									$('#submitClasses').hide();
+									$('#editOntology').show();
+									$('#editOntology')
+											.html(
+													"<a id=\"editOntologyButton\" class=\"btn btn-small btn-primary\" href=\"admin-edit-ontology.html\" onclick=\"\">Edit ontology</a>");
+								}
+							});
+
+		}
+
+		function getCopyClasses() {
+			$('#classesList').hide();
+			$('#progressbar').show();
+			$
+					.get(
+							"AdminApp?action=getClassesToCopy&ontologyURI="
+									+ sessionStorage.ontologyURI,
+							function(data) {
+								$('#progressbar').hide();
+								selClass = $('input[name=class]:checked',
+										'#classesSelect').val();
+								if (data != null && data.success === true) {
+									tmpData = data;
+									$('#classesListCopy').show();
+									$('#submitCopy').show();
+									$('#nameLabel3')
+											.html(
+													"Selected class: "
+															+ selClass
+																	.substring(selClass
+																			.indexOf("http")));
+									var radios = "";
+									for ( var i = 0; i < data.values.length; i++) {
+										radios += '<div class="classList" id="option-'+i+'">';
+										radios += '<input id="copy-class-'
+												+ i
+												+ '" class="radio" type="radio" name="copy-class" value="'
+												+ data.values[i].className;
+										radios += '" ><span class="label" onclick="$(\'#copy-class-'
+												+ i + '\').click();">'
+												+ data.values[i].className + "</span>";
+									}
+									$('#classesSelectCopy').html(radios);
+								} else {
+									tmpData = data;
+									$('#classesList').show();
+									$('#error').show();
+									$('#error').html(data[0]);
+									$('#submitClasses').hide();
+									$('#editOntology').show();
+									$('#editOntology')
+											.html(
+													"<a id=\"editOntologyButton\" class=\"btn btn-small btn-primary\" href=\"admin-edit-ontology.html\" onclick=\"\">Edit ontology</a>");
+								}
+							});
+
+		}
+
+		function getObjectProperties() {
+			$('#classesList').hide();
+			$('#progressbar').show();
+			selClass = $('input[name=class]:checked', '#classesSelect').val();
+			selClassNo = ($('input[name=class]:checked', '#classesSelect')
+					.attr('id')).substring(6);
+			cpvValues = [];
+			$('input.cpv').each(function() {
+				cpvValues.push($(this).val());
+			});
+			$
+					.post(
+							"AdminApp",
+							{
+								action : "getObjectProperties",
+								selClass : selClass,
+								ontologyURI : sessionStorage.ontologyURI,
+								cpvValues : cpvValues
+							},
+							function(data) {
+								if (data != null) {
+									tData = data;
+									checkboxes = "";
+									$('#progressbar').hide();
+									$('#objectPropertiesList').show();
+									$('#selectAllOP').show();
+									$('#submitObjectProperties').show();
+									$('#classLabel')
+											.html(
+													"Selected class: "
+															+ selClass
+																	.substring(selClass
+																			.indexOf("http")));
+									if (data.success != false) {
+										for ( var i = 1; i <= data.length; i++) {
+											checkboxes += '<div id="option-'+i+'">';
+											checkboxes += '<input id="op-'
+												+ i
+												+ '" class="checkbox op" type="checkbox" name="objectProperty" value="'
+												+ data[i-1] + '">';
+											checkboxes += '<span class="label" onclick="$('
+													+ "'#op-"
+													+ i
+													+ "'"
+													+ ').click();">'
+													+ data[i - 1]
+													+ '</span><input type="checkbox" value="'
+													+ (i - 1)
+													+ '" class="opreq" name="op-required-'
+													+ (i - 1)
+													+ '" id="op-required-'
+													+ (i - 1)
+													+ '" style="margin: 5px 5px 0 5px;"><span style="font-size: 11px;">Required?</span></div>';
+										}
+									} else {
+
+										for ( var i = 0; i < data.classes.length; i++) {
+											checkboxes += "<div><span>CPV codes: <br /><i>\""
+													+ data.classes[i].cpvs
+													+ "\"</i><br />already have a form assigned with the class<br /><i>\""
+													+ data.classes[i].classURI
+													+ "\"</i><br />You can review it <a href=\"#\" onclick=\"viewForm("
+													+ i
+													+ ");\">here</a>.</span></div><br />";
+										}
+
+										$('#selectAllOP').hide();
+										$('#submitObjectProperties').hide();
+									}
+
+									$('#objectPropertiesSelect').html(
+											checkboxes);
+								}
+							});
+
+		}
+		function getDatatypeProperties() {
+			$('#objectPropertiesList').hide();
+			$('#progressbar').show();
+			opValues = [];
+			$('input.op:checked').each(function() {
+				opValues.push($(this).val());
+			});
+
+			$
+					.post(
+							"AdminApp",
+							{
+								action : "getDatatypeProperties",
+								selClass : selClass,
+								ontologyURI : sessionStorage.ontologyURI,
+								opValues : opValues
+							},
+							function(data) {
+
+								if (data != null) {
+									$('#progressbar').hide();
+									$('#datatypePropertiesList').show();
+									if (selClass.indexOf("--") != -1)
+										$('#class2Label')
+												.html(
+														"Selected class: "
+																+ selClass
+																		.substring(selClass
+																				.indexOf("http")));
+									var properties = "";
+									/*for ( var i = 0; i < opValues.length; i++)
+										properties += opValues[i] + ", ";
+									$('#propertiesLabel').html(
+											"Selected properties: "
+													+ properties);*/
+									var radios = "";
+									for ( var i = 0; i < data.length; i++) {
+										radios += '<div id="option-'+i+'">';
+										radios += '<input id="dp-'
+												+ i
+												+ '" class="checkbox dp" type="checkbox" name="datatypeProperty" value="'
+												+ data[i] + '">';
+										radios += '<span class="label" onclick="$('
+												+ "'#dp-"
+												+ i
+												+ "'"
+												+ ').click();">'
+												+ data[i]
+												+ '</span><input type="checkbox" class="dpreq" value="'+i+'" name="dp-required-'+i+'" id="dp-required-'+i+'" style="margin: 5px 5px 0 5px;"><span style="font-size: 11px;">Required?</span></div>';
+									}
+									$('#datatypePropertiesSelect').html(radios);
+								}
+							});
+
+		}
+		function getRDFa() {
+			$('#datatypePropertiesList').hide();
+			$('#progressbar').show();
+			dpValues = [];
+			opRequired = [];
+			dpRequired = [];
+			$('input.dp:checked').each(function() {
+				dpValues.push($(this).val());
+			});
+
+			$('input.opreq:checked').each(function() {
+				opRequired.push($(this).val());
+			});
+
+			$('input.dpreq:checked').each(function() {
+				dpRequired.push($(this).val());
+			});
+
+			$
+					.post(
+							"AdminApp",
+							{
+								action : "getRDFa",
+								selClass : selClass,
+								ontologyURI : sessionStorage.ontologyURI,
+								opValues : opValues,
+								dpValues : dpValues,
+								opRequired : opRequired,
+								dpRequired : dpRequired
+							},
+							function(data) {
+
+								if (data != null) {
+									$('#progressbar').hide();
+									$('#tempForm').html(
+											'<h4>Detailed description form</h4>'
+													+ data);
+									$('#tempForm')
+											.append(
+													'<div style=\"width: 100%;\"><a id="submitOPropertiesBack" name="submitopropertiesback" class="btn btn-small btn-primary confirm" onclick="getDatatypePropertiesBack();">Back</a>'
+															+ '<a class="btn btn-small btn-primary confirm" onclick="saveForms();">Confirm</a></div>');
+									$('#tempForm').show();
+								}
+							});
+		}
+		
+		function copyFromClass() {
+			$('#classesListCopy').hide();
+			$('#progressbar').show();
+			selClassCopy = $('input[name=copy-class]:checked', '#classesSelectCopy').val();
+			$.post("AdminApp",
+							{
+								action : "loadFormToCopy",
+								selClassCopy : selClassCopy
+							},
+							function(data) {
+
+								if (data != null) {
+									$('#progressbar').hide();
+									$('#tempForm').html(
+											'<h4>Detailed description form</h4><div id=\"RDFcontent\">'
+													+ data.form+"</div>");
+									$('#tempForm')
+											.append(
+													'<div style=\"width: 100%;\"><a id="submitCopyBack" name="submitocopyback" class="btn btn-small btn-primary confirm" onclick="getCopyFormsBack();">Back</a>'
+															+ '<a class="btn btn-small btn-primary confirm" onclick="saveCopyForms();">Confirm</a></div>');
+									$('#tempForm').show();
+								}
+							});
+		}
+		
+		function saveForms() {
+			$('#tempForm').hide();
+			$('#progressbar').show();
+
+			$.post("AdminApp", {
+				action : "saveForms",
+				selClass : selClass,
+				ontologyURI : sessionStorage.ontologyURI,
+				form : $('#RDFcontent').html(),
+				opValues : opValues,
+				dpValues : dpValues,
+				cpvValues : cpvValues
+			}, function(data) {
+				if (data != null) {
+					$('#progressbar').hide();
+					$('#tempForm').html('<h4>Saved</h4>' + data);
+					$('#tempForm').show();
+					window.location = "admin-forms.html";
+				}
+			});
+		}
+		
+		function saveCopyForms() {
+			$('#tempForm').hide();
+			$('#progressbar').show();
+			cpvValues = [];
+			$('input.cpv').each(function() {
+				cpvValues.push($(this).val());
+			});
+			$.post("AdminApp", {
+				action : "saveCopyForms",
+				selClass : selClass,
+				selClassCopy : selClassCopy,
+				ontologyURI : sessionStorage.ontologyURI,
+				form : $('#RDFcontent').html(),
+				cpvValues : cpvValues
+			}, function(data) {
+				if (data != null) {
+					$('#progressbar').hide();
+					$('#tempForm').html('<h4>Saved</h4>' + data);
+					$('#tempForm').show();
+					window.location = "admin-forms.html";
+				}
+			});
+		}
+
+		function getClassesBack() {
+			$('#objectPropertiesList').hide();
+			$('#classesListCopy').hide();			
+			$('#progressbar').show();
+			getClasses(sessionStorage.ontologyURI);
+		}
+
+		function getObjectPropertiesBack() {
+			$('#datatypePropertiesList').hide();
+			$('#progressbar').show();
+			getObjectProperties();
+		}
+
+		function getDatatypePropertiesBack() {
+			$('#tempForm').hide();
+			$('#progressbar').show();
+			getDatatypeProperties();
+		}
+		
+		function getCopyFormsBack() {
+			$('#tempForm').hide();
+			$('#progressbar').show();
+			getCopyClasses();
+		}
+
+		function generateRDF() {
+			alert("This is only preview of the form. This form is not submittable.");
+		}
+
+		$(window).ready(function() {
+			$('#nameLabel').html(sessionStorage.ontologyURI);
+			getClasses(sessionStorage.ontologyURI);
+		});
+	</script>
+</body>
+</html>

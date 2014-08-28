@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Wealh of Nation</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<!-- Le styles -->
+	<link href="./bootstrap/css/bootstrap.css" rel="stylesheet">	
+	<link href="./bootstrap/css/won.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<style type="text/css">
+	body {
+		padding-top: 60px;
+		padding-bottom: 40px;
+	}
+	
+	.sidebar-nav {
+		padding: 9px 0;
+	}
+	
+	.activities tr td {
+		padding-top: 20px;
+		padding-bottom: 20px;
+	}
+	</style>
+	<link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+      	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+   	<![endif]-->
+</head>
+
+<body>
+
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span
+					class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+				</a> <a class="brand" href="#">PC Filing App <sup><i>with Product Ontologies</i></sup></a>
+				<div class="nav-collapse collapse">
+					<p class="navbar-text pull-right">
+						Logged in as <a id="username" href="#" class="navbar-link"></a> <a href="SystemManager?action=logout&forward=.%2F%3Ft%3Dinfo%26m%3D%3Cstrong%3EYou%20have%20been%20successfully%20logged%20out.%3C%2Fstrong%3E" class="navbar-link" style="margin-left: 1em "><i class="icon-off icon-white"></i></a> 						
+					</p>
+					<ul class="nav">
+						<li><a href="#" id="enableGuide" onclick="userHelper('on')">Help</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span2">
+				<div class="well sidebar-nav">
+					<ul class="nav nav-list">
+						<li><a href="buyer-dashboard.html"><i class="icon-home"></i>&nbsp;&nbsp;&nbsp;Dashboard</a></li>
+						<li class="divider"></li>
+						<li class="nav-header">My calls for tenders</li>
+						<li class="active"><a href="buyer-prepared.html">Calls in preparation</a></li>
+						<li><a href="buyer-published.html">Published calls</a></li>
+						<li><a href="buyer-cancelled.html">Cancelled calls</a></li>
+						<li class="divider"></li>
+						<li><a href="buyer-create-event.html" class="btn btn-small" style="margin-left: 10px; margin-right: 10px;">Create	call</a></li>
+						<li class="divider"></li>
+						<li class="nav-header">My contracts</li>
+						<li><a href="buyer-awarded.html">Awarded contracts</a></li>
+						<li><a href="buyer-completed.html">Completed contracts</a></li>
+						<li><a href="buyer-withdrawn.html">Withdrawn contracts</a></li>
+						<li class="divider"></li>
+						<li class="nav-header">Search public cloud</li>
+						<li class="disabled"><a href="#">Search calls for tenders</a></li>
+						<li class="disabled"><a href="#">Search contracts</a></li>
+						<li class="disabled"><a href="#">Search suppliers</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="span8">
+
+				<div class="alert hide" id="userHelper">
+					<button class="close" onclick="userHelper('off')" title="Disable guide" >×</button>
+					On this screen, you can see your events that were not published yet.<br/>
+					You can search for similar events or find possible suitable suppliers.<br/>
+					You can create a new event, publish an event, which will make it a call for tenders, or delete an event that you don’t want anymore.
+				</div>
+
+				<h4>Calls in preparation</h4>
+
+				<table class="table table-striped table-bordered" style="display: none;" id="contractTable">
+					<thead>
+						<tr>
+							<th>Title</th>
+							<th>Estimated price</th>
+							<th>Specifications (CPVs)</th>
+							<th>Detailed specification</th>
+							<th>Last update</th>
+							<th>Creation date</th>
+							<th>Action</th>
+							<th>Matchmaker</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+
+				<div style="text-align: center;" id="progressbar">
+					<br> <img src="images/progressbar.gif" />
+				</div>
+
+				<div class="pagination pagination-centered">
+					<ul id="pages">
+
+					</ul>
+
+					<div class="pull-right">
+						<a href="buyer-create-event.html" class="btn"
+							style="text-align: left; margin-left: 0px; margin-right: 10px; margin-top: 5px; padding-left: 0px;"
+							title="Click here to create a new event.">&nbsp;&nbsp;<i class="icon-plus"></i>&nbsp;&nbsp;create event</a>
+					</div>
+
+				</div>
+
+				<div id="showAllPages" class="hide pagination pull-right" style="margin: 0; margin-top: -16px;">
+					<ul>
+						<li><a
+							onclick="$('.3dots').remove(); $('#pages li').removeClass('reallyhide'); $('#showAllPages').remove(); "
+							href="#">show all pages</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="span2">				
+				<div class="box">
+					<div class="box-header">
+						<h2>My Stats</h2>
+						<div class="box-icon">
+							<a href="#" id="statsHide" class="btn-close">
+								<i onclick="userStats('true');" class="icon-plus"></i>
+								<i onclick="userStats('false');" class="icon-minus hide"></i>
+							</a> <a href="#" class="btn-close"><i class="icon-remove"></i></a>
+						</div>
+					</div>					
+					<div class="box-content">
+						<table class="table table-condensed hide" id="statsTable">						
+							<tr id="statsPrepared">
+								<td>Calls in preparation</td>
+								<td>0</td>
+							</tr>
+							<tr id="statsPublished">
+								<td>Published calls</td>
+								<td>0</td>
+							</tr>
+							<tr id="statsCancelled">
+								<td>Cancelled calls</td>
+								<td>0</td>
+							</tr>							
+							<tr id="statsAwarded">
+								<td>Awarded contracts</td>
+								<td>0</td>
+							</tr>
+							<tr id="statsCompleted">
+								<td>Completed contracts</td>
+								<td>0</td>
+							</tr>
+							<tr id="statsWithdrawn">
+								<td>Withdrawn contracts</td>
+								<td>0</td>
+							</tr>							
+						</table>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- Le javascript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="./bootstrap/js/jquery.js"></script>
+	<script src="./bootstrap/js/bootstrap-transition.js"></script>
+	<script src="./bootstrap/js/bootstrap-alert.js"></script>
+	<script src="./bootstrap/js/bootstrap-modal.js"></script>
+	<script src="./bootstrap/js/bootstrap-dropdown.js"></script>
+	<script src="./bootstrap/js/bootstrap-scrollspy.js"></script>
+	<script src="./bootstrap/js/bootstrap-tab.js"></script>
+	<script src="./bootstrap/js/bootstrap-tooltip.js"></script>
+	<script src="./bootstrap/js/bootstrap-popover.js"></script>
+	<script src="./bootstrap/js/bootstrap-button.js"></script>
+	<script src="./bootstrap/js/bootstrap-collapse.js"></script>
+	<script src="./bootstrap/js/bootstrap-carousel.js"></script>
+	<script src="./bootstrap/js/bootstrap-typeahead.js"></script>
+
+	<script src="js/functions.js"></script>
+	<script src="js/sessionstorage.1.4.js"></script>
+	<script src="js/cpv-codes.js"></script>
+	<script src="js/cpvs.js"></script>
+	<script src="js/script.js"></script>
+	<script src="js/toolsBuyer.js"></script>
+	<script src="js/date.format.js"></script>		
+	<script src="js/table.js"></script>
+	<script src="js/saveRDF.js"></script>
+	<script type="text/javascript">
+		var pagesTotal = 1;
+		var currentPage = 1;
+		var windowSize = 3; // in each direction from the current page
+		var tableItemsPerPage = 10;
+		var tableAddress = "PCFilingApp?action=table&tableName=PrivateContracts";
+
+		function fillTable() {
+
+			$('#progressbar').hide();
+			$('#contractTable').removeClass('hide');
+			$('#contractTable').fadeIn('slow');
+			$('#contractTable tbody').remove();
+			$.each(					
+					tableData[currentPage],
+					function(i, data) {
+						newRow = $('<tr>');
+
+						// Title
+						newTitle = $('<a>');
+						newTitle.attr('href', 'buyer-view-event.html');
+						newTitle.click(function() {
+							showEvent(htmlEncode(data.contractURI));
+						});
+						newTitle.html(data.title);
+						newRow.append($('<td>').append(newTitle));
+							// Price								
+						newPrice = $('<td>');
+						if (data.price != undefined	&& data.currency != undefined)
+							newPrice.append(Number(data.price).toFixed(2) + " " + data.currency);
+						newRow.append(newPrice);
+
+						// CPVs
+						newCPVs = $('<td>').append(
+						CPVs(data.cpv1URL, data.cpvAdd)).appendTo(newRow);
+						
+//####### NEW COLUMN WITH SPECIFICATIONS						
+						allSpecs = $('<td>');
+						specsArray = specsInArray(data.specs, data.contractURI+"Offering/");
+						cpvsArray = CPVsInArray(data.cpv1URL, data.cpvAdd);
+						for(var i=0;i<cpvsArray.length;i++){
+							//Specifications
+							contains = false;
+							var tempSpecURI = "";
+							for(var j=0;j<specsArray.length;j++)
+								if(specsArray[j].indexOf(cpvsArray[i].replace("http://purl.org/weso/cpv/2008/", "", "g"))!= -1) {
+									contains = true;
+									tempSpecURI = specsArray[j];
+									break;
+								}
+
+							newSpecifications = $('<div>');
+							newSpecifications.css('margin','5px');
+							newSpecifications.addClass('btn-group');
+							
+							if(contains){						
+								//View
+								newSpecification = $('<a>');
+								newSpecification.attr('href','buyer-view-specification.html');
+								newSpecification.append('view specification for #'+cpvsArray[i].replace("http://purl.org/weso/cpv/2008/", "", "g")).appendTo(newSpecifications);
+								newSpecification.click(function() { viewSpec(htmlEncode(tempSpecURI)); });
+								newSpecifications.children('a').addClass('btn');
+								
+								newSpecification = $('<a>');
+								newSpecification.attr('href','FormApp?forward=buyer-prepared.html&action=deleteSpecification&specificationURI='+htmlEncode(tempSpecURI));
+								newSpecification.click(function() { return confirm('Do you really want to delete this specification?'); });
+								newSpecification.append('delete').appendTo(newSpecifications);
+								newSpecifications.children('a').addClass('btn');
+								
+								allSpecs.append(newSpecifications);	
+							}else{							
+								// Add
+								newSpecification = $('<a>');
+								newSpecification.attr('href','FormApp?forward=buyer-add-specification.html&action=loadForm&cpv='+cpvsArray[i]+'&contractURI=' + htmlEncode(data.contractURI));
+								newSpecification.append('add specification for #'+cpvsArray[i].replace("http://purl.org/weso/cpv/2008/", "", "g")).appendTo(newSpecifications);
+								newSpecifications.children('a').addClass('btn');
+								allSpecs.append(newSpecifications);								
+							}
+						}						
+						
+						allSpecs.append(newSpecifications);
+						
+						newRow.append(allSpecs);						
+//##### END OF NEW COLUMN
+
+						// Modified
+						newModified = $('<td>').append(formatDate(data.modified)).appendTo(newRow);
+
+						// Created
+						newCreated = $('<td>').append(formatDate(data.created)).appendTo(newRow);
+
+						// Actions								
+						newActions = $('<div>');
+						newActions.addClass('btn-group');
+
+							// Publish
+							newPublish = $('<a>');
+							newPublish.attr('href','PCFilingApp?forward=buyer-published.html&action=publishPrivateContract&contractURI=' + htmlEncode(data.contractURI));
+							newPublish.click(function() { return confirm('Do you really want to publish this event?'); });
+							newPublish.append('publish').appendTo(newActions);
+	
+							// Edit
+							newEdit = $('<a>');
+							newEdit.attr('href', 'buyer-edit-event.html');
+							newEdit.click(function() { editEvent(htmlEncode(data.contractURI));	});
+							newEdit.append('edit').appendTo(newActions);
+	
+							// Delete
+							newPublish = $('<a>');
+							newPublish.attr('href','PCFilingApp?forward=buyer-prepared.html&action=deletePrivateContract&contractURI='+ htmlEncode(data.contractURI));
+							newPublish.click(function() { return confirm('Do you really want to delete this event?'); });
+							newPublish.append('delete').appendTo(newActions);
+
+						newActions.children('a').addClass('btn');
+						newRow.append($('<td>').append(newActions));
+
+						// Matchmaker								
+						newMatchmaker = $('<div>');
+						newMatchmaker.addClass('btn-group');
+
+							// Similar
+							newSimilar = $('<a>');
+							newSimilar.attr('href','buyer-similar-events.html');
+							newSimilar.click(function() { saveEventInfo(i);	});
+							newSimilar.append('similar events').appendTo(newMatchmaker);
+							
+							// Suppliers
+							newSuppliers = $('<a>');
+							newSuppliers.attr('href','buyer-suitable-suppliers.html');
+							newSuppliers.click(function() {	saveEventInfo(i); });
+							newSuppliers.append('suitable suppliers').appendTo(newMatchmaker);
+
+						newMatchmaker.children('a').addClass('btn');
+						newRow.append($('<td>').append(newMatchmaker));
+
+						newRow.appendTo("#contractTable");
+
+					}
+				);
+
+		}
+		
+		$(window).ready(function() {
+			loadPage(true);
+		});
+
+		$('a').tooltip();
+	</script>
+
+</body>
+</html>
