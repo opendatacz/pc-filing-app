@@ -130,7 +130,7 @@
 
 
                         <div class="control-group">
-                            <h4><fmt:message key="requestforproposal" bundle="${cons}" /><fmt:message key="viewevent.constraints" /></h4>
+                            <h4><fmt:message key="viewevent.constraints" /></h4>
                             <label class="control-label" for="inputDeadline">
                               <strong><fmt:message key="viewevent.deadlinetenders" /></strong>
                             </label>
