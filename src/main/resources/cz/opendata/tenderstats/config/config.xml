@@ -4,7 +4,7 @@
         <endpoint>http://live.payola.cz/datasource/41358834-d61c-4a3d-bb01-1babd60e8a5e</endpoint>
     </payola>
     <number-of-bidders>
-        <endpoint>http://i2g.unixstorm.org:8080/contract-analytics/bidders</endpoint>   
+        <endpoint>http://i2g.unixstorm.org:8180/contract-analytics/bidders</endpoint>   
     </number-of-bidders>
     <matchmaker>
         <endpoint>http://lod2.vse.cz:8080/matchmaker/</endpoint>
