@@ -133,52 +133,51 @@
         <script src="js/application.js"></script>
 
         <script>
-                                $("a").tooltip();
-                                $("button").tooltip();
-                                $("label").tooltip();
-                                $("#inputDeadline").datepicker({dateFormat: 'yy-mm-dd'});
-                                $("#inputStartDate").datepicker({dateFormat: 'yy-mm-dd'});
-                                $("#inputEndDate").datepicker({dateFormat: 'yy-mm-dd'});
+          $("a").tooltip();
+          $("button").tooltip();
+          $("label").tooltip();
+          $("#inputDeadline").datepicker({dateFormat: 'yy-mm-dd'});
+          $("#inputStartDate").datepicker({dateFormat: 'yy-mm-dd'});
+          $("#inputEndDate").datepicker({dateFormat: 'yy-mm-dd'});
 
-                                var contractURL = sessionStorage.contractURL;
-                                var title = sessionStorage.contractTitle;
-                                var buyerURL = sessionStorage.buyerURL;
+          var contractURL = sessionStorage.contractURL;
+          var buyerURL = sessionStorage.buyerURL;
 
-                                $(window).ready(function() {
-                                    APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
-                                    $('#contractTitle').append(title);
-                                    $('#buyerURL').attr('value', buyerURL);
-                                    $('#contractURL').attr('value', contractURL);
-                                    loadDocs();
+          $(window).ready(function() {
+            APP.dom.normalizeInputValidity("<fmt:message key="pleasefill" bundle="${cons}" />");
+            $('#contractTitle').text(decodeURIComponent(sessionStorage.contractTitle));
+            $('#buyerURL').attr('value', buyerURL);
+            $('#contractURL').attr('value', contractURL);
+            loadDocs();
 
-                                    $("#addDoc").on('click', function() {
-                                        var nD = newDoc($("#addDocSelect").val(), $("#addDocSelect option:selected").text());
-                                        $('#docsList').append(nD);
-                                        nD.fadeIn();
-                                    });
-                                });
+            $("#addDoc").on('click', function() {
+              var nD = newDoc($("#addDocSelect").val(), $("#addDocSelect option:selected").text());
+              $('#docsList').append(nD);
+              nD.fadeIn();
+            });
+          });
 
-                                function loadDocs() {
-                                    $.getJSON("PCFilingApp?action=getSupplierDocs", function(data) {
-                                        if (data != null && data.docs) {
-                                            $.each(data.docs, function() {
-                                                switch (this.docType) {
-                                                    case "QualityCertificate":
-                                                        $("#inputFileCerts").append('<option value="' + this.token + '">' + this.fileName + '</option>');
-                                                        break;
+          function loadDocs() {
+            $.getJSON("PCFilingApp?action=getSupplierDocs", function(data) {
+              if (data != null && data.docs) {
+                $.each(data.docs, function() {
+                  switch (this.docType) {
+                    case "QualityCertificate":
+                    $("#inputFileCerts").append('<option value="' + this.token + '">' + this.fileName + '</option>');
+                    break;
 
-                                                    case "CompanyProfile":
-                                                        $("#inputFileProfile").append('<option value="' + this.token + '">' + this.fileName + '</option>');
-                                                        break;
+                    case "CompanyProfile":
+                    $("#inputFileProfile").append('<option value="' + this.token + '">' + this.fileName + '</option>');
+                    break;
 
-                                                    case "FinancialStatements":
-                                                        $("#inputFinStatements").append('<option value="' + this.token + '">' + this.fileName + '</option>');
-                                                        break;
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
+                    case "FinancialStatements":
+                    $("#inputFinStatements").append('<option value="' + this.token + '">' + this.fileName + '</option>');
+                    break;
+                  }
+                });
+              }
+            });
+          }
 
         </script>
     </body>
