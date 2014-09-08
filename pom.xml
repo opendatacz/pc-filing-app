@@ -230,6 +230,7 @@
                         <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
                     </systemProperties>
                     <useTestClasspath>false</useTestClasspath>
+                    <uriEncoding>UTF-8</uriEncoding>
                 </configuration>
             </plugin>
         </plugins>

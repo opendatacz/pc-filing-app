@@ -25,7 +25,7 @@ public class Mustache {
     public String getByRelativePath(String name, Map<String, Object> scopes) {
         try (StringWriter stringWriter = new StringWriter(); InputStream resourceAsStream = getClass().getResourceAsStream(name)) {
             if (resourceAsStream != null) {
-                new DefaultMustacheFactory().compile(new InputStreamReader(resourceAsStream), name).execute(stringWriter, scopes).flush();
+                new DefaultMustacheFactory().compile(new InputStreamReader(resourceAsStream), name.replaceFirst("^/", "")).execute(stringWriter, scopes).flush();
             }
             return stringWriter.toString();
         } catch (IOException ex) {
