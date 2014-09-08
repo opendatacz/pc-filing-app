@@ -4,6 +4,7 @@
 <html>
     <head>
         <%@include file="WEB-INF/jspf/header.jspf" %>
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Buyer" />
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
     </head>
     <body>
@@ -45,17 +46,14 @@
                             <ul id="pages">
 
                             </ul>
-
                         </div>
 
                         <div id="showAllPages" class="hide pagination pull-right" style="margin: 0; margin-top: -16px;">
                             <ul>
-                                <li><a
-                                        onclick="$('.3dots').remove();
+                                <li><a onclick="$('.3dots').remove();
                                                 $('#pages li').removeClass('reallyhide');
-                                                $('#showAllPages').remove();
-                                        "
-                                        href="#"><fmt:message key="show all pages" bundle="${cons}" /></a></li>
+                                                $('#showAllPages').remove();"
+                                      href="#"><fmt:message key="show all pages" bundle="${cons}" /></a></li>
                             </ul>
                         </div>
                     </div>
@@ -70,7 +68,6 @@
         <script src="js/table.js"></script>
 
         <script type="text/javascript">
-
                                             var pagesTotal = 1;
                                             var currentPage = 1;
                                             var windowSize = 3; // in each direction from the current page
@@ -115,10 +112,8 @@
 
                                                                 $("#view").fadeIn();
                                                             } else {
-
                                                                 $('#message').addClass('alert-error');
-                                                                $('#message').append("Entity not found").fadeIn(
-                                                                        'slow');
+                                                                $('#message').append("<fmt:message key="entity.notfound" />").fadeIn('slow');
                                                             }
 
                                                         });

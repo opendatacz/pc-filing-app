@@ -4,6 +4,7 @@
 <html>
     <head>
         <%@include file="WEB-INF/jspf/header.jspf" %>
+        <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Buyer" />
         <fmt:setBundle basename="cz.opendata.tenderstats.i18n.Constants" var="cons" />
     </head>
     <body>
@@ -41,7 +42,7 @@
                     else
                     {
                         $('#message').addClass('alert-error');
-                        $('#message').append("Entity not found").fadeIn('slow');
+                        $('#message').append("<fmt:message key="entity.notfound" />").fadeIn('slow');
                     }
                 }
                 );
@@ -67,7 +68,6 @@
                     }
                 });
             }
-
         </script>
 
         <script>
