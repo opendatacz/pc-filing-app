@@ -115,9 +115,9 @@
                             <strong><fmt:message key="eventtype" bundle="${cons}" /></strong>
                           </label>
                             <div class="controls">
-                                <span class="hide" id="<fmt:message key="RFQ" bundle="${cons}" />"><fmt:message key="requestforquotation" bundle="${cons}" /></span>
-                                <span class="hide" id="<fmt:message key="ITT" bundle="${cons}" />"><fmt:message key="invitationtotender" bundle="${cons}" /></span>
-                                <span class="hide" id="<fmt:message key="RFP" bundle="${cons}" />"><fmt:message key="requestforproposal" bundle="${cons}" /></span>								
+                                <span class="hide" id="RFQ"><fmt:message key="requestforquotation" bundle="${cons}" /></span>
+                                <span class="hide" id="ITT"><fmt:message key="invitationtotender" bundle="${cons}" /></span>
+                                <span class="hide" id="RFP"><fmt:message key="requestforproposal" bundle="${cons}" /></span>								
                             </div>
                         </div>
                         <hr>
