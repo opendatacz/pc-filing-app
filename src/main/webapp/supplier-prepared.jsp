@@ -133,7 +133,7 @@
                                                 newSubmit.click(function() {
                                                     return confirm('<fmt:message key="prepared.submit.confirm" />');
                                                 });
-                                                newSubmit.append('submit').appendTo(newActions);
+                                                newSubmit.append('<fmt:message key="prepared.submit" />').appendTo(newActions);
 
                                                 // Edit
                                                 newEdit = $('<a>');
@@ -141,7 +141,7 @@
                                                 newEdit.click(function() {
                                                     editTender(encodeURIComponent(data.tenderURI), encodeURIComponent(data.title));
                                                 });
-                                                newEdit.append('edit').appendTo(newActions);
+                                                newEdit.append('<fmt:message key="prepared.edit" />').appendTo(newActions);
 
                                                 // Delete
                                                 newPublish = $('<a>');
@@ -149,16 +149,14 @@
                                                 newPublish.click(function() {
                                                     return confirm('<fmt:message key="prepared.delete.confirm" />');
                                                 });
-                                                newPublish.append('delete').appendTo(newActions);
+                                                newPublish.append('<fmt:message key="prepared.delete" />').appendTo(newActions);
 
                                                 newActions.children('a').addClass('btn');
                                                 newRow.append($('<td>').append(newActions));
 
                                                 newRow.appendTo("#contractTable");
-
                                             }
                                     );
-
                                 }
 
                                 $(window).ready(function() {
