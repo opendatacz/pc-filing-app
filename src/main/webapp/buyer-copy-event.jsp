@@ -22,7 +22,7 @@
 
                     <h3><fmt:message key="copyevent.title" /> "<span id="contractName"></span>"</h3>
                     <hr>
-                    <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm">
+                    <form action="PCFilingApp" enctype="multipart/form-data" method="post" class="form-horizontal" id="contractForm">
                         <input name="action" type="hidden" value="addPrivateContract">
                         <input name="forward" type="hidden" value="buyer-prepared.jsp">
 

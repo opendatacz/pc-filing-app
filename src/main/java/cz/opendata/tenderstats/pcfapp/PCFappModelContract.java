@@ -11,6 +11,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -224,7 +225,7 @@ public class PCFappModelContract implements Serializable {
         if (!contract.containsResource(ResourceFactory.createResource(contractURI))) {
             throw new PCFappException("Contract " + contractURI + " not found.");
         }
-
+        
         Resource contractRes = contract.getResource(contractURI);
 
         JsonObject json = new JsonObject();
@@ -507,9 +508,10 @@ public class PCFappModelContract implements Serializable {
                 + "  } "
                 + "VALUES ?contractURI { <" + contractURI + "> }");
         /* @formatter:on */
+        System.out.println(query);
         Model contract = QueryExecutionFactory.sparqlService(config.getSparqlPrivateQuery(), query).execConstruct();
 
-        System.out.println(query);
+        
         // System.out.println("###################################################");
         contract.write(System.out, "Turtle");
 
@@ -1407,7 +1409,7 @@ public class PCFappModelContract implements Serializable {
     public boolean publishContract(UserContext uc, String contractURL) throws PCFappException {
 
         // TODO: prerobit na transakciu
-        Model contract = getPrivateContract(contractURL, uc.getNamedGraph(), "none");
+        Model contract = getPrivateContract(contractURL, uc.getNamedGraph(), "none");     
         Resource contractRes = contract.getResource(contractURL);
 
         if (contractRes.getProperty(PCFappModel.pcf_status).getObject().asResource().getLocalName().compareTo("Prepared") != 0) {
@@ -1437,6 +1439,12 @@ public class PCFappModelContract implements Serializable {
         }
 
         NodeIterator i;
+        
+        i = contract.listObjectsOfProperty(PCFappModel.pc_contractingAuthority);
+        while (i.hasNext()) {
+            Resource asResource = i.next().asResource();
+            contract.removeAll(asResource, null, null);
+        }
 
         // removes supplier business entity objects from graph		
         i = contract.listObjectsOfProperty(PCFappModel.pcf_invitedSupplier);
@@ -1458,14 +1466,22 @@ public class PCFappModelContract implements Serializable {
         for (Property property : toDelete) {
             contract.removeAll(null, property, null);
         }
+        
+        ResIterator listSubjects = contract.listSubjects();
+        while (listSubjects.hasNext()) {
+            Resource next = listSubjects.next();
+            if (next.asNode().isBlank()) {
+                contract.removeAll(next.asResource(), null, null);
+            }
+        }
 
         // System.out.println("###################################################");
         // contract.write(System.out, "Turtle");
         contract.write(System.out, "N-TRIPLE");
-
+        
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         contract.write(baos, "N-TRIPLE");
-
+        
         UpdateRequest request;
         try {
             /* @formatter:off */
