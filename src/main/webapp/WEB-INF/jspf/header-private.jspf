@@ -11,7 +11,7 @@
                 <p class="navbar-text pull-right">
                     <fmt:message key="loggedin" bundle="${cons}" />
                     <span id="username" href="#"></span>
-                    <a href="SystemManager?action=logout&forward-message=<fmt:message key="logoutmessage" bundle="${cons}" />&forward=./" class="navbar-link icon-off icon-white" title="<fmt:message key="logout" bundle="${cons}" />" style="margin-left: 1em;"></a> 						
+                    <a href="SystemManager?action=logout&forward-message=<fmt:message key="logoutmessage" bundle="${cons}" />&forward=./" class="navbar-link icon-off icon-white" data-toggle="tooltip" data-placement="bottom" title="<fmt:message key="logout" bundle="${cons}" />" style="margin-left: 1em;"></a> 						
                 </p>
                 <ul class="nav">
                     <li><a href="#" id="enableGuide" onclick="userHelper('on')">Help</a></li>
