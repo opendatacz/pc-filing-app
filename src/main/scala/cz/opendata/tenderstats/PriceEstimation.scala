@@ -1,15 +1,6 @@
 package cz.opendata.tenderstats
 
 import cz.opendata.tenderstats.dm.Model1
-import cz.opendata.tenderstats.dm.Model10
-import cz.opendata.tenderstats.dm.Model2
-import cz.opendata.tenderstats.dm.Model3
-import cz.opendata.tenderstats.dm.Model4
-import cz.opendata.tenderstats.dm.Model5
-import cz.opendata.tenderstats.dm.Model6
-import cz.opendata.tenderstats.dm.Model7
-import cz.opendata.tenderstats.dm.Model8
-import cz.opendata.tenderstats.dm.Model9
 import cz.opendata.tenderstats.utils.AnyToDouble
 import cz.opendata.tenderstats.utils.AutoLift
 import cz.opendata.tenderstats.utils.Lift
@@ -32,10 +23,13 @@ class PriceEstimation extends AbstractComponent {
     response.setContentType("application/json; charset=UTF-8")
     Lift(request.getParameter("cpv"), request.getParameter("dur")) {
       case (AnyToDouble(cpv), AnyToDouble(dur)) => AutoLift(cpvs.get(cpv.toInt)) {
-        case Some(List(c1, c2, c3, c4, c5, c6, c7)) => PriceEstimation.models map (_.predictField9(c1.toString, c2.toString, c3.toString, c4.toString, c5.toString, c6.toString, c7.toString, dur))
+        case Some(List(c1, c2, c3, c4, c5, c6, c7)) => PriceEstimation.model.predictField9(c1.toString, c2.toString, c3.toString, c4.toString, c5.toString, c6.toString, c7.toString, dur)
       }
     } match {
-      case Some(x) => response.getWriter.print("{ \"price\": " + (x.foldLeft(0D)(_ + _) / x.length) + " }")
+      case Some(AnyToDouble(x)) => 
+        val from = PriceEstimation.intervals.foldLeft(0)((r, s) => if (x > s || x == 0) s else r)
+        val to = x.toInt
+        response.getWriter.print(s"""{ "price": { "from": $from, "to": $to } }""")
       case _ => response.sendError(400)
     }
   }
@@ -47,17 +41,8 @@ object PriceEstimation {
   val logger = LogManager.getLogger("PriceEstimation")
   import logger._
 
-  val models = List(
-    new Model1,
-    new Model2,
-    new Model3,
-    new Model4,
-    new Model5,
-    new Model6,
-    new Model7,
-    new Model8,
-    new Model9,
-    new Model10)
+  val model = new Model1
+  val intervals = List(250000, 500000, 1000000, 1500000, 2000000, 2500000, 3000000, 3500000, 4000000, 4500000, 5000000, 6000000, 7000000, 8000000, 9000000, 10000000, 12500000, 15000000, 17500000, 20000000, 25000000, 30000000, 35000000, 40000000, 50000000, 75000000, 100000000, 250000000)
 
   def mergeLists[A](l: List[A], ln: List[A]*)(m: (A, A) => A) = {
     def mergeItemList(l: List[A], result: List[A], ln: Seq[List[A]]): List[A] = l match {
