@@ -18,7 +18,7 @@
                 <div class="span10">
 
                     <div class="alert hide" id="userHelper">
-                        <button class="close" onclick="userHelper('off')" title="Disable guide" >×</button>
+                      <button class="close" onclick="userHelper('off')" title="<fmt:message key="disableguide" bundle="${cons}" />" >×</button>
                         <fmt:message key="createtender.help" />
                     </div>
 
@@ -26,7 +26,6 @@
 
                     <hr>
 
-                    <!-- <form action="PCFilingApp" method="post" class="form-horizontal" id="contractForm" enctype="multipart/form-data"> -->
                     <form action="PCFilingApp" method="post" enctype="multipart/form-data" class="form-horizontal" id="contractForm">
                         <input name="action" type="hidden" value="addPrivateTender">
                         <input name="forward" type="hidden" value="supplier-prepared.jsp">
@@ -42,10 +41,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="control-group">
+                        <div class="control-group required">
                             <h4><fmt:message key="createtender.pricingtiming" /></h4>
 
-                            <label class="control-label" for="inputPrice"><fmt:message key="offeredprice" bundle="${cons}" /> <font color="red">*</font></label>
+                            <label class="control-label" for="inputPrice">
+                              <fmt:message key="offeredprice" bundle="${cons}" />
+                            </label>
                             <div class="controls">              
                                 <input type="number" step="0.01" name="price" id="inputPrice">
                                 <select name="currency">
@@ -56,8 +57,10 @@
                             </div>            
                         </div>
 
-                        <div class="control-group">
-                            <label title="Contract duration" class="control-label" for="inputStartDate"><fmt:message key="createtender.startend" /> <font color="red">*</font></label>
+                        <div class="control-group required">
+                          <label title="<fmt:message key="createtender.startend.help" />" class="control-label" for="inputStartDate">
+                            <fmt:message key="createtender.startend" />
+                          </label>
                             <div class="controls">
                                 <input required name="startDate" type="text" id="inputStartDate"> - <input required id="inputEndDate" name="endDate" type="text">
                             </div>
@@ -88,7 +91,7 @@
                             <label class="control-label" for="inputFileCerts"><fmt:message key="createtender.attachments.certificates" /></label>
                             <div class="controls">                                              
                                 <select id="inputFileCerts" name="inputFileCerts">
-                                    <option value="">---select---</option>
+                                  <option value="">---<fmt:message key="createtender.select" />---</option>
                                 </select>                
                             </div>
                         </div>
@@ -97,7 +100,7 @@
                             <label class="control-label" for="inputFileProfile"><fmt:message key="createtender.attachments.profile" /></label>
                             <div class="controls">                                              
                                 <select id="inputFileProfile" name="inputFileProfile">
-                                    <option value="">---select---</option>
+                                  <option value="">---<fmt:message key="createtender.select" />---</option>
                                 </select>                
                             </div>
                         </div>
@@ -106,7 +109,7 @@
                             <label class="control-label" for="inputFinStatements"><fmt:message key="createtender.attachments.financial" /></label>
                             <div class="controls">                                              
                                 <select id="inputFinStatements" name="inputFileFinStatements">
-                                    <option value="">---select---</option>
+                                  <option value="">---<fmt:message key="createtender.select" />---</option>
                                 </select>                
                             </div>
                         </div>
