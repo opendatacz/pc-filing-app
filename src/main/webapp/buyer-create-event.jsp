@@ -192,7 +192,7 @@
                                   <fmt:message key="location" bundle="${cons}" />
                                 </label>
                                 <div class="controls">
-                                    <input required name="location" type="text" id="inputLocation" placeholder="Ex: Prague or FCA Prague">
+                                  <input required name="location" type="text" id="inputLocation" placeholder="<fmt:message key="createevent.locationrealization.example" />">
                                 </div>
                             </div>
                             <div class="control-group">
@@ -210,21 +210,21 @@
                                     <h5><fmt:message key="createevent.evaluationcriteria" /></h5>
                                     <label class="control-label" for="inputECPrice"><fmt:message key="price" bundle="${cons}" /></label>&nbsp;&nbsp;&nbsp;
                                     <div class="input-append">
-                                        <input name="evalPrice" type="number" max="100" id="inputECPrice" value="" placeholder="Ex: 70">
+                                      <input name="evalPrice" type="number" max="100" id="inputECPrice" value="" placeholder="<fmt:message key="forexample" bundle="${cons}" /> 70">
                                         <span class="add-on"> %</span>
                                     </div>
                                 </div>
                                 <div class="control-group">
                                     <label class="control-label" for="inputECTech"><fmt:message key="technicalspecification" bundle="${cons}" /></label>&nbsp;&nbsp;&nbsp;
                                     <div class="input-append">
-                                        <input name="evalTech" type="number" max="100" id="inputECTech" value="" placeholder="Ex: 20">
+                                      <input name="evalTech" type="number" max="100" id="inputECTech" value="" placeholder="<fmt:message key="forexample" bundle="${cons}" /> 20">
                                         <span class="add-on"> %</span>
                                     </div>
                                 </div>
                                 <div class="control-group">
                                     <label class="control-label" for="inputECDate"><fmt:message key="deliverydate" bundle="${cons}" /></label>&nbsp;&nbsp;&nbsp;
                                     <div class="input-append">
-                                        <input name="evalDate" type="number" max="100" id="inputECDate" value="" placeholder="Ex: 10">
+                                      <input name="evalDate" type="number" max="100" id="inputECDate" value="" placeholder="<fmt:message key="forexample" bundle="${cons}" /> 10">
                                         <span class="add-on"> %</span>
                                     </div>
                                 </div>
