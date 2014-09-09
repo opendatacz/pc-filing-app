@@ -114,9 +114,9 @@ public class SystemManager extends AbstractComponent {
             sparqlTemplateMap.put("ico", businessIC.trim());
         }
         if (role == 2) {
-            cpv1 = getConfiguration().getPrefix("cpv") + (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-'));
-            cpv2 = cpv2.isEmpty() ? null : getConfiguration().getPrefix("cpv") + (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-'));
-            cpv3 = cpv3.isEmpty() ? null : getConfiguration().getPrefix("cpv") + (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-'));
+            cpv1 = getConfiguration().getPrefix("cpv") + cpv1.replaceAll("#.*", "");
+            cpv2 = cpv2.isEmpty() ? null : getConfiguration().getPrefix("cpv") + cpv2.replaceAll("#.*", "");
+            cpv3 = cpv3.isEmpty() ? null : getConfiguration().getPrefix("cpv") + cpv3.replaceAll("#.*", "");
             HashMap<String, Object> cpv = new HashMap<>();
             List<String> cpvs = new LinkedList<>();
             cpvs.add(cpv1);
@@ -303,9 +303,9 @@ public class SystemManager extends AbstractComponent {
                         sparqlTemplateMap.put("ico", businessIC.trim());
                     }
                     if (uc.getRole().equals(Role.BIDDER)) {
-                        cpv1 = getConfiguration().getPrefix("cpv") + (cpv1 + "-").substring(0, (cpv1 + "-").indexOf('-'));
-                        cpv2 = cpv2.isEmpty() ? null : getConfiguration().getPrefix("cpv") + (cpv2 + "-").substring(0, (cpv2 + "-").indexOf('-'));
-                        cpv3 = cpv3.isEmpty() ? null : getConfiguration().getPrefix("cpv") + (cpv3 + "-").substring(0, (cpv3 + "-").indexOf('-'));
+                        cpv1 = getConfiguration().getPrefix("cpv") + cpv1.replaceAll("#.*", "");
+                        cpv2 = cpv2.isEmpty() ? null : getConfiguration().getPrefix("cpv") + cpv2.replaceAll("#.*", "");
+                        cpv3 = cpv3.isEmpty() ? null : getConfiguration().getPrefix("cpv") + cpv3.replaceAll("#.*", "");
                         HashMap<String, Object> cpv = new HashMap<>();
                         List<String> cpvs = new LinkedList<>();
                         cpvs.add(cpv1);
@@ -321,6 +321,7 @@ public class SystemManager extends AbstractComponent {
                             sparqlTemplateMap.put("location", businessPlace.trim());
                         }
                     }
+                    System.out.println(Mustache.getInstance().getBySparqlPath("update_business_entity.mustache", sparqlTemplateMap));
                     Sparql.privateUpdate(Mustache.getInstance().getBySparqlPath("update_business_entity.mustache", sparqlTemplateMap)).execute();
 
                     getUserContext(request, true);
