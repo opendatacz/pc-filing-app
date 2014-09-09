@@ -1760,7 +1760,7 @@ public class PCFappModelContract implements Serializable {
     public String createSearchContract(UserContext uc, String cpvString) {
 
         String contractURI = config.getPrefix("contract") + UUID.randomUUID().toString();
-        String cpvURI = config.getPrefix("cpv") + (cpvString + "-").substring(0, (cpvString + "-").indexOf('-'));
+        String cpvURI = config.getPrefix("cpv") + cpvString.replaceAll("#.*", "");
         String time = PCFappUtils.currentXMLTime();
         /* @formatter:off */
 
