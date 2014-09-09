@@ -242,7 +242,7 @@
                             <div class="control-group">
                                 <div class="form-actions">
                                     <input type="submit" class="btn btn-primary" title="<fmt:message key="createevent.submit.description" />" value="<fmt:message key="save" bundle="${cons}" />">
-                                    <a href="my-events.jsp" class="btn"><fmt:message key="cancel" bundle="${cons}" /></a>
+                                    <a href="buyer-dashboard.jsp" class="btn"><fmt:message key="cancel" bundle="${cons}" /></a>
                                 </div>
                             </div>
                         </div>
