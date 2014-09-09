@@ -103,6 +103,7 @@
                   <i class="icon-envelope"></i>
                   <fmt:message key="published.invite" />
                 </a>
+                {{#price}}
                 <a class="btn btn-small predict-bidders"
                    data-toggle="modal"
                    data-target="#predict-bidders"
@@ -110,6 +111,7 @@
                   <i class="icon-question-sign"></i>
                   <fmt:message key="predictbidders" bundle="${cons}" />
                 </a>
+                {{/price}}
               </div>
             </td>
             <td>

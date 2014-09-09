@@ -98,6 +98,7 @@
                   <i class="icon-trash"></i>
                   <fmt:message key="delete" bundle="${cons}" />
                 </a>
+                {{#price}}
                 <a class="btn btn-small predict-bidders"
                    data-toggle="modal"
                    data-target="#predict-bidders"
@@ -105,6 +106,7 @@
                   <i class="icon-question-sign"></i>
                   <fmt:message key="predictbidders" bundle="${cons}" />
                 </a>
+                {{/price}}
               </div>
             </td>
             <td>
