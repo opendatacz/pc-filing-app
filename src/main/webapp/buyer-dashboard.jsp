@@ -97,7 +97,6 @@
                                                             case "tenderSubmitted":
                                                                 var tenderSubmitted = "<fmt:message key="dashboard.activities.tenderSubmitted" />";
                                                                 tenderSubmitted = tenderSubmitted.replace("{0}", $('<div>').append(linkTender(dataRow.objectTitle, dataRow.subject).clone()).html());
-                                                                console.log(dataRow.subject);
                                                                 tenderSubmitted = tenderSubmitted.replace("{1}", $('<div>').append(linkEvent(dataRow.objectTitle, dataRow.object).clone()).html());
                                                                 tenderSubmitted = tenderSubmitted.replace("{2}", Number(data.price).toFixed(2) + ' ' + dataRow.currency);
                                                                 tenderSubmitted = tenderSubmitted.replace("{3}", $('<div>').append(linkEntity(dataRow.entityName, dataRow.entity).clone()).html());
