@@ -1,10 +1,7 @@
 {
     "@context": {
         "@vocab": "http://purl.org/procurement/public-contracts#",
-        "cpv": "http://linked.opendata.cz/resource/cpv-2008/concept/",
-        "contract": "http://linked.opendata.cz/resource/pc-filing-app/public-contract/",
         "nuts": "http://ec.europa.eu/eurostat/ramon/rdfdata/nuts2008/",
-        "proctypes": "http://purl.org/procurement/public-contracts-procedure-types#",
         "be": "http://linked.opendata.cz/resource/pc-filing-app/business-entity/",
         "graph": "http://linked.opendata.cz/resource/pc-filing-app/dataset/",
         "criteria": "http://purl.org/procurement/public-contracts-criteria#",
@@ -90,11 +87,11 @@
         "estimatedPrice": {
             "@type": "@id"
         },
+        "gr:hasCurrencyValue" : {
+            "@type": "xsd:float"
+        },
         "gr:valueAddedTaxIncluded": {
             "@type": "xsd:boolean"
-        },
-        "kind": {
-            "@type": "@id"
         },
         "location": {
             "@type": "@id"
