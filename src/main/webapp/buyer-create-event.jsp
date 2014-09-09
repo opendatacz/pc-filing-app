@@ -377,12 +377,22 @@
                   services.predictContractPrice(cpv[0], duration, function (data) {
                     if (data && typeof data.price !== "undefined") {
                       var template = "<p><strong>{{predictionLabel}}:</strong> {{prediction}} {{currency}}</p>",
-                      currency = $("select[name = 'estimatedPriceCurrency']").val();
+                        currency = $("select[name = 'estimatedPriceCurrency']").val(),
+                        priceFormat = function (price) {
+                          return APP.util.priceFormat(Number(price));
+                        },
+                        prediction;
+                      if (Number(data.price.to) === 0) {
+                        prediction = "> " + priceFormat(data.price.from);
+                      } else {
+                        prediction = priceFormat(data.price.from) + " - " + priceFormat(data.price.to);
+                      }
+                         
                       $predictPriceModal.find("#progressbar").hide();
                       $predictPriceModal.find(".modal-body").html(
                         Mustache.render(template, {
                           currency: currency,
-                          prediction: data.price.to == 0 ? "> " + Number(data.price.from).toString() : Number(data.price.from).toString() + " - " + Number(data.price.to).toString(),
+                          prediction: prediction, 
                           predictionLabel: $predictPriceModal.data("predicted-price")
                         })
                       );

@@ -71,6 +71,17 @@ var APP = {
       var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
           results = regex.exec(location.search);
       return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-    }
+    },
+    priceFormat: function (number, precision) {
+      // Stolen from: <http://stackoverflow.com/a/14428340/385505>
+      if (!isFinite(number)) {
+        return number.toString();
+      }
+
+      precision = precision || 0;
+      return number.toFixed(precision).replace(/./g, function(c, i, a) {
+        return i && c !== "." && !((a.length - i) % 3) ? ',' + c : c;
+      });
+    },
   }
 };
