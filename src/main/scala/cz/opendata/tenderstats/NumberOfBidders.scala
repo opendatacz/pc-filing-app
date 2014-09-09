@@ -51,7 +51,7 @@ object NumberOfBidders {
         .privateQuery(Sparql.template("resource_description_extended.mustache", Map("source-graph" -> graph, "resource" -> uri)))
         .execConstruct
         .write(baos, "JSONLD")
-      val x = JsonUtils.toPrettyString(JsonLdProcessor.frame(JsonUtils.fromString(baos.toString("UTF-8")), jsonLdFrame, jsonLdOptions))
+      val x = "\"" + JsonUtils.toString(JsonLdProcessor.frame(JsonUtils.fromString(baos.toString("UTF-8")), jsonLdFrame, jsonLdOptions)).replaceAll("\"", """ \\" """.trim) + "\""
       debug(s"POST body content is:\n$x")
       val rs = client.target(endpoint).request.post(Entity.entity(x, "application/ld+json"), classOf[String])
       debug(s"POST response is:\n$rs")
