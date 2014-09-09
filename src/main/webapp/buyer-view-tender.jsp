@@ -137,6 +137,7 @@
 
 	<%@include file="WEB-INF/jspf/footer.jspf" %>
 
+  <script src="js/application.js"></script>
 	<script src="js/functions.js"></script>
 	<script src="js/sessionstorage.1.4.js"></script>
 	<script src="js/toolsBuyer.js"></script>
@@ -144,29 +145,26 @@
 	<script src="js/table.js"></script>
 
 	<script type="text/javascript">
-	
-	var tenderURL = sessionStorage.tenderURL;
+	  var tenderURL = APP.util.getParameterByName("uri"); 
 	  var title = sessionStorage.contractTitle;
 	  var buyerURL = sessionStorage.buyerURL;
 	  
 	  $(window).ready(function() {		
-		$('#tenderTitle').append(title);
-		$('#buyerURL').attr('value',buyerURL);
-		$('#tenderURL').attr('value',tenderURL);
-		console.log(sessionStorage);		
-		loadForm();
+      $('#tenderTitle').append(title);
+      $('#buyerURL').attr('value', buyerURL);
+      $('#tenderURL').attr('value', tenderURL);
+      loadForm();
 	  });
 	  
-	  
 	function loadForm() {
-		
-		$.getJSON("PCFilingApp?action=getTenderJson&editTenderURL="+encodeURIComponent(sessionStorage.tenderURL), function(data)
-				{
+    $.getJSON("PCFilingApp", {
+        action: "getTenderJson",
+        editTenderURL: tenderURL
+      }, function(data) {
 					if (data == null || data.length == 0) {
 						sessionStorage.clear();
 						window.location.href = "./";
 					} else {
-					
 						$("#supplier").html('<a onclick="showEntity(\''+data.supplier.entity+'\')" href="info-supplier.jsp">'+data.supplier.name+'</a>');
 						$("#inputDescription").html(data.description);
 						$("#inputCurrency").html(data.currency);
@@ -176,7 +174,6 @@
 						var docsEnabled = false;
 						var attaEnabled = false;
 						$.each(data.documents,function(){
-							
 							var item;
 							switch ( this.docType ) {							
 							case "Offer":			
@@ -216,12 +213,8 @@
 							}	
 							
 							item.append('<li id="doc-'+this.token+'"><a href="PCFilingApp?action=document&token='+this.token+'"><i class="icon-download"></i> '+this.fileName+'</a></li>');
-							item.closest(".control-group").show();//css('display','block');
+							item.closest(".control-group").show();
 						});		
-						
-// 						if ( !docsEnabled ) $('#docsHeader').css('display','none');
-// 						if ( !attaEnabled ) $('#attaHeader').css('display','none');
-						
 					}
 					
 					$("#progressbar").hide();

@@ -52,7 +52,6 @@ function userStats(value) {
 function copyEvent(contractURL) {
 	sessionStorage.copyContractURL = contractURL;
 	return;
-	
 }
 
 function linkEntity(entityName,entityURI) {
@@ -64,9 +63,8 @@ function linkEntity(entityName,entityURI) {
 }
 
 function linkTender(tenderTitle,tenderURI) {
-	var link = $('<a>');
-	link.attr('href','buyer-view-tender.jsp');
-	link.on('click',function(){ showTender(tenderTitle,tenderURI);   });
+	var link = $("<a>");
+	link.attr("href", "buyer-view-tender.jsp?uri=" + encodeURIComponent(tenderURI));
 	link.append("tender");
 	return link;
 }
