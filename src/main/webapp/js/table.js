@@ -59,11 +59,15 @@ var TABLE = {
         services.predictBidders(TABLE.util.getClosestContractUri(e), function (data) {
           var $modal = TABLE.dom.$predictBiddersModal, 
             predictedNumberLabel = $modal.data("predicted-number"),
-            template = "<p><strong>{{predictedNumberLabel}}:</strong> {{predictedNumber}}</p>";
+            template = "<p><strong>{{predictedNumberLabel}}:</strong> {{predictedNumber}}"
+              + "(from {{predictedMinimum}} to {{predictedMaximum}})"
+              + "</p>";
           $modal.find("#progressbar").hide();
 
           $modal.find(".modal-body").html(
             Mustache.render(template, {
+              predictedMaximum: data["topBoundary"],
+              predictedMinimum: data["bottomBoundary"],
               predictedNumber: data["prediction"],
               predictedNumberLabel: predictedNumberLabel
             }));
