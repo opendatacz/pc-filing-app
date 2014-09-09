@@ -321,7 +321,6 @@ public class SystemManager extends AbstractComponent {
                             sparqlTemplateMap.put("location", businessPlace.trim());
                         }
                     }
-                    System.out.println(Mustache.getInstance().getBySparqlPath("update_business_entity.mustache", sparqlTemplateMap));
                     Sparql.privateUpdate(Mustache.getInstance().getBySparqlPath("update_business_entity.mustache", sparqlTemplateMap)).execute();
 
                     getUserContext(request, true);
