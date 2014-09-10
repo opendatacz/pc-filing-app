@@ -28,6 +28,22 @@ var APP = {
       return beginsWith.concat(caseInsensitive);
     }
   },
+  cpv: {
+    getLabel: function (notation) {
+      if (typeof cpvCollection !== "undefined") {
+        var results = jQuery.grep(cpvCollection, function (cpv) {
+          return cpv.indexOf(notation) === 0;
+        });
+        if (results.length === 0) {
+          return notation;
+        } else {
+          return results[0].split("#").pop();
+        }
+      } else {
+        return notation;
+      }
+    }
+  },
   dom: {
     dismissablePopover: function (e) {
       // Stolen from <http://stackoverflow.com/a/14857326/385505>

@@ -44,6 +44,7 @@ var MATCHMAKER = {
         visiblePages: 3,
         onPageClick: function (event, page) {
           matchResultsBody.html(Mustache.render(template, {
+            matchedUri: config.resourceUri,
             matches: jQuery.map(matches, function (match, i) {
               if (MATCHMAKER.inPage(i, page)) {
                 match.rank = i + 1;
