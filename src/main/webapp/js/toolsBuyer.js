@@ -62,17 +62,17 @@ function linkEntity(entityName,entityURI) {
 	return link;
 }
 
-function linkTender(tenderTitle,tenderURI) {
+function linkTender(tenderTitle, tenderURI) {
 	var link = $("<a>");
 	link.attr("href", "buyer-view-tender.jsp?uri=" + encodeURIComponent(tenderURI));
 	link.append("tender");
 	return link;
 }
 
-function linkEvent(eventTitle,eventURI) {
+function linkEvent(eventTitle, eventURI) {
 	var link = $('<a>');
 	link.attr('href','buyer-view-event.jsp');
-	link.on('click',function(){ showEvent(eventURI); });
+  link.attr('onclick', 'showEvent("'+eventURI+'");');
 	link.append(eventTitle);
 	return link;
 }
@@ -82,7 +82,7 @@ function newDoc(inputName,name) {
 	var newClose = $('<a>').append($('<i>').addClass('icon-remove-sign'));
 	newClose.css('cursor','pointer');
 	newClose.on('click',function() {				
-		$(this).closest('.addDocLI').fadeOut(function(){ $(this).remove();});
+		$(this).closest('.addDocLI').fadeOut(function () { $(this).remove(); });
 	});
 	newD.append(newClose);
 	newD.append($('<label for="'+inputName+'">').append(name));

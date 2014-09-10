@@ -44,7 +44,7 @@ function checkUser() {
 	userPreferences();
 }
 
-function showTender(title,tender) {		
+function showTender(title, tender) {		
 	sessionStorage.tenderURL =  decodeURIComponent(tender);
 	sessionStorage.contractTitle =  decodeURIComponent(title);
 }

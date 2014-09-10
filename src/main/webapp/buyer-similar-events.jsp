@@ -31,22 +31,16 @@
             <fmt:message key="similarevents.title" /> '<span id="contractTitle"></span>'.
           </h3>
 
-          <!--
-          <div class="btn-group btn-group">
-            <a href="mycontracts-step-05.html" class="btn btn-small" title="Click to compare your contract with this one.">compare</a>
-          </div>
-          -->
-
           <table class="table table-striped table-bordered" id="matchResultsTable">
             <thead>
               <tr>
                 <th><fmt:message key="rank" bundle="${cons}" /></th>
                 <th><fmt:message key="contracttitle" bundle="${cons}" /></th>
                 <th><fmt:message key="description" bundle="${cons}" /></th>
-                <!--
+                <%--
                 <th><fmt:message key="place" bundle="${cons}" /></th>
+                --%>
                 <th><fmt:message key="action" bundle="${cons}" /></th>
-                -->
               </tr>
             </thead>
             <tbody>
@@ -156,6 +150,12 @@
             </a>
           </td>
           <td class="fixedCol truncate">{{description}}</td>
+          <td>
+            <a class="btn"
+              href="compare-contracts.jsp?source={{matchedUri}}&target={{uri}}">
+              <fmt:message key="comparecontracts.title" />
+            </a>
+          </td>
         </tr>
       {{/matches}}
     </script>
