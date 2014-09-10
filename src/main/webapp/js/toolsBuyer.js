@@ -65,6 +65,7 @@ function linkEntity(entityName,entityURI) {
 function linkTender(tenderTitle, tenderURI) {
 	var link = $("<a>");
 	link.attr("href", "buyer-view-tender.jsp?uri=" + encodeURIComponent(tenderURI));
+  link.attr("onclick", 'showTender("' + tenderTitle + '", "' + tenderURI + '")');
 	link.append("tender");
 	return link;
 }

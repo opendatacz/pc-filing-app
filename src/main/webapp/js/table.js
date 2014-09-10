@@ -109,6 +109,8 @@ var TABLE = {
       .delegate(".view-tenders", "click", function (e) {
         if ($(e.target).hasClass("disabled")) {
           return false;
+        } else {
+          TABLE.saveContractData(e);
         }
       })
       .delegate(".send-notification", "click", function (e) {

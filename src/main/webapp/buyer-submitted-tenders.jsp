@@ -125,7 +125,7 @@
 
                                                         // View
                                                         newView = $('<a>');
-                                                        newView.attr('href', 'buyer-view-tender.jsp?uri=' + encodeUriComponent(data.tenderURL));
+                                                        newView.attr('href', 'buyer-view-tender.jsp?uri=' + encodeURIComponent(data.tenderURL));
                                                         newView.append('<fmt:message key="view" bundle="${cons}" />').appendTo(newActions);
 
                                                         // Reject
