@@ -145,7 +145,7 @@
 	<script src="js/table.js"></script>
 
 	<script type="text/javascript">
-	  var tenderURL = APP.util.getParameterByName("uri"); 
+	  var tenderURL = APP.util.getParameterByName("uri") || sessionStorage.tenderURL; 
 	  var title = sessionStorage.contractTitle;
 	  var buyerURL = sessionStorage.buyerURL;
 	  
