@@ -60,7 +60,7 @@ var TABLE = {
           var $modal = TABLE.dom.$predictBiddersModal, 
             predictedNumberLabel = $modal.data("predicted-number"),
             template = "<p><strong>{{predictedNumberLabel}}:</strong> {{predictedNumber}}"
-              + "(from {{predictedMinimum}} to {{predictedMaximum}})"
+              + " (from {{predictedMinimum}} to {{predictedMaximum}})"
               + "</p>";
           $modal.find("#progressbar").hide();
 
